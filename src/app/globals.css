@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-blush text-wine font-cleanSans antialiased;
+    background-image: radial-gradient(circle at top, #fff 0%, #f6eef1 45%, #f3e6eb 100%);
+    min-height: 100dvh;
+  }
+}
+
+@layer components {
+  .romantic-card {
+    @apply rounded-3xl bg-white/85 shadow-soft backdrop-blur-sm border border-rose/20;
+  }
+
+  .romantic-input {
+    @apply w-full rounded-2xl border border-rose/30 bg-ivory px-4 py-3 text-base text-wine placeholder:text-wine/40 focus:outline-none focus:ring-2 focus:ring-rose/40;
+  }
+
+  .romantic-button {
+    @apply rounded-full bg-wine px-6 py-3 text-base font-semibold text-white transition hover:bg-rose disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+}
