@@ -2,8 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Fotos do Casamento',
-  description: 'Capture, aplique filtros e envie para impressão no local.'
+  title: '✿ Cabine Fotográfica',
+  description: 'Cabine de fotos mobile-first com filtros e impressão para convidados.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

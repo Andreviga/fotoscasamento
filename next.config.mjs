@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: '/casamento',
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com'
-      }
-    ]
+    remotePatterns: [{ protocol: 'https', hostname: 'res.cloudinary.com' }]
   }
 };
 
