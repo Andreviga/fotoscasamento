@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #fffaf6;
+}
+
+::selection {
+  background: rgba(180, 125, 117, 0.18);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serifRomance text-cocoa;
+  }
+
+  p,
+  span,
+  button,
+  input,
+  label {
+    @apply font-cleanSans;
+  }
+}
+
+@layer components {
+  .romantic-shell {
+    @apply relative mx-auto min-h-dvh w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  .romantic-panel {
+    @apply rounded-[32px] border border-white/70 bg-white/80 shadow-soft backdrop-blur;
+  }
+
+  .romantic-button {
+    @apply inline-flex items-center justify-center rounded-full bg-wine px-5 py-3 text-sm font-semibold text-ivory transition hover:bg-cocoa disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .romantic-button-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-rose/40 bg-transparent px-5 py-3 text-sm font-semibold text-wine transition hover:border-roseDeep hover:bg-white/60;
+  }
+
+  .romantic-input {
+    @apply w-full rounded-[22px] border border-rose/30 bg-ivory/80 px-4 py-3 text-sm text-cocoa outline-none transition placeholder:text-wine/45 focus:border-roseDeep focus:bg-white;
+  }
+
+  .hero-haze {
+    @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(212,180,131,0.24),transparent_38%),radial-gradient(circle_at_12%_22%,rgba(216,180,171,0.22),transparent_22%),radial-gradient(circle_at_82%_16%,rgba(180,125,117,0.12),transparent_18%)];
+  }
+
+  .mural-columns {
+    column-gap: 1rem;
+    columns: 2;
+  }
+
+  .mural-card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mural-columns {
+    columns: 3;
+  }
+}
+
+@media (min-width: 1200px) {
+  .mural-columns {
+    columns: 4;
+  }
+}

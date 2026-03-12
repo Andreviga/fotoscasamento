@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /mural/{documentId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+        'guestName',
+        'imageUrl',
+        'filterId',
+        'publicId',
+        'createdAt',
+        'createdAtMs'
+      ])
+      && request.resource.data.guestName is string
+      && request.resource.data.guestName.size() > 0
+      && request.resource.data.guestName.size() <= 40
+      && request.resource.data.imageUrl is string
+      && request.resource.data.imageUrl.size() > 0
+      && request.resource.data.filterId is string
+      && request.resource.data.publicId is string
+      && request.resource.data.createdAtMs is int;
+      allow update, delete: if false;
+    }
+  }
+}
