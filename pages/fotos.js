@@ -186,6 +186,20 @@ export default function FotosPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!cameraAtiva || !videoRef.current || !streamRef.current) {
+      return;
+    }
+
+    videoRef.current.srcObject = streamRef.current;
+    videoRef.current.setAttribute('playsinline', 'true');
+
+    void videoRef.current.play().catch((error) => {
+      console.error(error);
+      setMensagem('A webcam foi liberada, mas não iniciou a prévia. Tente fechar e abrir novamente.');
+    });
+  }, [cameraAtiva]);
+
   async function iniciarCamera() {
     if (!navigator?.mediaDevices?.getUserMedia) {
       setMensagem('Seu navegador não oferece suporte de câmera. Use a câmera do celular ou a galeria.');
@@ -203,13 +217,6 @@ export default function FotosPage() {
       });
 
       streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play();
-      }
-
       setCameraAtiva(true);
       setMensagem('Webcam pronta. Se preferir, a câmera do celular continua sendo a opção mais simples.');
     } catch (error) {
