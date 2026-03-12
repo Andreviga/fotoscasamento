@@ -15,7 +15,7 @@ const clean = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'André & Nathália | Cabine de Fotos',
+  title: 'André & Nathália',
   description: 'Cabine de fotos digital e mural ao vivo do casamento de André & Nathália.'
 };
 

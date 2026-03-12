@@ -1,19 +1,54 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 import { firebaseDb } from '@/lib/firebaseClient';
 
-function formatTime(timestamp) {
-  const date = timestamp?.toDate ? timestamp.toDate() : null;
-  if (!date) {
+function extractPhotoDate(data) {
+  if (typeof data.createdAtMs === 'number') {
+    return new Date(data.createdAtMs);
+  }
+
+  if (typeof data.dataCriacaoMs === 'number') {
+    return new Date(data.dataCriacaoMs);
+  }
+
+  if (data.createdAt?.toDate) {
+    return data.createdAt.toDate();
+  }
+
+  if (data.dataCriacao?.toDate) {
+    return data.dataCriacao.toDate();
+  }
+
+  if (data.timestamp?.toDate) {
+    return data.timestamp.toDate();
+  }
+
+  return null;
+}
+
+function normalizePhoto(doc) {
+  const data = doc.data();
+  const photoDate = extractPhotoDate(data);
+
+  return {
+    id: doc.id,
+    guestName: data.guestName || data.nomeConvidado || data.nome_convidado || 'Convidado',
+    imageUrl: data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '',
+    createdAtMs: photoDate ? photoDate.getTime() : 0
+  };
+}
+
+function formatTime(timestampMs) {
+  if (!timestampMs) {
     return 'Agora';
   }
 
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit'
-  }).format(date);
+  }).format(timestampMs);
 }
 
 export default function MuralPage() {
@@ -21,15 +56,15 @@ export default function MuralPage() {
   const [status, setStatus] = useState('Conectando ao mural...');
 
   useEffect(() => {
-    const wallQuery = query(collection(firebaseDb, 'mural'), orderBy('timestamp', 'desc'), limit(120));
+    const wallQuery = query(collection(firebaseDb, 'mural'), limit(120));
 
     const unsubscribe = onSnapshot(
       wallQuery,
       (snapshot) => {
-        const items = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const items = snapshot.docs
+          .map(normalizePhoto)
+          .filter((item) => item.imageUrl)
+          .sort((first, second) => second.createdAtMs - first.createdAtMs);
 
         setPhotos(items);
         setStatus(items.length ? 'Atualização em tempo real ativa ✿' : 'Mural pronto para receber a primeira foto.');
@@ -78,10 +113,10 @@ export default function MuralPage() {
             <div className="mural-columns mt-8">
               {photos.map((photo) => (
                 <article key={photo.id} className="mural-card romantic-panel overflow-hidden">
-                  <img src={photo.url_foto} alt={`Foto de ${photo.nome_convidado || 'Convidado'}`} className="w-full object-cover" />
+                  <img src={photo.imageUrl} alt={`Foto de ${photo.guestName || 'Convidado'}`} className="w-full object-cover" />
                   <div className="px-4 py-4">
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-wine/50">{formatTime(photo.timestamp)}</p>
-                    <h2 className="mt-1 text-2xl">{photo.nome_convidado || 'Convidado'}</h2>
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-wine/50">{formatTime(photo.createdAtMs)}</p>
+                    <h2 className="mt-1 text-2xl">{photo.guestName || 'Convidado'}</h2>
                   </div>
                 </article>
               ))}

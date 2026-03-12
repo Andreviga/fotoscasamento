@@ -7,9 +7,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { cloudinaryUrl, filterLabel, guestName } = req.body;
+    const { cloudinaryUrl, filterLabel, guestName, publicId } = req.body;
 
-    // Validações simples
     if (!cloudinaryUrl || !guestName) {
       return res.status(400).json({ error: 'URL da Cloudinary e nome do convidado são obrigatórios' });
     }
@@ -18,14 +17,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Por favor, insira seu nome' });
     }
 
-    // Adicionar documento à coleção 'mural' no Firestore
     const adminDb = getAdminDb();
     const docRef = await adminDb.collection('mural').add({
-      cloudinaryUrl,
-      filter: filterLabel || 'Original',
+      imageUrl: cloudinaryUrl,
+      filterId: filterLabel || 'original',
       guestName: guestName.trim(),
-      timestamp: FieldValue.serverTimestamp(),
-      createdAt: new Date().toISOString()
+      publicId: publicId || '',
+      createdAt: FieldValue.serverTimestamp(),
+      createdAtMs: Date.now()
     });
 
     return res.status(200).json({

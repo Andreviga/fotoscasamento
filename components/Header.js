@@ -5,7 +5,7 @@ export default function Header() {
     <header className="site-header">
       <div className="container site-header__inner">
         <Link href="/" className="site-brand" aria-label="Página inicial">
-          ✿ André & Nathália
+          André & Nathália
         </Link>
         <nav className="site-nav" aria-label="Navegação principal">
           <Link href="/" className="site-nav__link">

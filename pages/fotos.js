@@ -5,7 +5,6 @@ import {
   collection,
   limit,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp
 } from 'firebase/firestore';
@@ -16,7 +15,7 @@ import { firebaseDb } from '../lib/firebaseClient';
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '';
-const COLLECTION_NAME = 'fotos_casamento';
+const COLLECTION_NAME = 'mural';
 
 const FILTERS = [
   { id: 'original', label: 'Original', transformation: 'f_auto,q_auto' },
@@ -30,6 +29,30 @@ const FILTERS = [
   }
 ];
 
+function extractPhotoDate(data) {
+  if (typeof data.createdAtMs === 'number') {
+    return new Date(data.createdAtMs);
+  }
+
+  if (typeof data.dataCriacaoMs === 'number') {
+    return new Date(data.dataCriacaoMs);
+  }
+
+  if (data.createdAt?.toDate) {
+    return data.createdAt.toDate();
+  }
+
+  if (data.dataCriacao?.toDate) {
+    return data.dataCriacao.toDate();
+  }
+
+  if (data.timestamp?.toDate) {
+    return data.timestamp.toDate();
+  }
+
+  return null;
+}
+
 function formatDate(timestamp, fallbackMs) {
   const tsDate = timestamp?.toDate ? timestamp.toDate() : null;
   const date = tsDate || (typeof fallbackMs === 'number' ? new Date(fallbackMs) : null);
@@ -42,6 +65,38 @@ function formatDate(timestamp, fallbackMs) {
     dateStyle: 'short',
     timeStyle: 'short'
   }).format(date);
+}
+
+function normalizePhoto(doc) {
+  const data = doc.data();
+  const photoDate = extractPhotoDate(data);
+
+  return {
+    id: doc.id,
+    guestName: data.guestName || data.nomeConvidado || data.nome_convidado || data.guestName || 'Convidado',
+    imageUrl: data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '',
+    filterId: data.filterId || data.filtro || data.filter || 'original',
+    createdAt: data.createdAt || data.dataCriacao || data.timestamp || null,
+    createdAtMs: photoDate ? photoDate.getTime() : 0
+  };
+}
+
+function getCameraErrorMessage(error) {
+  const errorName = error?.name || '';
+
+  if (errorName === 'NotAllowedError') {
+    return 'A permissão da câmera foi negada. Use o botão da câmera do celular ou escolha uma foto da galeria.';
+  }
+
+  if (errorName === 'NotFoundError') {
+    return 'Nenhuma câmera foi encontrada neste dispositivo. Use a galeria para continuar.';
+  }
+
+  if (errorName === 'NotReadableError') {
+    return 'A câmera já está sendo usada por outro aplicativo. Feche outros apps e tente novamente.';
+  }
+
+  return 'Não conseguimos acessar a câmera do navegador. Use a câmera nativa do celular ou escolha uma foto da galeria.';
 }
 
 function buildCloudinaryUrl(publicId, transformation) {
@@ -74,12 +129,14 @@ async function uploadUnsignedToCloudinary(fileOrRemoteUrl, folder = 'casamento/f
 export default function FotosPage() {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
   const [cameraAtiva, setCameraAtiva] = useState(false);
   const [capturando, setCapturando] = useState(false);
   const [publicando, setPublicando] = useState(false);
-  const [mensagem, setMensagem] = useState('Digite seu nome e registre um momento especial ✿');
+  const [publicado, setPublicado] = useState(false);
+  const [mensagem, setMensagem] = useState('');
 
   const [fotoBase, setFotoBase] = useState(null);
   const [filtroSelecionadoId, setFiltroSelecionadoId] = useState(FILTERS[0].id);
@@ -99,16 +156,16 @@ export default function FotosPage() {
   }, [fotoBase, filtroSelecionado]);
 
   useEffect(() => {
-    const feedQuery = query(
-      collection(firebaseDb, COLLECTION_NAME),
-      orderBy('dataCriacaoMs', 'desc'),
-      limit(100)
-    );
+    const feedQuery = query(collection(firebaseDb, COLLECTION_NAME), limit(120));
 
     const unsubscribe = onSnapshot(
       feedQuery,
       (snapshot) => {
-        const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const items = snapshot.docs
+          .map(normalizePhoto)
+          .filter((item) => item.imageUrl)
+          .sort((first, second) => second.createdAtMs - first.createdAtMs);
+
         setFeed(items);
         setFeedStatus(items.length > 0 ? 'Feed atualizado em tempo real ✿' : 'O feed está pronto para a primeira foto.');
       },
@@ -131,13 +188,17 @@ export default function FotosPage() {
 
   async function iniciarCamera() {
     if (!navigator?.mediaDevices?.getUserMedia) {
-      setMensagem('Seu navegador não oferece suporte de câmera. Use a galeria.');
+      setMensagem('Seu navegador não oferece suporte de câmera. Use a câmera do celular ou a galeria.');
       return;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
+        video: {
+          facingMode: { ideal: 'user' },
+          width: { ideal: 1080 },
+          height: { ideal: 1440 }
+        },
         audio: false
       });
 
@@ -145,15 +206,16 @@ export default function FotosPage() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', 'true');
         await videoRef.current.play();
       }
 
       setCameraAtiva(true);
-      setMensagem('Câmera ativa! Clique em "Capturar Foto" para registrar.');
+      setMensagem('Webcam pronta. Se preferir, a câmera do celular continua sendo a opção mais simples.');
     } catch (error) {
       console.error(error);
       setCameraAtiva(false);
-      setMensagem('Não conseguimos acessar a câmera. Você pode escolher uma foto da galeria.');
+      setMensagem(getCameraErrorMessage(error));
     }
   }
 
@@ -188,7 +250,9 @@ export default function FotosPage() {
       });
 
       setFiltroSelecionadoId(FILTERS[0].id);
-      setMensagem('Imagem pronta! Escolha um filtro divertido e publique no feed.');
+  setPublicado(false);
+  setMensagem('');
+  setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
     } catch (error) {
       console.error(error);
       setMensagem('Falha ao enviar imagem para o Cloudinary. Tente novamente.');
@@ -202,12 +266,18 @@ export default function FotosPage() {
       return;
     }
 
+    if (!videoRef.current.videoWidth || !videoRef.current.videoHeight) {
+      setMensagem('A webcam ainda está iniciando. Aguarde um instante e tente novamente.');
+      return;
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
 
     const context = canvas.getContext('2d');
     if (!context) {
+      setMensagem('Não foi possível preparar a foto da webcam. Use a câmera do celular ou a galeria.');
       return;
     }
 
@@ -218,7 +288,10 @@ export default function FotosPage() {
         if (blob) {
           void prepararFoto(blob);
           encerrarCamera();
+          return;
         }
+
+        setMensagem('Não foi possível capturar pela webcam. Use a câmera do celular ou a galeria.');
       },
       'image/jpeg',
       0.92
@@ -227,9 +300,12 @@ export default function FotosPage() {
 
   function escolherDaGaleria(event) {
     const file = event.target.files?.[0];
+    event.target.value = '';
+
     if (!file) {
       return;
     }
+
     void prepararFoto(file);
   }
 
@@ -250,16 +326,18 @@ export default function FotosPage() {
     try {
       const transformedUrl = buildCloudinaryUrl(fotoBase.publicId, filtroSelecionado.transformation);
       const finalUpload = await uploadUnsignedToCloudinary(transformedUrl, 'casamento/feed');
+      const createdAtMs = Date.now();
 
       await addDoc(collection(firebaseDb, COLLECTION_NAME), {
-        nomeConvidado: nomeConvidado.trim(),
-        urlFoto: finalUpload.secure_url,
-        filtro: filtroSelecionado.id,
-        dataCriacao: serverTimestamp(),
-        dataCriacaoMs: Date.now()
+        guestName: nomeConvidado.trim(),
+        imageUrl: finalUpload.secure_url,
+        filterId: filtroSelecionado.id,
+        publicId: finalUpload.public_id || fotoBase.publicId,
+        createdAt: serverTimestamp(),
+        createdAtMs
       });
 
-      setMensagem('Foto publicada! Role a página para ver no feed ao vivo ✿');
+      setPublicado(true);
       setFotoBase(null);
       setFiltroSelecionadoId(FILTERS[0].id);
       setNomeConvidado('');
@@ -270,6 +348,8 @@ export default function FotosPage() {
       setPublicando(false);
     }
   }
+
+  const step = publicado ? 3 : fotoBase ? 2 : 1;
 
   return (
     <>
@@ -293,23 +373,28 @@ export default function FotosPage() {
             </p>
           </div>
 
+          <div className="step-indicator">
+            <div className={`step-indicator__item${step > 1 ? ' step-indicator__item--done' : ' step-indicator__item--active'}`}>
+              <span className="step-indicator__num">{step > 1 ? '✓' : '1'}</span>
+              <span className="step-indicator__label">Foto</span>
+            </div>
+            <div className="step-indicator__line" />
+            <div className={`step-indicator__item${step > 2 ? ' step-indicator__item--done' : step >= 2 ? ' step-indicator__item--active' : ' step-indicator__item--pending'}`}>
+              <span className="step-indicator__num">{step > 2 ? '✓' : '2'}</span>
+              <span className="step-indicator__label">Filtro</span>
+            </div>
+            <div className="step-indicator__line" />
+            <div className={`step-indicator__item${step === 3 ? ' step-indicator__item--done' : ' step-indicator__item--pending'}`}>
+              <span className="step-indicator__num">{step === 3 ? '✓' : '3'}</span>
+              <span className="step-indicator__label">Publicar</span>
+            </div>
+          </div>
+
           <section className="photo-booth">
             <div className="photo-booth__left">
-              <label htmlFor="nomeConvidado" className="form-label">
-                Nome do convidado
-              </label>
-              <input
-                id="nomeConvidado"
-                className="input-elegant"
-                placeholder="Ex.: Mariana"
-                value={nomeConvidado}
-                maxLength={40}
-                onChange={(event) => setNomeConvidado(event.target.value)}
-              />
-
               <div className="camera-stage">
                 {cameraAtiva ? (
-                  <video ref={videoRef} playsInline muted className="camera-stage__media" />
+                  <video ref={videoRef} autoPlay playsInline muted className="camera-stage__media" />
                 ) : previewPrincipalUrl ? (
                   <img
                     src={previewPrincipalUrl}
@@ -318,53 +403,79 @@ export default function FotosPage() {
                   />
                 ) : (
                   <div className="camera-stage__placeholder">
-                    Sua foto aparecerá aqui após capturar pela câmera ou escolher da galeria.
+                    A forma mais fácil é usar a câmera do celular ou escolher uma foto pronta da galeria.
                   </div>
                 )}
               </div>
 
               <div className="booth-actions">
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={() => void iniciarCamera()}
-                  disabled={cameraAtiva || capturando}
-                >
-                  Abrir Câmera
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn--outline"
-                  onClick={capturarDaCamera}
-                  disabled={!cameraAtiva || capturando}
-                >
-                  {capturando ? 'Processando...' : 'Capturar Foto'}
-                </button>
+                <label className="btn btn--primary">
+                  Usar Câmera do Celular
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="user"
+                    className="input-file-hidden"
+                    onChange={escolherDaGaleria}
+                  />
+                </label>
 
                 <label className="btn btn--outline">
                   Escolher da Galeria
                   <input
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     className="input-file-hidden"
                     onChange={escolherDaGaleria}
                   />
                 </label>
 
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={() => void iniciarCamera()}
+                  disabled={cameraAtiva || capturando}
+                >
+                  {cameraAtiva ? 'Webcam Ativa' : 'Usar Webcam do Navegador'}
+                </button>
+
                 {cameraAtiva && (
-                  <button type="button" className="btn btn--ghost" onClick={encerrarCamera}>
-                    Fechar Câmera
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn--outline"
+                      onClick={capturarDaCamera}
+                      disabled={capturando}
+                    >
+                      {capturando ? 'Processando...' : 'Capturar pela Webcam'}
+                    </button>
+                    <button type="button" className="btn btn--ghost" onClick={encerrarCamera}>
+                      Fechar Webcam
+                    </button>
+                  </>
                 )}
               </div>
             </div>
 
-            <div className="photo-booth__right">
-              <h2 className="panel-title">Filtros Divertidos</h2>
+            <div className="photo-booth__right" ref={filtersRef}>
+              {step === 3 ? (
+                <div className="booth-success">
+                  <div className="booth-success__icon">✿</div>
+                  <h2 className="panel-title">Foto publicada!</h2>
+                  <p className="panel-subtitle">Ela já deve aparecer no mural da festa em instantes.</p>
+                  <button type="button" className="btn btn--outline" onClick={() => setPublicado(false)}>
+                    Tirar outra foto
+                  </button>
+                </div>
+              ) : (
+              <>
+              <h2 className="panel-title">
+                {fotoBase ? 'Filtros Divertidos' : 'Como usar'}
+              </h2>
               <p className="panel-subtitle">
-                Escolha um estilo para sua foto antes de publicar no feed da festa.
+                {fotoBase
+                  ? 'Escolha um estilo para sua foto antes de publicar.'
+                  : 'Capture uma foto com a câmera do celular, escolha um filtro e publique no feed da festa.'}
               </p>
 
               <div className="filter-grid">
@@ -392,6 +503,22 @@ export default function FotosPage() {
                 })}
               </div>
 
+              {fotoBase && (
+                <>
+                  <label htmlFor="nomeConvidado" className="form-label">
+                    Seu nome
+                  </label>
+                  <input
+                    id="nomeConvidado"
+                    className="input-elegant"
+                    placeholder="Ex.: Mariana"
+                    value={nomeConvidado}
+                    maxLength={40}
+                    onChange={(event) => setNomeConvidado(event.target.value)}
+                  />
+                </>
+              )}
+
               <div className="publish-actions">
                 <button
                   type="button"
@@ -399,11 +526,13 @@ export default function FotosPage() {
                   onClick={() => void publicarNoFeed()}
                   disabled={!fotoBase?.publicId || !nomeConvidado.trim() || publicando}
                 >
-                  {publicando ? 'Publicando...' : 'Publicar'}
+                  {publicando ? 'Publicando...' : 'Publicar no Feed'}
                 </button>
               </div>
 
-              <p className="status-message">{mensagem}</p>
+              {mensagem && <p className="status-message">{mensagem}</p>}
+              </>
+              )}
             </div>
           </section>
 
@@ -423,13 +552,13 @@ export default function FotosPage() {
                 {feed.map((item) => (
                   <article key={item.id} className="photo-feed-card">
                     <img
-                      src={item.urlFoto}
-                      alt={`Foto publicada por ${item.nomeConvidado || 'Convidado'}`}
+                      src={item.imageUrl}
+                      alt={`Foto publicada por ${item.guestName || 'Convidado'}`}
                       className="photo-feed-card__image"
                     />
                     <div className="photo-feed-card__content">
-                      <h3>{item.nomeConvidado || 'Convidado'}</h3>
-                      <p>{formatDate(item.dataCriacao, item.dataCriacaoMs)}</p>
+                      <h3>{item.guestName || 'Convidado'}</h3>
+                      <p>{formatDate(item.createdAt, item.createdAtMs)}</p>
                     </div>
                   </article>
                 ))}

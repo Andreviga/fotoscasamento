@@ -28,9 +28,9 @@ export default function HomePage() {
             A &amp; N
           </div>
           <p className="text-sm uppercase tracking-[0.34em] text-wine/70">03 de maio de 2026</p>
-          <h1 className="text-5xl leading-none text-cocoa sm:text-7xl">Cabine Digital &amp; Mural ao Vivo</h1>
+          <h1 className="text-5xl leading-none text-cocoa sm:text-7xl">André &amp; Nathália</h1>
           <p className="mx-auto max-w-2xl text-sm leading-7 text-wine/80 sm:text-base">
-            Acesse rapidamente as experiências principais do casamento e use o menu extra quando precisar consultar o cardápio da festa.
+            Cabine digital, mural ao vivo e cardápio da festa em um único lugar para os convidados.
           </p>
         </div>
 
