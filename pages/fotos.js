@@ -17,6 +17,29 @@ const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '';
 const COLLECTION_NAME = 'mural';
 
+function isConfiguredEnvValue(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const normalized = value.trim();
+  return normalized.length > 0 && normalized !== 'undefined' && normalized !== 'null';
+}
+
+function getMissingCloudinaryEnv() {
+  const missing = [];
+
+  if (!isConfiguredEnvValue(CLOUDINARY_CLOUD_NAME)) {
+    missing.push('NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME');
+  }
+
+  if (!isConfiguredEnvValue(CLOUDINARY_UPLOAD_PRESET)) {
+    missing.push('NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET');
+  }
+
+  return missing;
+}
+
 const FILTERS = [
   { id: 'original', label: 'Original', transformation: 'f_auto,q_auto' },
   { id: 'pb-elegante', label: 'P&B elegante', transformation: 'e_art:audrey,f_auto,q_auto' },
@@ -133,6 +156,7 @@ export default function FotosPage() {
 
   const [nomeConvidado, setNomeConvidado] = useState('');
   const [cameraAtiva, setCameraAtiva] = useState(false);
+  const [webcamPronta, setWebcamPronta] = useState(false);
   const [capturando, setCapturando] = useState(false);
   const [publicando, setPublicando] = useState(false);
   const [publicado, setPublicado] = useState(false);
@@ -186,6 +210,29 @@ export default function FotosPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!cameraAtiva || !videoRef.current || !streamRef.current) {
+      return;
+    }
+
+    const video = videoRef.current;
+    const handleReady = () => setWebcamPronta(true);
+
+    setWebcamPronta(false);
+    video.srcObject = streamRef.current;
+    video.setAttribute('playsinline', 'true');
+    video.addEventListener('loadeddata', handleReady);
+
+    void video.play().catch((error) => {
+      console.error(error);
+      setMensagem('A webcam foi liberada, mas não iniciou a prévia. Tente fechar e abrir novamente.');
+    });
+
+    return () => {
+      video.removeEventListener('loadeddata', handleReady);
+    };
+  }, [cameraAtiva]);
+
   async function iniciarCamera() {
     if (!navigator?.mediaDevices?.getUserMedia) {
       setMensagem('Seu navegador não oferece suporte de câmera. Use a câmera do celular ou a galeria.');
@@ -203,18 +250,13 @@ export default function FotosPage() {
       });
 
       streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play();
-      }
-
       setCameraAtiva(true);
-      setMensagem('Webcam pronta. Se preferir, a câmera do celular continua sendo a opção mais simples.');
+      setWebcamPronta(false);
+      setMensagem('Webcam iniciando... quando a prévia aparecer, toque em capturar.');
     } catch (error) {
       console.error(error);
       setCameraAtiva(false);
+      setWebcamPronta(false);
       setMensagem(getCameraErrorMessage(error));
     }
   }
@@ -230,11 +272,16 @@ export default function FotosPage() {
     }
 
     setCameraAtiva(false);
+    setWebcamPronta(false);
   }
 
   async function prepararFoto(fileOrBlob) {
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      setMensagem('Cloudinary não configurado. Confira as variáveis de ambiente.');
+    const missingCloudinaryEnv = getMissingCloudinaryEnv();
+
+    if (missingCloudinaryEnv.length > 0) {
+      setMensagem(
+        `Cloudinary não configurado. Defina ${missingCloudinaryEnv.join(', ')} no .env.local e reinicie o servidor (npm run dev).`
+      );
       return;
     }
 
@@ -250,9 +297,9 @@ export default function FotosPage() {
       });
 
       setFiltroSelecionadoId(FILTERS[0].id);
-  setPublicado(false);
-  setMensagem('');
-  setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+      setPublicado(false);
+      setMensagem('Foto carregada. Escolha um filtro para continuar.');
+      setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
     } catch (error) {
       console.error(error);
       setMensagem('Falha ao enviar imagem para o Cloudinary. Tente novamente.');
@@ -261,15 +308,17 @@ export default function FotosPage() {
     }
   }
 
-  function capturarDaCamera() {
+  async function capturarDaCamera() {
     if (!videoRef.current || !cameraAtiva) {
       return;
     }
 
-    if (!videoRef.current.videoWidth || !videoRef.current.videoHeight) {
-      setMensagem('A webcam ainda está iniciando. Aguarde um instante e tente novamente.');
+    if (!webcamPronta || !videoRef.current.videoWidth || !videoRef.current.videoHeight) {
+      setMensagem('A webcam ainda está iniciando. Aguarde a prévia aparecer e tente novamente.');
       return;
     }
+
+    setMensagem('Capturando foto...');
 
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
@@ -283,19 +332,17 @@ export default function FotosPage() {
 
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          void prepararFoto(blob);
-          encerrarCamera();
-          return;
-        }
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', 0.92);
+    });
 
-        setMensagem('Não foi possível capturar pela webcam. Use a câmera do celular ou a galeria.');
-      },
-      'image/jpeg',
-      0.92
-    );
+    if (blob) {
+      encerrarCamera();
+      await prepararFoto(blob);
+      return;
+    }
+
+    setMensagem('Não foi possível capturar pela webcam. Use a câmera do celular ou a galeria.');
   }
 
   function escolherDaGaleria(event) {
@@ -444,8 +491,8 @@ export default function FotosPage() {
                     <button
                       type="button"
                       className="btn btn--outline"
-                      onClick={capturarDaCamera}
-                      disabled={capturando}
+                      onClick={() => void capturarDaCamera()}
+                      disabled={capturando || !webcamPronta}
                     >
                       {capturando ? 'Processando...' : 'Capturar pela Webcam'}
                     </button>
