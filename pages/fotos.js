@@ -401,7 +401,7 @@ export default function FotosPage() {
           <div className="step-indicator">
             <div className={`step-indicator__item${step > 1 ? ' step-indicator__item--done' : ' step-indicator__item--active'}`}>
               <span className="step-indicator__num">{step > 1 ? '✓' : '1'}</span>
-              <span className="step-indicator__label">Foto</span>
+              <span className="step-indicator__label">Mídia</span>
             </div>
             <div className="step-indicator__line" />
             <div className={`step-indicator__item${step > 2 ? ' step-indicator__item--done' : step >= 2 ? ' step-indicator__item--active' : ' step-indicator__item--pending'}`}>
@@ -443,7 +443,7 @@ export default function FotosPage() {
 
               <div className="booth-actions">
                 <label className="btn btn--primary">
-                  Tirar Foto Agora
+                  Foto na Hora
                   <input
                     type="file"
                     accept="image/*"
@@ -455,7 +455,7 @@ export default function FotosPage() {
                 </label>
 
                 <label className="btn btn--outline">
-                  Gravar Vídeo Agora
+                  Vídeo na Hora
                   <input
                     type="file"
                     accept="video/*"
@@ -467,7 +467,7 @@ export default function FotosPage() {
                 </label>
 
                 <label className="btn btn--outline">
-                  Escolher da Galeria
+                  Galeria
                   <input
                     type="file"
                     accept="image/*,video/*"
@@ -483,10 +483,10 @@ export default function FotosPage() {
               {step === 3 ? (
                 <div className="booth-success">
                   <div className="booth-success__icon">✿</div>
-                  <h2 className="panel-title">Mídia publicada!</h2>
+                  <h2 className="panel-title">Publicado!</h2>
                   <p className="panel-subtitle">Ela já deve aparecer no mural da festa em instantes.</p>
                   <button type="button" className="btn btn--outline" onClick={() => setPublicado(false)}>
-                    Publicar outra mídia
+                    Nova publicação
                   </button>
                 </div>
               ) : (
