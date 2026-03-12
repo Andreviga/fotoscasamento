@@ -12,11 +12,11 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: #fffaf6;
+  background-color: #fbfaf7;
 }
 
 ::selection {
-  background: rgba(180, 125, 117, 0.18);
+  background: rgba(111, 132, 117, 0.24);
 }
 
 @layer base {
