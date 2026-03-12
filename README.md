@@ -75,3 +75,5 @@ As regras iniciais estão em `firestore.rules`.
 2. Adicione todas as variáveis de ambiente listadas acima.
 3. Faça o deploy da branch principal.
 4. Teste `/fotos` no telemóvel e `/mural` em outra aba ou no telão.
+
+Guia operacional detalhado: `DEPLOY.md`
