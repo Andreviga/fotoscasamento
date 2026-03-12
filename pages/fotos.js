@@ -81,24 +81,6 @@ function normalizePhoto(doc) {
   };
 }
 
-function getCameraErrorMessage(error) {
-  const errorName = error?.name || '';
-
-  if (errorName === 'NotAllowedError') {
-    return 'A permissão da câmera foi negada. Use o botão da câmera do celular ou escolha uma foto da galeria.';
-  }
-
-  if (errorName === 'NotFoundError') {
-    return 'Nenhuma câmera foi encontrada neste dispositivo. Use a galeria para continuar.';
-  }
-
-  if (errorName === 'NotReadableError') {
-    return 'A câmera já está sendo usada por outro aplicativo. Feche outros apps e tente novamente.';
-  }
-
-  return 'Não conseguimos acessar a câmera do navegador. Use a câmera nativa do celular ou escolha uma foto da galeria.';
-}
-
 function buildCloudinaryUrl(publicId, transformation) {
   return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformation}/${publicId}.jpg`;
 }
@@ -127,13 +109,10 @@ async function uploadUnsignedToCloudinary(fileOrRemoteUrl, folder = 'casamento/f
 }
 
 export default function FotosPage() {
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
   const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
-  const [cameraAtiva, setCameraAtiva] = useState(false);
-  const [capturando, setCapturando] = useState(false);
+  const [carregando, setCarregando] = useState(false);
   const [publicando, setPublicando] = useState(false);
   const [publicado, setPublicado] = useState(false);
   const [mensagem, setMensagem] = useState('');
@@ -178,68 +157,20 @@ export default function FotosPage() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, []);
-
-  async function iniciarCamera() {
-    if (!navigator?.mediaDevices?.getUserMedia) {
-      setMensagem('Seu navegador não oferece suporte de câmera. Use a câmera do celular ou a galeria.');
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: 'user' },
-          width: { ideal: 1080 },
-          height: { ideal: 1440 }
-        },
-        audio: false
-      });
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play();
-      }
-
-      setCameraAtiva(true);
-      setMensagem('Webcam pronta. Se preferir, a câmera do celular continua sendo a opção mais simples.');
-    } catch (error) {
-      console.error(error);
-      setCameraAtiva(false);
-      setMensagem(getCameraErrorMessage(error));
-    }
-  }
-
-  function encerrarCamera() {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-
-    setCameraAtiva(false);
-  }
-
   async function prepararFoto(fileOrBlob) {
     if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
       setMensagem('Cloudinary não configurado. Confira as variáveis de ambiente.');
       return;
     }
 
-    setCapturando(true);
-    setMensagem('Enviando imagem base para aplicar filtros...');
+    // Validação do arquivo
+    if (!(fileOrBlob instanceof Blob || fileOrBlob instanceof File)) {
+      setMensagem('Arquivo inválido. Tente novamente.');
+      return;
+    }
+
+    setCarregando(true);
+    setMensagem('Enviando imagem para processar filtros...');
 
     try {
       const uploaded = await uploadUnsignedToCloudinary(fileOrBlob, 'casamento/base');
@@ -250,52 +181,15 @@ export default function FotosPage() {
       });
 
       setFiltroSelecionadoId(FILTERS[0].id);
-  setPublicado(false);
-  setMensagem('');
-  setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+      setPublicado(false);
+      setMensagem('');
+      setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
     } catch (error) {
       console.error(error);
-      setMensagem('Falha ao enviar imagem para o Cloudinary. Tente novamente.');
+      setMensagem('Erro ao processar a foto. Tente novamente.');
     } finally {
-      setCapturando(false);
+      setCarregando(false);
     }
-  }
-
-  function capturarDaCamera() {
-    if (!videoRef.current || !cameraAtiva) {
-      return;
-    }
-
-    if (!videoRef.current.videoWidth || !videoRef.current.videoHeight) {
-      setMensagem('A webcam ainda está iniciando. Aguarde um instante e tente novamente.');
-      return;
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-
-    const context = canvas.getContext('2d');
-    if (!context) {
-      setMensagem('Não foi possível preparar a foto da webcam. Use a câmera do celular ou a galeria.');
-      return;
-    }
-
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          void prepararFoto(blob);
-          encerrarCamera();
-          return;
-        }
-
-        setMensagem('Não foi possível capturar pela webcam. Use a câmera do celular ou a galeria.');
-      },
-      'image/jpeg',
-      0.92
-    );
   }
 
   function escolherDaGaleria(event) {
@@ -393,9 +287,7 @@ export default function FotosPage() {
           <section className="photo-booth">
             <div className="photo-booth__left">
               <div className="camera-stage">
-                {cameraAtiva ? (
-                  <video ref={videoRef} autoPlay playsInline muted className="camera-stage__media" />
-                ) : previewPrincipalUrl ? (
+                {previewPrincipalUrl ? (
                   <img
                     src={previewPrincipalUrl}
                     alt="Pré-visualização da foto com filtro"
@@ -403,7 +295,7 @@ export default function FotosPage() {
                   />
                 ) : (
                   <div className="camera-stage__placeholder">
-                    A forma mais fácil é usar a câmera do celular ou escolher uma foto pronta da galeria.
+                    Use a câmera do celular ou escolha uma foto pronta da galeria.
                   </div>
                 )}
               </div>
@@ -416,6 +308,7 @@ export default function FotosPage() {
                     accept="image/*"
                     capture="user"
                     className="input-file-hidden"
+                    disabled={carregando || publicando}
                     onChange={escolherDaGaleria}
                   />
                 </label>
@@ -426,34 +319,10 @@ export default function FotosPage() {
                     type="file"
                     accept="image/*"
                     className="input-file-hidden"
+                    disabled={carregando || publicando}
                     onChange={escolherDaGaleria}
                   />
                 </label>
-
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  onClick={() => void iniciarCamera()}
-                  disabled={cameraAtiva || capturando}
-                >
-                  {cameraAtiva ? 'Webcam Ativa' : 'Usar Webcam do Navegador'}
-                </button>
-
-                {cameraAtiva && (
-                  <>
-                    <button
-                      type="button"
-                      className="btn btn--outline"
-                      onClick={capturarDaCamera}
-                      disabled={capturando}
-                    >
-                      {capturando ? 'Processando...' : 'Capturar pela Webcam'}
-                    </button>
-                    <button type="button" className="btn btn--ghost" onClick={encerrarCamera}>
-                      Fechar Webcam
-                    </button>
-                  </>
-                )}
               </div>
             </div>
 
@@ -524,9 +393,9 @@ export default function FotosPage() {
                   type="button"
                   className="btn btn--primary"
                   onClick={() => void publicarNoFeed()}
-                  disabled={!fotoBase?.publicId || !nomeConvidado.trim() || publicando}
+                  disabled={!fotoBase?.publicId || !nomeConvidado.trim() || publicando || carregando}
                 >
-                  {publicando ? 'Publicando...' : 'Publicar no Feed'}
+                  {publicando ? 'Publicando...' : carregando ? 'Processando...' : 'Publicar no Feed'}
                 </button>
               </div>
 
