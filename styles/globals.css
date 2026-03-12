@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-blush: #f7eeec;
+  --color-rose: #d8b4ab;
+  --color-wine: #6b3f3a;
+  --color-ivory: #fffaf6;
+  --color-cocoa: #3b2724;
+  --color-linen: #f3e7e2;
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-blush text-wine font-sans antialiased;
+    background-image: radial-gradient(circle at top, #fff 0%, #f7eeec 45%, #f0e4d8 100%);
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serifRomance font-semibold;
+  }
+
+  button {
+    @apply transition-all duration-200;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto max-w-6xl px-4 sm:px-6;
+  }
+
+  .main {
+    @apply min-h-[calc(100vh-_theme(spacing.16))] py-8 sm:py-12 relative;
+  }
+
+  .hero-haze {
+    @apply absolute inset-0 -top-16 z-0 bg-gradient-to-b from-rose/5 to-transparent pointer-events-none;
+  }
+
+  .section-header {
+    @apply mb-8 text-center;
+  }
+
+  .section-kicker {
+    @apply inline-block text-xs font-bold uppercase tracking-widest text-rose;
+  }
+
+  .section-subtitle {
+    @apply mx-auto mt-2 max-w-md text-base text-wine/75;
+  }
+
+  .romantic-panel {
+    @apply rounded-3xl border border-rose/20 bg-white/85 shadow-soft backdrop-blur-sm;
+  }
+
+  .romantic-card {
+    @apply rounded-2xl border border-rose/15 bg-white/75 p-5 shadow-sm;
+  }
+
+  .input-elegant {
+    @apply w-full rounded-2xl border border-rose/30 bg-ivory px-4 py-3 text-base text-wine placeholder:text-wine/40 focus:outline-none focus:ring-2 focus:ring-rose/40;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-base font-semibold transition-all duration-200;
+  }
+
+  .btn--primary {
+    @apply bg-wine text-white hover:bg-roseDeep disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .btn--outline {
+    @apply border border-wine/30 text-wine hover:bg-wine/5 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .mural-columns {
+    @apply columns-1 gap-4 sm:columns-2 lg:columns-3;
+  }
+
+  .mural-card {
+    @apply mb-4 break-inside-avoid transition-shadow duration-200 hover:shadow-frame;
+  }
+}

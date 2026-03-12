@@ -1,7 +1,12 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}', './pages/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './styles/**/*.css',
+    './components/**/*.{js,ts,jsx,tsx,mdx}'
+  ],
   theme: {
     extend: {
       colors: {
@@ -16,7 +21,9 @@ const config: Config = {
       },
       fontFamily: {
         serifRomance: ['var(--font-romance)', 'Georgia', 'serif'],
-        cleanSans: ['var(--font-clean)', 'system-ui', 'sans-serif']
+        cleanSans: ['var(--font-clean)', 'system-ui', 'sans-serif'],
+        serif: ['Georgia', 'serif'],
+        sans: ['system-ui', 'sans-serif']
       },
       boxShadow: {
         soft: '0 20px 60px rgba(107, 63, 58, 0.12)',
