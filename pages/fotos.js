@@ -17,6 +17,29 @@ const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '';
 const COLLECTION_NAME = 'mural';
 
+function isConfiguredEnvValue(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const normalized = value.trim();
+  return normalized.length > 0 && normalized !== 'undefined' && normalized !== 'null';
+}
+
+function getMissingCloudinaryEnv() {
+  const missing = [];
+
+  if (!isConfiguredEnvValue(CLOUDINARY_CLOUD_NAME)) {
+    missing.push('NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME');
+  }
+
+  if (!isConfiguredEnvValue(CLOUDINARY_UPLOAD_PRESET)) {
+    missing.push('NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET');
+  }
+
+  return missing;
+}
+
 const FILTERS = [
   { id: 'original', label: 'Original', transformation: 'f_auto,q_auto' },
   { id: 'pb-elegante', label: 'P&B elegante', transformation: 'e_art:audrey,f_auto,q_auto' },
@@ -253,8 +276,12 @@ export default function FotosPage() {
   }
 
   async function prepararFoto(fileOrBlob) {
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      setMensagem('Cloudinary não configurado. Confira as variáveis de ambiente.');
+    const missingCloudinaryEnv = getMissingCloudinaryEnv();
+
+    if (missingCloudinaryEnv.length > 0) {
+      setMensagem(
+        `Cloudinary não configurado. Defina ${missingCloudinaryEnv.join(', ')} no .env.local e reinicie o servidor (npm run dev).`
+      );
       return;
     }
 
