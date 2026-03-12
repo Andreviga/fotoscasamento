@@ -1,12 +1,10 @@
 import Head from 'next/head';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  addDoc,
   collection,
   limit,
   onSnapshot,
-  query,
-  serverTimestamp
+  query
 } from 'firebase/firestore';
 
 import Header from '../components/Header';
@@ -16,16 +14,80 @@ import { firebaseDb } from '../lib/firebaseClient';
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '';
 const COLLECTION_NAME = 'mural';
+const DELETE_TOKENS_STORAGE_KEY = 'muralDeleteTokens';
 
 const FILTERS = [
-  { id: 'original', label: 'Original', transformation: 'f_auto,q_auto' },
-  { id: 'pb-elegante', label: 'P&B elegante', transformation: 'e_art:audrey,f_auto,q_auto' },
-  { id: 'vintage-sepia', label: 'Vintage Sépia', transformation: 'e_art:zorro,f_auto,q_auto' },
-  { id: 'cores-vivas', label: 'Cores Vivas', transformation: 'e_improve,f_auto,q_auto' },
+  {
+    id: 'original',
+    label: 'Original',
+    imageTransformation: 'f_auto,q_auto',
+    videoTransformation: 'f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'pb-classico',
+    label: 'P&B Clássico',
+    imageTransformation: 'e_grayscale,f_auto,q_auto',
+    videoTransformation: 'e_grayscale,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'sepia',
+    label: 'Sépia',
+    imageTransformation: 'e_sepia,f_auto,q_auto',
+    videoTransformation: 'e_sepia,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'vibrante',
+    label: 'Vibrante',
+    imageTransformation: 'e_saturation:35,e_contrast:18,f_auto,q_auto',
+    videoTransformation: 'e_saturation:35,e_contrast:18,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'suave',
+    label: 'Suave',
+    imageTransformation: 'e_brightness:10,e_saturation:-10,f_auto,q_auto',
+    videoTransformation: 'e_brightness:10,e_saturation:-10,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'dramatico',
+    label: 'Dramático',
+    imageTransformation: 'e_contrast:42,e_brightness:-10,f_auto,q_auto',
+    videoTransformation: 'e_contrast:42,e_brightness:-10,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'quente',
+    label: 'Quente',
+    imageTransformation: 'e_red:20,e_blue:-8,f_auto,q_auto',
+    videoTransformation: 'e_red:20,e_blue:-8,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'frio',
+    label: 'Frio',
+    imageTransformation: 'e_blue:20,e_red:-8,f_auto,q_auto',
+    videoTransformation: 'e_blue:20,e_red:-8,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'cinema',
+    label: 'Cinema',
+    imageTransformation: 'e_contrast:30,e_shadow:35,f_auto,q_auto',
+    videoTransformation: 'e_contrast:30,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'festa',
+    label: 'Festa',
+    imageTransformation: 'e_vibrance:45,e_brightness:6,f_auto,q_auto',
+    videoTransformation: 'e_vibrance:45,e_brightness:6,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'retro',
+    label: 'Retrô',
+    imageTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto',
+    videoTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto:good,vc_auto'
+  },
   {
     id: 'polaroid',
     label: 'Estilo Polaroid',
-    transformation: 'f_auto,q_auto,b_white,bo_36px_solid_white,c_fill,g_auto,h_1700,w_1300'
+    imageTransformation: 'f_auto,q_auto,b_white,bo_36px_solid_white,c_fill,g_auto,h_1700,w_1300',
+    videoTransformation: 'f_auto,q_auto:good,vc_auto,b_white,bo_24px_solid_white,c_fill,g_auto,h_1700,w_1300'
   }
 ];
 
@@ -70,19 +132,33 @@ function formatDate(timestamp, fallbackMs) {
 function normalizePhoto(doc) {
   const data = doc.data();
   const photoDate = extractPhotoDate(data);
+  const mediaType = data.mediaType === 'video' ? 'video' : 'image';
+  const mediaUrl = data.mediaUrl || data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '';
 
   return {
     id: doc.id,
     guestName: data.guestName || data.nomeConvidado || data.nome_convidado || data.guestName || 'Convidado',
-    imageUrl: data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '',
+    imageUrl: data.imageUrl || mediaUrl,
+    mediaUrl,
+    mediaType,
+    messageText: data.messageText || '',
     filterId: data.filterId || data.filtro || data.filter || 'original',
     createdAt: data.createdAt || data.dataCriacao || data.timestamp || null,
     createdAtMs: photoDate ? photoDate.getTime() : 0
   };
 }
 
-function buildCloudinaryUrl(publicId, transformation) {
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformation}/${publicId}.jpg`;
+function resolveFilterTransformation(filter, mediaType) {
+  if (mediaType === 'video') {
+    return filter?.videoTransformation || FILTERS[0].videoTransformation;
+  }
+
+  return filter?.imageTransformation || FILTERS[0].imageTransformation;
+}
+
+function buildCloudinaryUrl(publicId, transformation, mediaType = 'image') {
+  const extension = mediaType === 'video' ? 'mp4' : 'jpg';
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${mediaType}/upload/${transformation}/${publicId}.${extension}`;
 }
 
 async function uploadUnsignedToCloudinary(fileOrRemoteUrl, folder = 'casamento/fotos') {
@@ -92,7 +168,7 @@ async function uploadUnsignedToCloudinary(fileOrRemoteUrl, folder = 'casamento/f
   formData.append('folder', folder);
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
     {
       method: 'POST',
       body: formData
@@ -108,10 +184,40 @@ async function uploadUnsignedToCloudinary(fileOrRemoteUrl, folder = 'casamento/f
   return payload;
 }
 
+function normalizeGuestMessage(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+}
+
+function generateDeleteToken() {
+  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+    const randomBytes = new Uint8Array(24);
+    window.crypto.getRandomValues(randomBytes);
+    return Array.from(randomBytes, (item) => item.toString(16).padStart(2, '0')).join('');
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}${Math.random().toString(16).slice(2)}`;
+}
+
+function saveDeleteToken(documentId, deleteToken) {
+  if (typeof window === 'undefined' || !documentId || !deleteToken) {
+    return;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(DELETE_TOKENS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    parsed[documentId] = deleteToken;
+    window.localStorage.setItem(DELETE_TOKENS_STORAGE_KEY, JSON.stringify(parsed));
+  } catch (error) {
+    console.error('Falha ao salvar token de exclusão no navegador', error);
+  }
+}
+
 export default function FotosPage() {
   const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
+  const [mensagemFoto, setMensagemFoto] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [publicando, setPublicando] = useState(false);
   const [publicado, setPublicado] = useState(false);
@@ -131,7 +237,12 @@ export default function FotosPage() {
     if (!fotoBase?.publicId) {
       return '';
     }
-    return buildCloudinaryUrl(fotoBase.publicId, filtroSelecionado.transformation);
+    const transformation = resolveFilterTransformation(filtroSelecionado, fotoBase.mediaType);
+    return buildCloudinaryUrl(
+      fotoBase.publicId,
+      `${transformation},c_fill,g_auto,h_1400,w_1080`,
+      fotoBase.mediaType
+    );
   }, [fotoBase, filtroSelecionado]);
 
   useEffect(() => {
@@ -142,7 +253,7 @@ export default function FotosPage() {
       (snapshot) => {
         const items = snapshot.docs
           .map(normalizePhoto)
-          .filter((item) => item.imageUrl)
+          .filter((item) => item.mediaUrl || item.imageUrl)
           .sort((first, second) => second.createdAtMs - first.createdAtMs);
 
         setFeed(items);
@@ -170,14 +281,16 @@ export default function FotosPage() {
     }
 
     setCarregando(true);
-    setMensagem('Enviando imagem para processar filtros...');
+    setMensagem('Enviando mídia para processar filtros...');
 
     try {
       const uploaded = await uploadUnsignedToCloudinary(fileOrBlob, 'casamento/base');
+      const mediaType = uploaded.resource_type === 'video' ? 'video' : 'image';
 
       setFotoBase({
         publicId: uploaded.public_id,
-        secureUrl: uploaded.secure_url
+        secureUrl: uploaded.secure_url,
+        mediaType
       });
 
       setFiltroSelecionadoId(FILTERS[0].id);
@@ -186,7 +299,7 @@ export default function FotosPage() {
       setTimeout(() => filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
     } catch (error) {
       console.error(error);
-      setMensagem('Erro ao processar a foto. Tente novamente.');
+      setMensagem('Erro ao processar a mídia. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -205,7 +318,7 @@ export default function FotosPage() {
 
   async function publicarNoFeed() {
     if (!nomeConvidado.trim()) {
-      setMensagem('Digite seu nome antes de publicar a foto.');
+      setMensagem('Digite seu nome antes de publicar.');
       return;
     }
 
@@ -218,26 +331,44 @@ export default function FotosPage() {
     setMensagem('Publicando no feed em tempo real...');
 
     try {
-      const transformedUrl = buildCloudinaryUrl(fotoBase.publicId, filtroSelecionado.transformation);
-      const finalUpload = await uploadUnsignedToCloudinary(transformedUrl, 'casamento/feed');
-      const createdAtMs = Date.now();
+      const selectedTransformation = resolveFilterTransformation(filtroSelecionado, fotoBase.mediaType);
+      const deleteToken = generateDeleteToken();
 
-      await addDoc(collection(firebaseDb, COLLECTION_NAME), {
-        guestName: nomeConvidado.trim(),
-        imageUrl: finalUpload.secure_url,
-        filterId: filtroSelecionado.id,
-        publicId: finalUpload.public_id || fotoBase.publicId,
-        createdAt: serverTimestamp(),
-        createdAtMs
+      const response = await fetch('/api/publishPhoto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          guestName: nomeConvidado.trim(),
+          publicId: fotoBase.publicId,
+          filterId: filtroSelecionado.id,
+          filterTransformation: selectedTransformation,
+          mediaType: fotoBase.mediaType,
+          messageText: normalizeGuestMessage(mensagemFoto),
+          deleteToken
+        })
       });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Não foi possível publicar no mural.');
+      }
+
+      if (payload?.documentId) {
+        saveDeleteToken(payload.documentId, deleteToken);
+      }
 
       setPublicado(true);
       setFotoBase(null);
       setFiltroSelecionadoId(FILTERS[0].id);
       setNomeConvidado('');
+      setMensagemFoto('');
+      setMensagem(payload?.message || 'Mídia publicada com sucesso no mural ✿');
     } catch (error) {
       console.error(error);
-      setMensagem('Não foi possível publicar sua foto. Tente novamente em instantes.');
+      setMensagem(error?.message || 'Não foi possível publicar sua mídia. Tente novamente em instantes.');
     } finally {
       setPublicando(false);
     }
@@ -263,7 +394,7 @@ export default function FotosPage() {
             <span className="section-kicker">André & Nathália</span>
             <h1>Cabine de Fotos Digital</h1>
             <p className="section-subtitle">
-              Tire uma foto divertida, aplique seu filtro favorito e publique direto no feed da festa.
+              Tire foto ou grave vídeo, escolha entre vários filtros e publique direto no feed da festa.
             </p>
           </div>
 
@@ -288,25 +419,35 @@ export default function FotosPage() {
             <div className="photo-booth__left">
               <div className="camera-stage">
                 {previewPrincipalUrl ? (
-                  <img
-                    src={previewPrincipalUrl}
-                    alt="Pré-visualização da foto com filtro"
-                    className="camera-stage__media"
-                  />
+                  fotoBase?.mediaType === 'video' ? (
+                    <video
+                      src={previewPrincipalUrl}
+                      className="camera-stage__media"
+                      controls
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <img
+                      src={previewPrincipalUrl}
+                      alt="Pré-visualização da foto com filtro"
+                      className="camera-stage__media"
+                    />
+                  )
                 ) : (
                   <div className="camera-stage__placeholder">
-                    Use a câmera do celular ou escolha uma foto pronta da galeria.
+                    Use a câmera do celular ou escolha foto/vídeo da galeria.
                   </div>
                 )}
               </div>
 
               <div className="booth-actions">
                 <label className="btn btn--primary">
-                  Usar Câmera do Celular
+                  Câmera do Celular (Foto/Vídeo)
                   <input
                     type="file"
-                    accept="image/*"
-                    capture="user"
+                    accept="image/*,video/*"
+                    capture="environment"
                     className="input-file-hidden"
                     disabled={carregando || publicando}
                     onChange={escolherDaGaleria}
@@ -314,10 +455,10 @@ export default function FotosPage() {
                 </label>
 
                 <label className="btn btn--outline">
-                  Escolher da Galeria
+                  Escolher da Galeria (Foto/Vídeo)
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     className="input-file-hidden"
                     disabled={carregando || publicando}
                     onChange={escolherDaGaleria}
@@ -330,27 +471,29 @@ export default function FotosPage() {
               {step === 3 ? (
                 <div className="booth-success">
                   <div className="booth-success__icon">✿</div>
-                  <h2 className="panel-title">Foto publicada!</h2>
+                  <h2 className="panel-title">Mídia publicada!</h2>
                   <p className="panel-subtitle">Ela já deve aparecer no mural da festa em instantes.</p>
                   <button type="button" className="btn btn--outline" onClick={() => setPublicado(false)}>
-                    Tirar outra foto
+                    Publicar outra mídia
                   </button>
                 </div>
               ) : (
               <>
               <h2 className="panel-title">
-                {fotoBase ? 'Filtros Divertidos' : 'Como usar'}
+                {fotoBase ? 'Muitos Filtros' : 'Como usar'}
               </h2>
               <p className="panel-subtitle">
                 {fotoBase
-                  ? 'Escolha um estilo para sua foto antes de publicar.'
-                  : 'Capture uma foto com a câmera do celular, escolha um filtro e publique no feed da festa.'}
+                  ? 'Escolha um estilo para sua mídia antes de publicar.'
+                  : 'Capture foto/vídeo no celular, escolha o filtro e publique no feed da festa.'}
               </p>
 
               <div className="filter-grid">
                 {FILTERS.map((filter) => {
+                  const isVideo = fotoBase?.mediaType === 'video';
+                  const thumbTransformation = resolveFilterTransformation(filter, isVideo ? 'video' : 'image');
                   const thumbUrl = fotoBase?.publicId
-                    ? buildCloudinaryUrl(filter.id === 'polaroid' ? fotoBase.publicId : fotoBase.publicId, `${filter.transformation},c_fill,g_auto,h_300,w_250`)
+                    ? buildCloudinaryUrl(fotoBase.publicId, `${thumbTransformation},c_fill,g_auto,h_300,w_250`, isVideo ? 'video' : 'image')
                     : '';
 
                   return (
@@ -362,7 +505,19 @@ export default function FotosPage() {
                       disabled={!fotoBase?.publicId}
                     >
                       {thumbUrl ? (
-                        <img src={thumbUrl} alt={filter.label} className="filter-card__thumb" />
+                        isVideo ? (
+                          <video
+                            src={thumbUrl}
+                            className="filter-card__thumb"
+                            muted
+                            playsInline
+                            loop
+                            autoPlay
+                            preload="metadata"
+                          />
+                        ) : (
+                          <img src={thumbUrl} alt={filter.label} className="filter-card__thumb" />
+                        )
                       ) : (
                         <div className="filter-card__thumb filter-card__thumb--empty" />
                       )}
@@ -384,6 +539,18 @@ export default function FotosPage() {
                     value={nomeConvidado}
                     maxLength={40}
                     onChange={(event) => setNomeConvidado(event.target.value)}
+                  />
+
+                  <label htmlFor="mensagemFoto" className="form-label" style={{ marginTop: '0.9rem' }}>
+                    Mensagem na mídia (opcional)
+                  </label>
+                  <input
+                    id="mensagemFoto"
+                    className="input-elegant"
+                    placeholder="Ex.: Viva os noivos ✿"
+                    value={mensagemFoto}
+                    maxLength={80}
+                    onChange={(event) => setMensagemFoto(event.target.value)}
                   />
                 </>
               )}
@@ -408,7 +575,7 @@ export default function FotosPage() {
           <section className="photo-feed-section" aria-live="polite">
             <div className="section-header section-header--left">
               <span className="section-kicker">Mural da Festa</span>
-              <h2>Feed Contínuo de Fotos</h2>
+              <h2>Feed Contínuo de Mídias</h2>
               <p className="section-subtitle section-subtitle--left">{feedStatus}</p>
             </div>
 
@@ -420,13 +587,24 @@ export default function FotosPage() {
               <div className="photo-feed-grid">
                 {feed.map((item) => (
                   <article key={item.id} className="photo-feed-card">
-                    <img
-                      src={item.imageUrl}
-                      alt={`Foto publicada por ${item.guestName || 'Convidado'}`}
-                      className="photo-feed-card__image"
-                    />
+                    {item.mediaType === 'video' ? (
+                      <video
+                        src={item.mediaUrl || item.imageUrl}
+                        className="photo-feed-card__image"
+                        controls
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : (
+                      <img
+                        src={item.mediaUrl || item.imageUrl}
+                        alt={`Foto publicada por ${item.guestName || 'Convidado'}`}
+                        className="photo-feed-card__image"
+                      />
+                    )}
                     <div className="photo-feed-card__content">
                       <h3>{item.guestName || 'Convidado'}</h3>
+                      {item.messageText ? <p>{item.messageText}</p> : null}
                       <p>{formatDate(item.createdAt, item.createdAtMs)}</p>
                     </div>
                   </article>

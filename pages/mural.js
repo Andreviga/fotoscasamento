@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 import { firebaseDb } from '@/lib/firebaseClient';
 
+const DELETE_TOKENS_STORAGE_KEY = 'muralDeleteTokens';
+
 function extractPhotoDate(data) {
   if (typeof data.createdAtMs === 'number') {
     return new Date(data.createdAtMs);
@@ -31,13 +33,47 @@ function extractPhotoDate(data) {
 function normalizePhoto(doc) {
   const data = doc.data();
   const photoDate = extractPhotoDate(data);
+  const mediaType = data.mediaType === 'video' ? 'video' : 'image';
+  const mediaUrl = data.mediaUrl || data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '';
 
   return {
     id: doc.id,
     guestName: data.guestName || data.nomeConvidado || data.nome_convidado || 'Convidado',
-    imageUrl: data.imageUrl || data.urlFoto || data.url_foto || data.cloudinaryUrl || '',
+    mediaType,
+    mediaUrl,
+    imageUrl: data.imageUrl || mediaUrl,
+    messageText: data.messageText || '',
     createdAtMs: photoDate ? photoDate.getTime() : 0
   };
+}
+
+function loadDeleteTokensMap() {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  try {
+    const raw = window.localStorage.getItem(DELETE_TOKENS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (error) {
+    console.error('Falha ao ler tokens de exclusão', error);
+    return {};
+  }
+}
+
+function removeDeleteToken(documentId) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const map = loadDeleteTokensMap();
+    delete map[documentId];
+    window.localStorage.setItem(DELETE_TOKENS_STORAGE_KEY, JSON.stringify(map));
+  } catch (error) {
+    console.error('Falha ao remover token de exclusão', error);
+  }
 }
 
 function formatTime(timestampMs) {
@@ -54,6 +90,8 @@ function formatTime(timestampMs) {
 export default function MuralPage() {
   const [photos, setPhotos] = useState([]);
   const [status, setStatus] = useState('Conectando ao mural...');
+  const [deleteTokens, setDeleteTokens] = useState({});
+  const [deletingId, setDeletingId] = useState('');
 
   useEffect(() => {
     const wallQuery = query(collection(firebaseDb, 'mural'), limit(120));
@@ -63,7 +101,7 @@ export default function MuralPage() {
       (snapshot) => {
         const items = snapshot.docs
           .map(normalizePhoto)
-          .filter((item) => item.imageUrl)
+          .filter((item) => item.mediaUrl || item.imageUrl)
           .sort((first, second) => second.createdAtMs - first.createdAtMs);
 
         setPhotos(items);
@@ -77,6 +115,49 @@ export default function MuralPage() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setDeleteTokens(loadDeleteTokensMap());
+  }, []);
+
+  async function excluirMidia(documentId) {
+    const deleteToken = deleteTokens?.[documentId];
+
+    if (!deleteToken) {
+      return;
+    }
+
+    setDeletingId(documentId);
+
+    try {
+      const response = await fetch('/api/deleteMedia', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ documentId, deleteToken })
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Não foi possível excluir a mídia.');
+      }
+
+      removeDeleteToken(documentId);
+      setDeleteTokens((current) => {
+        const next = { ...current };
+        delete next[documentId];
+        return next;
+      });
+      setStatus('Mídia excluída com sucesso.');
+    } catch (error) {
+      console.error(error);
+      setStatus(error?.message || 'Falha ao excluir a mídia.');
+    } finally {
+      setDeletingId('');
+    }
+  }
 
   return (
     <>
@@ -113,10 +194,31 @@ export default function MuralPage() {
             <div className="mural-columns mt-8">
               {photos.map((photo) => (
                 <article key={photo.id} className="mural-card romantic-panel overflow-hidden">
-                  <img src={photo.imageUrl} alt={`Foto de ${photo.guestName || 'Convidado'}`} className="w-full object-cover" />
+                  {photo.mediaType === 'video' ? (
+                    <video
+                      src={photo.mediaUrl || photo.imageUrl}
+                      className="w-full object-cover"
+                      controls
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <img src={photo.mediaUrl || photo.imageUrl} alt={`Foto de ${photo.guestName || 'Convidado'}`} className="w-full object-cover" />
+                  )}
                   <div className="px-4 py-4">
                     <p className="text-[11px] uppercase tracking-[0.28em] text-wine/50">{formatTime(photo.createdAtMs)}</p>
                     <h2 className="mt-1 text-2xl">{photo.guestName || 'Convidado'}</h2>
+                    {photo.messageText ? <p className="mt-2 text-sm text-wine/75">{photo.messageText}</p> : null}
+                    {deleteTokens?.[photo.id] ? (
+                      <button
+                        type="button"
+                        className="btn btn--outline mt-3"
+                        onClick={() => void excluirMidia(photo.id)}
+                        disabled={deletingId === photo.id}
+                      >
+                        {deletingId === photo.id ? 'Excluindo...' : 'Excluir minha mídia'}
+                      </button>
+                    ) : null}
                   </div>
                 </article>
               ))}
