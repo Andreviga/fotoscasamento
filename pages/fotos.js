@@ -24,10 +24,46 @@ const FILTERS = [
     videoTransformation: 'f_auto,q_auto:good,vc_auto'
   },
   {
+    id: 'festa-pop',
+    label: 'Festa Pop',
+    imageTransformation: 'e_saturation:45,e_contrast:22,e_brightness:6,f_auto,q_auto',
+    videoTransformation: 'e_saturation:45,e_contrast:22,e_brightness:6,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'neon',
+    label: 'Neon',
+    imageTransformation: 'e_saturation:70,e_contrast:45,e_blue:18,e_red:10,f_auto,q_auto',
+    videoTransformation: 'e_saturation:70,e_contrast:45,e_blue:18,e_red:10,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'sunset',
+    label: 'Sunset',
+    imageTransformation: 'e_red:30,e_blue:-15,e_brightness:8,e_contrast:10,f_auto,q_auto',
+    videoTransformation: 'e_red:30,e_blue:-15,e_brightness:8,e_contrast:10,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'algodao-doce',
+    label: 'Algodão Doce',
+    imageTransformation: 'e_brightness:18,e_saturation:28,e_colorize:22,co_rgb:FF9FD7,f_auto,q_auto',
+    videoTransformation: 'e_brightness:18,e_saturation:28,e_colorize:22,co_rgb:FF9FD7,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'dream',
+    label: 'Dream',
+    imageTransformation: 'e_blur:120,e_brightness:12,e_saturation:10,f_auto,q_auto',
+    videoTransformation: 'e_blur:120,e_brightness:12,e_saturation:10,f_auto,q_auto:good,vc_auto'
+  },
+  {
     id: 'pb-classico',
     label: 'P&B Clássico',
     imageTransformation: 'e_grayscale,f_auto,q_auto',
     videoTransformation: 'e_grayscale,f_auto,q_auto:good,vc_auto'
+  },
+  {
+    id: 'noir',
+    label: 'Noir',
+    imageTransformation: 'e_grayscale,e_contrast:50,e_brightness:-12,f_auto,q_auto',
+    videoTransformation: 'e_grayscale,e_contrast:50,e_brightness:-12,f_auto,q_auto:good,vc_auto'
   },
   {
     id: 'sepia',
@@ -36,34 +72,10 @@ const FILTERS = [
     videoTransformation: 'e_sepia,f_auto,q_auto:good,vc_auto'
   },
   {
-    id: 'vibrante',
-    label: 'Vibrante',
-    imageTransformation: 'e_saturation:35,e_contrast:18,f_auto,q_auto',
-    videoTransformation: 'e_saturation:35,e_contrast:18,f_auto,q_auto:good,vc_auto'
-  },
-  {
-    id: 'suave',
-    label: 'Suave',
-    imageTransformation: 'e_brightness:10,e_saturation:-10,f_auto,q_auto',
-    videoTransformation: 'e_brightness:10,e_saturation:-10,f_auto,q_auto:good,vc_auto'
-  },
-  {
-    id: 'dramatico',
-    label: 'Dramático',
-    imageTransformation: 'e_contrast:42,e_brightness:-10,f_auto,q_auto',
-    videoTransformation: 'e_contrast:42,e_brightness:-10,f_auto,q_auto:good,vc_auto'
-  },
-  {
-    id: 'quente',
-    label: 'Quente',
-    imageTransformation: 'e_red:20,e_blue:-8,f_auto,q_auto',
-    videoTransformation: 'e_red:20,e_blue:-8,f_auto,q_auto:good,vc_auto'
-  },
-  {
-    id: 'frio',
-    label: 'Frio',
-    imageTransformation: 'e_blue:20,e_red:-8,f_auto,q_auto',
-    videoTransformation: 'e_blue:20,e_red:-8,f_auto,q_auto:good,vc_auto'
+    id: 'retro',
+    label: 'Retrô',
+    imageTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto',
+    videoTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto:good,vc_auto'
   },
   {
     id: 'cinema',
@@ -72,22 +84,10 @@ const FILTERS = [
     videoTransformation: 'e_contrast:30,f_auto,q_auto:good,vc_auto'
   },
   {
-    id: 'festa',
-    label: 'Festa',
-    imageTransformation: 'e_vibrance:45,e_brightness:6,f_auto,q_auto',
-    videoTransformation: 'e_vibrance:45,e_brightness:6,f_auto,q_auto:good,vc_auto'
-  },
-  {
-    id: 'retro',
-    label: 'Retrô',
-    imageTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto',
-    videoTransformation: 'e_colorize:45,co_rgb:D9A97A,f_auto,q_auto:good,vc_auto'
-  },
-  {
     id: 'polaroid',
-    label: 'Estilo Polaroid',
+    label: 'Polaroid',
     imageTransformation: 'f_auto,q_auto,b_white,bo_36px_solid_white,c_fill,g_auto,h_1700,w_1300',
-    videoTransformation: 'f_auto,q_auto:good,vc_auto,b_white,bo_24px_solid_white,c_fill,g_auto,h_1700,w_1300'
+    videoTransformation: 'f_auto,q_auto:good,vc_auto,b_white,bo_24px_solid_white,c_fill,g_center,h_1700,w_1300'
   }
 ];
 
