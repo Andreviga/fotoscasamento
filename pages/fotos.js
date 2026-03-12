@@ -379,10 +379,10 @@ export default function FotosPage() {
   return (
     <>
       <Head>
-        <title>Cabine de Fotos e Feed ✿ André & Nathália</title>
+        <title>Instacasamento ✿ André & Nathália</title>
         <meta
           name="description"
-          content="Cabine de fotos digital com filtros divertidos e feed em tempo real para o casamento."
+          content="Instacasamento com foto e vídeo, filtros divertidos e mural em tempo real para o casamento."
         />
       </Head>
 
@@ -392,7 +392,7 @@ export default function FotosPage() {
         <div className="container">
           <div className="section-header">
             <span className="section-kicker">André & Nathália</span>
-            <h1>Cabine de Fotos Digital</h1>
+            <h1>Instacasamento</h1>
             <p className="section-subtitle">
               Tire foto ou grave vídeo, escolha entre vários filtros e publique direto no feed da festa.
             </p>
@@ -443,10 +443,10 @@ export default function FotosPage() {
 
               <div className="booth-actions">
                 <label className="btn btn--primary">
-                  Câmera do Celular (Foto/Vídeo)
+                  Tirar Foto Agora
                   <input
                     type="file"
-                    accept="image/*,video/*"
+                    accept="image/*"
                     capture="environment"
                     className="input-file-hidden"
                     disabled={carregando || publicando}
@@ -455,7 +455,19 @@ export default function FotosPage() {
                 </label>
 
                 <label className="btn btn--outline">
-                  Escolher da Galeria (Foto/Vídeo)
+                  Gravar Vídeo Agora
+                  <input
+                    type="file"
+                    accept="video/*"
+                    capture="environment"
+                    className="input-file-hidden"
+                    disabled={carregando || publicando}
+                    onChange={escolherDaGaleria}
+                  />
+                </label>
+
+                <label className="btn btn--outline">
+                  Escolher da Galeria
                   <input
                     type="file"
                     accept="image/*,video/*"

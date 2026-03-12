@@ -3,8 +3,8 @@ import Link from 'next/link';
 const quickLinks = [
   {
     href: '/fotos',
-    title: 'Cabine de Fotos',
-    description: 'Capture a foto, escolha o filtro e publique no mural do casamento.'
+    title: 'Instacasamento',
+    description: 'Capture foto ou vídeo, escolha o filtro e publique no mural do casamento.'
   },
   {
     href: '/mural',
@@ -30,7 +30,7 @@ export default function HomePage() {
           <p className="text-sm uppercase tracking-[0.34em] text-wine/70">03 de maio de 2026</p>
           <h1 className="text-5xl leading-none text-cocoa sm:text-7xl">André &amp; Nathália</h1>
           <p className="mx-auto max-w-2xl text-sm leading-7 text-wine/80 sm:text-base">
-            Cabine digital, mural ao vivo e cardápio da festa em um único lugar para os convidados.
+            Instacasamento, mural ao vivo e cardápio da festa em um único lugar para os convidados.
           </p>
         </div>
 

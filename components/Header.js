@@ -12,7 +12,7 @@ export default function Header() {
             Início
           </Link>
           <Link href="/fotos" className="site-nav__link">
-            Cabine
+            Instacasamento
           </Link>
           <Link href="/mural" className="site-nav__link">
             Mural

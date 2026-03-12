@@ -16,7 +16,7 @@ const clean = DM_Sans({
 
 export const metadata: Metadata = {
   title: 'André & Nathália',
-  description: 'Cabine de fotos digital e mural ao vivo do casamento de André & Nathália.'
+  description: 'Instacasamento, mural ao vivo e cardápio digital do casamento de André & Nathália.'
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

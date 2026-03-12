@@ -173,20 +173,20 @@ export default function MuralPage() {
           <div className="section-header">
             <span className="section-kicker">André & Nathália</span>
             <h1 className="mt-3 text-4xl sm:text-6xl">✿ Mural ao Vivo</h1>
-            <p className="section-subtitle">Ideal para o telão: cada nova foto publicada aparece automaticamente para todos.</p>
+            <p className="section-subtitle">Ideal para o telão: cada nova mídia publicada aparece automaticamente para todos.</p>
           </div>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="rounded-full border border-rose/20 bg-ivory/70 px-4 py-2 text-sm text-wine/75">{status}</p>
             <Link href="/fotos" className="btn btn--outline">
-              Abrir Cabine
+              Abrir Instacasamento
             </Link>
           </div>
 
           {photos.length === 0 ? (
             <div className="romantic-panel mt-8 flex min-h-[46vh] items-center justify-center px-6 py-10 text-center">
               <div>
-                <p className="font-serifRomance text-4xl text-cocoa">Nenhuma foto ainda ✿</p>
+                <p className="font-serifRomance text-4xl text-cocoa">Nenhuma mídia ainda ✿</p>
                 <p className="mt-3 text-sm text-wine/75">Abra /fotos no celular e publique a primeira memória da festa.</p>
               </div>
             </div>
