@@ -29,7 +29,9 @@ function buildCloudinaryDeliveryUrl({ cloudName, publicId, mediaType, filterTran
     ? 'f_auto,q_auto:good,vc_auto'
     : 'f_auto,q_auto');
 
-  const baseTransformation = `${normalizedTransformation},c_fill,g_auto,h_1600,w_1200`;
+  const gravity = mediaType === 'video' ? 'g_center' : 'g_auto';
+
+  const baseTransformation = `${normalizedTransformation},c_fill,${gravity},h_1600,w_1200`;
 
   const safeMessage = normalizeText(messageText, 80);
 

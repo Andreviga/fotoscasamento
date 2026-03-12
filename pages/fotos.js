@@ -238,9 +238,10 @@ export default function FotosPage() {
       return '';
     }
     const transformation = resolveFilterTransformation(filtroSelecionado, fotoBase.mediaType);
+    const gravity = fotoBase.mediaType === 'video' ? 'g_center' : 'g_auto';
     return buildCloudinaryUrl(
       fotoBase.publicId,
-      `${transformation},c_fill,g_auto,h_1400,w_1080`,
+      `${transformation},c_fill,${gravity},h_1400,w_1080`,
       fotoBase.mediaType
     );
   }, [fotoBase, filtroSelecionado]);
@@ -503,9 +504,10 @@ export default function FotosPage() {
               <div className="filter-grid">
                 {FILTERS.map((filter) => {
                   const isVideo = fotoBase?.mediaType === 'video';
+                  const gravity = isVideo ? 'g_center' : 'g_auto';
                   const thumbTransformation = resolveFilterTransformation(filter, isVideo ? 'video' : 'image');
                   const thumbUrl = fotoBase?.publicId
-                    ? buildCloudinaryUrl(fotoBase.publicId, `${thumbTransformation},c_fill,g_auto,h_300,w_250`, isVideo ? 'video' : 'image')
+                    ? buildCloudinaryUrl(fotoBase.publicId, `${thumbTransformation},c_fill,${gravity},h_300,w_250`, isVideo ? 'video' : 'image')
                     : '';
 
                   return (
