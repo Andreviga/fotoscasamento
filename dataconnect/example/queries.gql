@@ -1,0 +1,51 @@
+query ListAllMovies @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only fetches movie information.") {
+  movies {
+    id
+    title
+    year
+    genres
+    summary
+    posterUrl
+  }
+}
+
+query GetMyWatchlist @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it filters by auth.uid.") {
+  movieLists(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    description
+    isPublic
+    createdAt
+    updatedAt
+    movieListEntries {
+      position
+      note
+      movie {
+        id
+        title
+        year
+      }
+    }
+  }
+}
+
+mutation AddMovieToWatchlist($movieListId: UUID!, $movieId: UUID!, $position: Int!, $note: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it adds an entry to a user's watchlist.") {
+  movieListEntry_insert(data: {
+    movieListId: $movieListId,
+    movieId: $movieId,
+    position: $position,
+    note: $note
+  })
+}
+
+query GetReviewsForMovie($movieId: UUID!) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only fetches reviews for a specific movie.") {
+  reviews(where: {movieId: {eq: $movieId}, isPublic: {eq: true}}) {
+    id
+    rating
+    reviewText
+    createdAt
+    user {
+      displayName
+    }
+  }
+}
