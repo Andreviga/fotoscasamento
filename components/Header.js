@@ -2,20 +2,23 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-rose/10 bg-white/95 backdrop-blur-md">
-      <div className="container flex items-center justify-between px-4 py-4 sm:py-5">
-        <Link href="/" className="font-serifRomance text-2xl text-wine">
+    <header className="site-header">
+      <div className="container site-header__inner">
+        <Link href="/" className="site-brand" aria-label="Página inicial">
           ✿ André & Nathália
         </Link>
-        <nav className="flex gap-6">
-          <Link href="/" className="text-sm text-wine/75 hover:text-wine">
-            Casa
+        <nav className="site-nav" aria-label="Navegação principal">
+          <Link href="/" className="site-nav__link">
+            Início
           </Link>
-          <Link href="/fotos" className="text-sm text-wine/75 hover:text-wine">
-            Fotos
+          <Link href="/fotos" className="site-nav__link">
+            Cabine
           </Link>
-          <Link href="/mural" className="text-sm text-wine/75 hover:text-wine">
+          <Link href="/mural" className="site-nav__link">
             Mural
+          </Link>
+          <Link href="/cardapio" className="site-nav__link">
+            Cardápio
           </Link>
         </nav>
       </div>

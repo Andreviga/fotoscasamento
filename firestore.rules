@@ -2,6 +2,25 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /fotos_casamento/{documentId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+        'nomeConvidado',
+        'urlFoto',
+        'filtro',
+        'dataCriacao',
+        'dataCriacaoMs'
+      ])
+      && request.resource.data.nomeConvidado is string
+      && request.resource.data.nomeConvidado.size() > 0
+      && request.resource.data.nomeConvidado.size() <= 40
+      && request.resource.data.urlFoto is string
+      && request.resource.data.urlFoto.size() > 0
+      && request.resource.data.filtro is string
+      && request.resource.data.dataCriacaoMs is int;
+      allow update, delete: if false;
+    }
+
     match /mural/{documentId} {
       allow read: if true;
       allow create: if request.resource.data.keys().hasOnly([
