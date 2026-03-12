@@ -12,11 +12,11 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: #fffaf6;
+  background-color: #fbfaf7;
 }
 
 ::selection {
-  background: rgba(180, 125, 117, 0.18);
+  background: rgba(111, 132, 117, 0.24);
 }
 
 @layer base {
@@ -50,11 +50,11 @@ body {
   }
 
   .section-kicker {
-    @apply text-xs uppercase tracking-[0.3em] text-wine/60;
+    @apply text-xs uppercase tracking-[0.3em] text-wine/70;
   }
 
   .section-subtitle {
-    @apply mx-auto mt-3 max-w-3xl text-sm leading-7 text-wine/75;
+    @apply mx-auto mt-3 max-w-3xl text-sm leading-7 text-wine/80;
   }
 
   .btn {
@@ -66,11 +66,11 @@ body {
   }
 
   .btn--outline {
-    @apply border border-rose/40 bg-transparent text-wine hover:border-roseDeep hover:bg-white/60;
+    @apply border border-roseDeep/40 bg-white/50 text-wine hover:border-roseDeep hover:bg-white/80;
   }
 
   .chip {
-    @apply rounded-full border border-rose/30 px-3 py-1.5 text-xs font-medium text-wine/80 transition;
+    @apply rounded-full border border-roseDeep/25 bg-white/60 px-3 py-1.5 text-xs font-medium text-wine/80 transition;
   }
 
   .chip--active {
@@ -78,7 +78,7 @@ body {
   }
 
   .input-elegant {
-    @apply w-full rounded-[22px] border border-rose/30 bg-ivory/80 px-4 py-3 text-sm text-cocoa outline-none transition placeholder:text-wine/45 focus:border-roseDeep focus:bg-white;
+    @apply w-full rounded-[22px] border border-roseDeep/25 bg-ivory/90 px-4 py-3 text-sm text-cocoa outline-none transition placeholder:text-wine/50 focus:border-gold focus:bg-white;
   }
 
   .romantic-shell {
@@ -86,7 +86,7 @@ body {
   }
 
   .romantic-panel {
-    @apply rounded-[32px] border border-white/70 bg-white/80 shadow-soft backdrop-blur;
+    @apply rounded-[32px] border border-[#e7e1d4] bg-white/80 shadow-soft backdrop-blur;
   }
 
   .romantic-button {
@@ -94,15 +94,15 @@ body {
   }
 
   .romantic-button-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-rose/40 bg-transparent px-5 py-3 text-sm font-semibold text-wine transition hover:border-roseDeep hover:bg-white/60;
+    @apply inline-flex items-center justify-center rounded-full border border-roseDeep/40 bg-white/40 px-5 py-3 text-sm font-semibold text-wine transition hover:border-roseDeep hover:bg-white/80;
   }
 
   .romantic-input {
-    @apply w-full rounded-[22px] border border-rose/30 bg-ivory/80 px-4 py-3 text-sm text-cocoa outline-none transition placeholder:text-wine/45 focus:border-roseDeep focus:bg-white;
+    @apply w-full rounded-[22px] border border-roseDeep/25 bg-ivory/90 px-4 py-3 text-sm text-cocoa outline-none transition placeholder:text-wine/50 focus:border-gold focus:bg-white;
   }
 
   .hero-haze {
-    @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(212,180,131,0.24),transparent_38%),radial-gradient(circle_at_12%_22%,rgba(216,180,171,0.22),transparent_22%),radial-gradient(circle_at_82%_16%,rgba(180,125,117,0.12),transparent_18%)];
+    @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(201,179,126,0.26),transparent_38%),radial-gradient(circle_at_12%_22%,rgba(111,132,117,0.18),transparent_22%),radial-gradient(circle_at_82%_16%,rgba(15,79,61,0.12),transparent_18%)];
   }
 
   .mural-columns {
