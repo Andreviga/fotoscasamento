@@ -523,6 +523,7 @@
   border-radius: 1.2rem;
   padding: 1.1rem;
   box-shadow: 0 14px 28px rgba(34, 53, 44, 0.08);
+  text-align: center;
 }
 
 .menu-card--wedding {
@@ -538,6 +539,10 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-weight: 700;
+}
+
+.menu-card__header {
+  text-align: center;
 }
 
 .menu-card__header h2 {
@@ -564,7 +569,11 @@
   border-top: 1px dashed rgba(111, 132, 117, 0.24);
   padding-top: 0.75rem;
   position: relative;
-  padding-left: 1rem;
+  padding-left: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .menu-list__item:first-child {
@@ -574,17 +583,12 @@
 
 .menu-list__item::before {
   content: '';
-  position: absolute;
-  left: 0;
-  top: 1.1rem;
+  position: static;
   width: 0.38rem;
   height: 0.38rem;
   border-radius: 999px;
   background: rgba(201, 179, 126, 0.9);
-}
-
-.menu-list__item:first-child::before {
-  top: 0.35rem;
+  margin-bottom: 0.45rem;
 }
 
 .menu-list__item-title {
