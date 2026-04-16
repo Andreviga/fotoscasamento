@@ -22,9 +22,9 @@ fotos.js (Browser) → POST /api/publishPhoto → Backend (Node.js)
 ## Componentes
 
 ### 1. **lib/firebaseAdmin.js** (Backend)
-- Inicializa Firebase Admin SDK com o `service account JSON`
+- Inicializa Firebase Admin SDK com o `service account JSON` via variável de ambiente
 - Funções: `getAdminDb()` e `getAdminAuth()`
-- Usa `path` e `fs` para carregar credenciais do arquivo JSON
+- Lê credenciais de `FIREBASE_SERVICE_ACCOUNT_JSON` (sem arquivo de chave no repositório)
 
 ```javascript
 import { getAdminDb } from '@/lib/firebaseAdmin.js';
@@ -100,10 +100,10 @@ Real-time updates: novas fotos aparecem no grid!
 
 ## Configuração
 
-### O arquivo service account já está:
-- ✅ Criado: `casamento-fotos-84576-firebase-adminsdk-fbsvc-759a467756.json`
-- ✅ Protegido: Listed em `.gitignore`
-- ✅ Usado: Automaticamente por `lib/firebaseAdmin.js`
+### Credencial service account:
+- ✅ Usada via `FIREBASE_SERVICE_ACCOUNT_JSON`
+- ✅ Sem arquivo JSON de chave dentro do repositório
+- ✅ Bloqueada por padrões no `.gitignore`
 
 ### Inicialização automática:
 Quando o API route é acessado pela primeira vez, o SDK Admin se inicializa automaticamente!
@@ -153,9 +153,9 @@ Ver foto em tempo real! ✿
 - Verificar `tsconfig.json` tem `"@/*": ["./*"]`
 - Restart dev server: `npm run dev`
 
-### Erro: "Service account file not found"
-- Confirmar que `casamento-fotos-84576-firebase-adminsdk-fbsvc-759a467756.json` está na raiz
-- Verificar nome exato (case-sensitive no Linux/Mac)
+### Erro: "FIREBASE_SERVICE_ACCOUNT_JSON nao configurado"
+- O projeto nao usa arquivo de chave local.
+- Defina `FIREBASE_SERVICE_ACCOUNT_JSON` no `.env.local` com o JSON completo da conta de servico em uma unica linha.
 
 ### API retorna erro 500
 - Verificar logs do servidor: `npm run dev` console

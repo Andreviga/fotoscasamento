@@ -39,10 +39,18 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=df3aqieat
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=fotos_casamento
 ```
 
-## 3️⃣ FIREBASE ADMIN (já configurados)
-FIREBASE_SERVICE_ACCOUNT_JSON=... ✅
-GOOGLE_SERVICE_ACCOUNT_JSON=... ✅
+## 3️⃣ FIREBASE ADMIN (server-side)
+Configure no `.env.local`:
+
+```bash
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
+GOOGLE_SERVICE_ACCOUNT_JSON=... 
 GOOGLE_DRIVE_FOLDER_ID=... (deixe em branco se não usar)
+```
+
+Observacoes:
+- Nao salve arquivo `.json` de service account dentro do repositório.
+- Rotacione a chave no Google Cloud se uma credencial foi exposta anteriormente.
 
 ---
 
