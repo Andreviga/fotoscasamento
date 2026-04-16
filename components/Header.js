@@ -9,7 +9,7 @@ export default function Header() {
     { href: '/mesa', label: 'Mesa' },
     { href: '/mapa', label: 'Mapa' },
     { href: '/etiqueta', label: 'Etiqueta' },
-    { href: '/cardapio', label: 'Cardápio' },
+    { href: '/menu', label: 'Menu' },
     { href: '/admin', label: 'Admin' }
   ];
 

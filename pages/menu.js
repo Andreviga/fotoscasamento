@@ -5,8 +5,8 @@ import WeddingFooter from '../components/WeddingFooter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
-const CARDAPIO_FALLBACK = {
-  heroTitle: 'Cardápio da Celebração',
+const MENU_FALLBACK = {
+  heroTitle: 'Menu da Celebração',
   heroSubtitle: 'Uma seleção pensada com carinho para tornar essa noite ainda mais inesquecível.',
   secoes: [
     { id: 'recepcao', title: 'Recepção', subtitle: 'Boas-vindas', items: [{ name: 'Welcome drink', description: '' }, { name: 'Canapés de boas-vindas', description: '' }] },
@@ -16,27 +16,27 @@ const CARDAPIO_FALLBACK = {
   ],
 };
 
-export default function CardapioPage() {
-  const { loading, error, data } = useConfig(['site', 'cardapio']);
+export default function MenuPage() {
+  const { loading, error, data } = useConfig(['site', 'menu']);
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
-  const heroTitle = data?.cardapio?.heroTitle || CARDAPIO_FALLBACK.heroTitle;
-  const heroSubtitle = data?.cardapio?.heroSubtitle || CARDAPIO_FALLBACK.heroSubtitle;
-  const menuSections = Array.isArray(data?.cardapio?.secoes) && data.cardapio.secoes.length > 0
-    ? data.cardapio.secoes
-    : CARDAPIO_FALLBACK.secoes;
+  const heroTitle = data?.menu?.heroTitle || MENU_FALLBACK.heroTitle;
+  const heroSubtitle = data?.menu?.heroSubtitle || MENU_FALLBACK.heroSubtitle;
+  const menuSections = Array.isArray(data?.menu?.secoes) && data.menu.secoes.length > 0
+    ? data.menu.secoes
+    : MENU_FALLBACK.secoes;
   return (
     <>
       <Head>
-        <title>Cardápio — André & Nathália</title>
+        <title>Menu — André & Nathália</title>
         <meta
           name="description"
-          content="Cardápio digital da noite com entradas, pratos principais, sobremesas e bebidas."
+          content="Menu digital da noite com entradas, pratos principais, sobremesas e bebidas."
         />
       </Head>
 
       <WeddingHeader />
 
-      <main className="main" id="cardapio">
+      <main className="main" id="menu">
         <div className="hero-haze" />
         <div className="container relative z-10">
           <section className="menu-hero page-section">
@@ -55,7 +55,7 @@ export default function CardapioPage() {
             </div>
           </section>
 
-          {loading ? <LoadingSpinner label="Carregando cardápio" /> : null}
+          {loading ? <LoadingSpinner label="Carregando menu" /> : null}
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
 
           {!loading && !error ? (

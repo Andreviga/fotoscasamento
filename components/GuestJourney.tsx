@@ -42,9 +42,9 @@ const JOURNEY_LINKS = [
     )
   },
   {
-    href: '/cardapio',
-    label: 'Cardápio',
-    title: 'Cardápio digital',
+    href: '/menu',
+    label: 'Menu',
+    title: 'Menu digital',
     sublabel: 'Pratos e bebidas',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">

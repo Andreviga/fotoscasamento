@@ -9,12 +9,13 @@ import useConfig from '../lib/useConfig';
 
 const TABS = [
   { id: 'site', label: 'Site' },
-  { id: 'cardapio', label: 'Cardápio' },
+  { id: 'menu', label: 'Menu' },
   { id: 'roteiro', label: 'Roteiro' },
   { id: 'etiqueta', label: 'Etiqueta' },
   { id: 'aparencia', label: 'Aparência' },
   { id: 'convidados', label: 'Convidados' },
-  { id: 'mapa', label: 'Mapa' }
+  { id: 'mapa', label: 'Mapa' },
+  { id: 'mural', label: 'Mural' }
 ];
 
 const EMPTY_ROTEIRO = { horario: '', titulo: '', descricao: '', icone: '✨', destaque: false };
@@ -62,7 +63,7 @@ function TabButton({ active, label, onClick }) {
 }
 
 export default function AdminPage() {
-  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'cardapio', 'mapa']);
+  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'menu', 'mapa']);
   const [token, setToken] = useState('');
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState('site');
@@ -71,7 +72,7 @@ export default function AdminPage() {
   const [aparencia, setAparencia] = useState({});
   const [roteiro, setRoteiro] = useState([]);
   const [etiqueta, setEtiqueta] = useState([]);
-  const [cardapio, setCardapio] = useState({ heroTitle: '', heroSubtitle: '', secoes: [] });
+  const [menu, setMenu] = useState({ heroTitle: '', heroSubtitle: '', secoes: [] });
 
   const [statusMessage, setStatusMessage] = useState('');
   const [savingDoc, setSavingDoc] = useState('');
@@ -83,6 +84,9 @@ export default function AdminPage() {
   const [guestFilters, setGuestFilters] = useState({ grupo: '', mesa: '', confirmado: '' });
   const [guestRows, setGuestRows] = useState([]);
   const [loadingGuests, setLoadingGuests] = useState(false);
+
+  const [muralPhotos, setMuralPhotos] = useState([]);
+  const [loadingMural, setLoadingMural] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -96,10 +100,10 @@ export default function AdminPage() {
       setAparencia(data.aparencia || {});
       setRoteiro(Array.isArray(data?.roteiro?.itens) ? data.roteiro.itens : []);
       setEtiqueta(Array.isArray(data?.etiqueta?.secoes) ? data.etiqueta.secoes : []);
-      setCardapio({
-        heroTitle: data?.cardapio?.heroTitle || '',
-        heroSubtitle: data?.cardapio?.heroSubtitle || '',
-        secoes: Array.isArray(data?.cardapio?.secoes) ? data.cardapio.secoes : []
+      setMenu({
+        heroTitle: data?.menu?.heroTitle || '',
+        heroSubtitle: data?.menu?.heroSubtitle || '',
+        secoes: Array.isArray(data?.menu?.secoes) ? data.menu.secoes : []
       });
     }
   }, [loading, data]);
@@ -336,6 +340,62 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
 
+  async function fetchMural() {
+    setLoadingMural(true);
+    try {
+      const response = await fetch('/api/adminMural', {
+        headers: { 'x-admin-token': token }
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Falha ao carregar mural');
+      setMuralPhotos(payload.photos || []);
+    } catch (err) {
+      setStatusMessage(err.message);
+    } finally {
+      setLoadingMural(false);
+    }
+  }
+
+  async function deleteMuralPhoto(id) {
+    try {
+      const response = await fetch('/api/adminMural', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ id })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Falha ao excluir');
+      setMuralPhotos((prev) => prev.filter((p) => p.id !== id));
+      setStatusMessage('Foto excluída do mural.');
+    } catch (err) {
+      setStatusMessage(err.message);
+    }
+  }
+
+  async function deleteAllMuralPhotos() {
+    if (!window.confirm('Tem certeza que deseja excluir TODAS as fotos do mural?')) return;
+    try {
+      const response = await fetch('/api/adminMural', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ deleteAll: true })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Falha ao excluir');
+      setMuralPhotos([]);
+      setStatusMessage(`${payload.deleted} foto(s) excluída(s) do mural.`);
+    } catch (err) {
+      setStatusMessage(err.message);
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'mural' && token) {
+      fetchMural();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, token]);
+
   async function saveGuest(guest) {
     try {
       const response = await fetch('/api/adminGuests', {
@@ -386,25 +446,22 @@ export default function AdminPage() {
     setEtiqueta(clone);
   }
 
-  function moveCardapioSection(index, direction) {
+  function moveMenuSection(index, direction) {
     const target = index + direction;
-    if (target < 0 || target >= cardapio.secoes.length) return;
-    const clone = [...cardapio.secoes];
+    if (target < 0 || target >= menu.secoes.length) return;
+    const clone = [...menu.secoes];
     const [item] = clone.splice(index, 1);
     clone.splice(target, 0, item);
-    setCardapio((prev) => ({ ...prev, secoes: clone }));
+    setMenu((prev) => ({ ...prev, secoes: clone }));
   }
 
-  function moveCardapioItem(sectionIndex, itemIndex, direction) {
-    const items = [...(cardapio.secoes[sectionIndex]?.items || [])];
+  function moveMenuItem(sectionIndex, itemIndex, direction) {
+    const items = [...(menu.secoes[sectionIndex]?.items || [])];
     const target = itemIndex + direction;
     if (target < 0 || target >= items.length) return;
     const [item] = items.splice(itemIndex, 1);
     items.splice(target, 0, item);
-    setCardapio((prev) => ({
-      ...prev,
-      secoes: prev.secoes.map((section, index) => (index === sectionIndex ? { ...section, items } : section))
-    }));
+    setMenu((prev) => ({
   }
 
   const tabContent = useMemo(() => {
@@ -439,55 +496,55 @@ export default function AdminPage() {
       );
     }
 
-    if (activeTab === 'cardapio') {
+    if (activeTab === 'menu') {
       return (
         <section className="space-y-3">
           <div className="romantic-panel p-5 space-y-3">
-            <h2 className="text-2xl text-cocoa">Editor de cardápio</h2>
+            <h2 className="text-2xl text-cocoa">Editor de menu</h2>
             <label className="block">
               <span className="form-label">Título principal</span>
-              <input className="input-elegant" value={cardapio.heroTitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroTitle: e.target.value }))} />
+              <input className="input-elegant" value={menu.heroTitle || ''} onChange={(e) => setMenu((prev) => ({ ...prev, heroTitle: e.target.value }))} />
             </label>
             <label className="block">
               <span className="form-label">Subtítulo principal</span>
-              <textarea className="input-elegant" rows={3} value={cardapio.heroSubtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroSubtitle: e.target.value }))} />
+              <textarea className="input-elegant" rows={3} value={menu.heroSubtitle || ''} onChange={(e) => setMenu((prev) => ({ ...prev, heroSubtitle: e.target.value }))} />
             </label>
-            <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: [...prev.secoes, { ...EMPTY_MENU_SECTION, id: `secao-${Date.now()}` }] }))}>Adicionar seção</button>
+            <button className="btn btn--outline" onClick={() => setMenu((prev) => ({ ...prev, secoes: [...prev.secoes, { ...EMPTY_MENU_SECTION, id: `secao-${Date.now()}` }] }))}>Adicionar seção</button>
           </div>
 
-          {(cardapio.secoes || []).map((section, sectionIndex) => (
+          {(menu.secoes || []).map((section, sectionIndex) => (
             <article key={section.id || sectionIndex} className="romantic-panel p-4 space-y-3">
               <div className="grid gap-2 sm:grid-cols-2">
-                <input className="input-elegant" placeholder="Título da seção" value={section.title || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, title: e.target.value } : item)) }))} />
-                <input className="input-elegant" placeholder="ID da seção" value={section.id || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, id: e.target.value } : item)) }))} />
+                <input className="input-elegant" placeholder="Título da seção" value={section.title || ''} onChange={(e) => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, title: e.target.value } : item)) }))} />
+                <input className="input-elegant" placeholder="ID da seção" value={section.id || ''} onChange={(e) => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, id: e.target.value } : item)) }))} />
               </div>
-              <textarea className="input-elegant" rows={2} placeholder="Subtítulo da seção" value={section.subtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, subtitle: e.target.value } : item)) }))} />
+              <textarea className="input-elegant" rows={2} placeholder="Subtítulo da seção" value={section.subtitle || ''} onChange={(e) => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, subtitle: e.target.value } : item)) }))} />
 
               <div className="space-y-2">
                 {(section.items || []).map((item, itemIndex) => (
                   <div key={`${section.id || sectionIndex}-${itemIndex}`} className="rounded-2xl border border-roseDeep/15 bg-white/70 p-3 space-y-2">
-                    <input className="input-elegant" placeholder="Nome do item" value={item.name || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, name: e.target.value } : currentItem) } : currentSection) }))} />
-                    <textarea className="input-elegant" rows={2} placeholder="Descricao do item" value={item.description || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, description: e.target.value } : currentItem) } : currentSection) }))} />
+                    <input className="input-elegant" placeholder="Nome do item" value={item.name || ''} onChange={(e) => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, name: e.target.value } : currentItem) } : currentSection) }))} />
+                    <textarea className="input-elegant" rows={2} placeholder="Descricao do item" value={item.description || ''} onChange={(e) => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, description: e.target.value } : currentItem) } : currentSection) }))} />
                     <div className="flex flex-wrap gap-2">
-                      <button className="btn btn--outline" onClick={() => moveCardapioItem(sectionIndex, itemIndex, -1)}>Subir item</button>
-                      <button className="btn btn--outline" onClick={() => moveCardapioItem(sectionIndex, itemIndex, 1)}>Descer item</button>
-                      <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.filter((_, currentItemIndex) => currentItemIndex !== itemIndex) } : currentSection) }))}>Remover item</button>
+                      <button className="btn btn--outline" onClick={() => moveMenuItem(sectionIndex, itemIndex, -1)}>Subir item</button>
+                      <button className="btn btn--outline" onClick={() => moveMenuItem(sectionIndex, itemIndex, 1)}>Descer item</button>
+                      <button className="btn btn--outline" onClick={() => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.filter((_, currentItemIndex) => currentItemIndex !== itemIndex) } : currentSection) }))}>Remover item</button>
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => index === sectionIndex ? { ...item, items: [...(item.items || []), { ...EMPTY_MENU_ITEM }] } : item) }))}>Adicionar item</button>
-                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, -1)}>Subir seção</button>
-                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, 1)}>Descer seção</button>
-                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.filter((_, index) => index !== sectionIndex) }))}>Remover seção</button>
+                <button className="btn btn--outline" onClick={() => setMenu((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => index === sectionIndex ? { ...item, items: [...(item.items || []), { ...EMPTY_MENU_ITEM }] } : item) }))}>Adicionar item</button>
+                <button className="btn btn--outline" onClick={() => moveMenuSection(sectionIndex, -1)}>Subir seção</button>
+                <button className="btn btn--outline" onClick={() => moveMenuSection(sectionIndex, 1)}>Descer seção</button>
+                <button className="btn btn--outline" onClick={() => setMenu((prev) => ({ ...prev, secoes: prev.secoes.filter((_, index) => index !== sectionIndex) }))}>Remover seção</button>
               </div>
             </article>
           ))}
 
-          <button className="btn btn--primary" onClick={() => saveConfig('cardapio', cardapio)} disabled={savingDoc === 'cardapio'}>
-            {savingDoc === 'cardapio' ? 'Salvando...' : 'Salvar Cardápio'}
+          <button className="btn btn--primary" onClick={() => saveConfig('menu', menu)} disabled={savingDoc === 'menu'}>
+            {savingDoc === 'menu' ? 'Salvando...' : 'Salvar Menu'}
           </button>
         </section>
       );
@@ -694,14 +751,68 @@ export default function AdminPage() {
       );
     }
 
+    if (activeTab === 'mapa') {
+      return (
+        <section className="romantic-panel p-5 space-y-3">
+          <h2 className="text-2xl text-cocoa">Editor do mapa</h2>
+          <p className="text-sm text-wine/80">Acesse o modo admin do mapa para arrastar, editar e salvar elementos do layout.</p>
+          <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
+        </section>
+      );
+    }
+
+    if (activeTab === 'mural') {
     return (
-      <section className="romantic-panel p-5 space-y-3">
-        <h2 className="text-2xl text-cocoa">Editor do mapa</h2>
-        <p className="text-sm text-wine/80">Acesse o modo admin do mapa para arrastar, editar e salvar elementos do layout.</p>
-        <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
+      <section className="romantic-panel p-5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-2xl text-cocoa">Fotos do Mural</h2>
+          <div className="flex flex-wrap gap-2">
+            <button className="btn btn--outline" onClick={fetchMural} disabled={loadingMural}>
+              {loadingMural ? 'Carregando...' : 'Atualizar'}
+            </button>
+            <button className="btn btn--outline" style={{ color: '#b91c1c' }} onClick={deleteAllMuralPhotos} disabled={loadingMural || muralPhotos.length === 0}>
+              Excluir todas ({muralPhotos.length})
+            </button>
+          </div>
+        </div>
+
+        {loadingMural ? <LoadingSpinner label="Carregando fotos do mural" /> : null}
+
+        {!loadingMural && muralPhotos.length === 0 ? (
+          <p className="text-sm text-wine/60">Nenhuma foto no mural.</p>
+        ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+          {muralPhotos.map((photo) => (
+            <div key={photo.id} className="rounded-2xl border border-roseDeep/15 bg-white/70 p-3 space-y-2">
+              {photo.imageUrl ? (
+                <img
+                  src={photo.imageUrl}
+                  alt={photo.guestName}
+                  className="w-full rounded-xl object-cover"
+                  style={{ maxHeight: '180px' }}
+                />
+              ) : null}
+              <p className="text-sm font-semibold text-cocoa truncate">{photo.guestName}</p>
+              {photo.createdAtMs ? (
+                <p className="text-xs text-wine/50">{new Date(photo.createdAtMs).toLocaleString('pt-BR')}</p>
+              ) : null}
+              <button
+                className="btn btn--outline w-full"
+                style={{ color: '#b91c1c' }}
+                onClick={() => deleteMuralPhoto(photo.id)}
+              >
+                Excluir
+              </button>
+            </div>
+          ))}
+        </div>
       </section>
     );
-  }, [activeTab, aparencia, cardapio, etiqueta, guestFilters, guestRows, importing, loadingGuests, preview, roteiro, savingDoc, site, token]);
+  }
+
+  return null;
+  }, [activeTab, aparencia, menu, etiqueta, guestFilters, guestRows, importing, loadingGuests, loadingMural, muralPhotos, preview, roteiro, savingDoc, site, token]);
 
   return (
     <>

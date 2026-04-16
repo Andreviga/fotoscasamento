@@ -37,7 +37,7 @@ export default function WeddingFooter() {
             <span>•</span>
             <a href="/mapa" className="hover:text-cocoa">Mapa</a>
             <span>•</span>
-            <a href="/cardapio" className="hover:text-cocoa">Cardápio</a>
+            <a href="/menu" className="hover:text-cocoa">Menu</a>
             <span>•</span>
             <a href="/fotos" className="hover:text-cocoa">Instacasamento</a>
           </div>

@@ -8,7 +8,7 @@ const QUICK_LINKS = [
   { href: '/fotos', label: 'Fotos' },
   { href: '/mural', label: 'Mural' },
   { href: '/mapa', label: 'Mapa' },
-  { href: '/cardapio', label: 'Cardápio' },
+  { href: '/menu', label: 'Menu' },
   { href: '/etiqueta', label: 'Etiqueta' }
 ];
 

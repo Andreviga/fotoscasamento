@@ -14,7 +14,7 @@ type RoteiroItem = {
   destaque?: boolean;
 };
 
-type SubTab = 'roteiro' | 'mapa' | 'cardapio' | 'extra';
+type SubTab = 'roteiro' | 'mapa' | 'menu' | 'extra';
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '17:00', titulo: 'Chegada e welcome drink',     destaque: false },
@@ -55,7 +55,7 @@ function getHorarioAtual(items: RoteiroItem[]): string | null {
 const SUB_TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'roteiro',  label: 'Roteiro',  icon: '🗓' },
   { id: 'mapa',     label: 'Mapa',     icon: '🗺' },
-  { id: 'cardapio', label: 'Cardápio', icon: '🍽' },
+  { id: 'menu', label: 'Menu', icon: '🍽' },
   { id: 'extra',    label: 'Mais',     icon: '✦'  },
 ];
 
@@ -64,7 +64,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
   const [loadingRoteiro, setLoadingRoteiro] = useState(true);
   const [roteiroItems, setRoteiroItems] = useState<RoteiroItem[]>([]);
   const [mapaMounted, setMapaMounted] = useState(false);
-  const [cardapioMounted, setCardapioMounted] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -83,7 +83,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
 
   useEffect(() => {
     if (sub === 'mapa') setMapaMounted(true);
-    if (sub === 'cardapio') setCardapioMounted(true);
+    if (sub === 'menu') setMenuMounted(true);
   }, [sub]);
 
   useEffect(() => {
@@ -201,12 +201,12 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
           </div>
         </div>
 
-        {/* CARDAPIO */}
-        <div className={sub === 'cardapio' ? 'flex h-full flex-col' : 'hidden'}>
-          {cardapioMounted ? (
+        {/* MENU */}
+        <div className={sub === 'menu' ? 'flex h-full flex-col' : 'hidden'}>
+          {menuMounted ? (
             <iframe
-              src="/cardapio?embedded=1"
-              title="Cardápio"
+              src="/menu?embedded=1"
+              title="Menu"
               className="w-full flex-1 border-0"
               style={{ height: 'calc(100dvh - 8rem)' }}
             />
@@ -249,10 +249,10 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
               </div>
               <span className="text-roseDeep/40">›</span>
             </a>
-            <a href="/cardapio" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
+            <a href="/menu" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">🍽</span>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-cocoa">Cardápio da noite</p>
+                <p className="font-semibold text-cocoa">Menu da noite</p>
                 <p className="text-xs text-wine/65">Entradas, pratos e bebidas</p>
               </div>
               <span className="text-roseDeep/40">›</span>
