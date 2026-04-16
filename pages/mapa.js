@@ -10,7 +10,15 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
-const SALAO_LAYOUT_URL = '/layout-salao.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH';
+const DEFAULT_LAYOUT_SETTINGS = {
+  pdfUrl: '/layout-salao.pdf',
+  showBackground: true,
+  opacity: 0.5
+};
+
+function getSalaoLayoutUrl(pdfUrl) {
+  return `${pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+}
 
 const TYPE_COLORS = {
   mesa_grande: '#C9A96E',
@@ -110,6 +118,7 @@ export default function MapaPage() {
   const router = useRouter();
   const { loading, data } = useConfig(['mapa', 'site']);
   const [elementos, setElementos] = useState([]);
+  const [layoutSettings, setLayoutSettings] = useState(DEFAULT_LAYOUT_SETTINGS);
   const [selectedId, setSelectedId] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -132,9 +141,12 @@ export default function MapaPage() {
 
   useEffect(() => {
     const configElements = data?.mapa?.elementos;
+    const configLayout = data?.mapa?.layout;
+
     if (Array.isArray(configElements) && configElements.length > 0) {
       setElementos(configElements);
       setSelectedId(configElements[0].id);
+      setLayoutSettings({ ...DEFAULT_LAYOUT_SETTINGS, ...(configLayout || {}) });
       return;
     }
 
@@ -142,6 +154,7 @@ export default function MapaPage() {
       const defaults = makeDefaultMapElementos();
       setElementos(defaults);
       setSelectedId(defaults[0].id);
+      setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
     }
   }, [data, loading]);
 
@@ -296,7 +309,7 @@ export default function MapaPage() {
           'Content-Type': 'application/json',
           'x-admin-token': token
         },
-        body: JSON.stringify({ docId: 'mapa', data: { elementos } })
+        body: JSON.stringify({ docId: 'mapa', data: { elementos, layout: layoutSettings } })
       });
 
       const payload = await response.json();
@@ -316,6 +329,15 @@ export default function MapaPage() {
     const defaults = makeDefaultMapElementos();
     setElementos(defaults);
     setSelectedId(defaults[0].id);
+    setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
+  }
+
+  function nudgeSelected(dx, dy) {
+    if (!selected) return;
+    updateSelected({
+      x: clamp(Number(selected.x || 0) + dx, 2, 98),
+      y: clamp(Number(selected.y || 0) + dy, 2, 96)
+    });
   }
 
   return (
@@ -338,7 +360,7 @@ export default function MapaPage() {
               <p>
                 Este mapa usa o layout do salao como base visual. Se preferir, voce tambem pode abrir o PDF completo em outra aba para ampliar a orientacao.
               </p>
-              <a href="/layout-salao.pdf" target="_blank" rel="noreferrer" className="btn btn--outline">
+              <a href={layoutSettings.pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl} target="_blank" rel="noreferrer" className="btn btn--outline">
                 Abrir layout completo
               </a>
             </div>
@@ -354,11 +376,14 @@ export default function MapaPage() {
                   className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
                   style={{ aspectRatio: '16 / 10' }}
                 >
-                  <iframe
-                    title="Layout do salao"
-                    src={SALAO_LAYOUT_URL}
-                    className="absolute inset-0 h-full w-full scale-[1.01] opacity-50 pointer-events-none"
-                  />
+                  {layoutSettings.showBackground ? (
+                    <iframe
+                      title="Layout do salao"
+                      src={getSalaoLayoutUrl(layoutSettings.pdfUrl)}
+                      className="absolute inset-0 h-full w-full scale-[1.01] pointer-events-none"
+                      style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
+                    />
+                  ) : null}
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,239,0.2),rgba(255,250,239,0.48))]" />
                   {elementos.map((item) => {
                     const isSelected = item.id === selectedId;
@@ -420,7 +445,20 @@ export default function MapaPage() {
                     ) : null}
 
                     {adminEnabled ? (
-                      <div className="space-y-2 border-t border-roseDeep/20 pt-3">
+                      <div className="space-y-3 border-t border-roseDeep/20 pt-3">
+                        <div className="rounded-2xl border border-roseDeep/15 bg-white/70 p-3 space-y-2">
+                          <p className="text-sm font-semibold text-cocoa">Base do PDF</p>
+                          <label className="flex items-center gap-2 text-sm text-wine">
+                            <input type="checkbox" checked={Boolean(layoutSettings.showBackground)} onChange={(e) => setLayoutSettings((prev) => ({ ...prev, showBackground: e.target.checked }))} />
+                            Mostrar PDF do salao no fundo
+                          </label>
+                          <label className="block">
+                            <span className="form-label">Opacidade do PDF</span>
+                            <input type="range" min="0" max="0.9" step="0.05" value={layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity} onChange={(e) => setLayoutSettings((prev) => ({ ...prev, opacity: Number(e.target.value) }))} className="w-full" />
+                            <p className="mt-1 text-xs text-wine/60">Atual: {Math.round(Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) * 100)}%</p>
+                          </label>
+                        </div>
+
                         <label className="block">
                           <span className="form-label">Nome</span>
                           <input className="input-elegant" value={selected.nome || ''} onChange={(e) => updateSelected({ nome: e.target.value })} />
@@ -433,6 +471,33 @@ export default function MapaPage() {
                             ))}
                           </select>
                         </label>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <label className="block">
+                            <span className="form-label">X</span>
+                            <input type="number" step="0.5" className="input-elegant" value={selected.x ?? 0} onChange={(e) => updateSelected({ x: Number(e.target.value || 0) })} />
+                          </label>
+                          <label className="block">
+                            <span className="form-label">Y</span>
+                            <input type="number" step="0.5" className="input-elegant" value={selected.y ?? 0} onChange={(e) => updateSelected({ y: Number(e.target.value || 0) })} />
+                          </label>
+                          <label className="block">
+                            <span className="form-label">Largura</span>
+                            <input type="number" step="0.5" className="input-elegant" value={selected.largura ?? 0} onChange={(e) => updateSelected({ largura: Number(e.target.value || 0) })} />
+                          </label>
+                          <label className="block">
+                            <span className="form-label">Altura</span>
+                            <input type="number" step="0.5" className="input-elegant" value={selected.altura ?? 0} onChange={(e) => updateSelected({ altura: Number(e.target.value || 0) })} />
+                          </label>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <button type="button" className="btn btn--outline" onClick={() => nudgeSelected(-0.5, 0)}>◀</button>
+                          <button type="button" className="btn btn--outline" onClick={() => nudgeSelected(0, -0.5)}>▲</button>
+                          <button type="button" className="btn btn--outline" onClick={() => nudgeSelected(0.5, 0)}>▶</button>
+                          <button type="button" className="btn btn--outline col-start-2" onClick={() => nudgeSelected(0, 0.5)}>▼</button>
+                        </div>
+
                         <label className="block">
                           <span className="form-label">Capacidade</span>
                           <input

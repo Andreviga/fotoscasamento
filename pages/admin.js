@@ -9,6 +9,7 @@ import useConfig from '../lib/useConfig';
 
 const TABS = [
   { id: 'site', label: 'Site' },
+  { id: 'cardapio', label: 'Cardapio' },
   { id: 'roteiro', label: 'Roteiro' },
   { id: 'etiqueta', label: 'Etiqueta' },
   { id: 'aparencia', label: 'Aparencia' },
@@ -18,6 +19,8 @@ const TABS = [
 
 const EMPTY_ROTEIRO = { horario: '', titulo: '', descricao: '', icone: '✨', destaque: false };
 const EMPTY_SECAO = { titulo: '', conteudo: '', icone: '✨' };
+const EMPTY_MENU_ITEM = { name: '', description: '' };
+const EMPTY_MENU_SECTION = { id: '', title: '', subtitle: '', items: [{ ...EMPTY_MENU_ITEM }] };
 
 function AdminLogin({ onLogin, error }) {
   const [password, setPassword] = useState('');
@@ -59,7 +62,7 @@ function TabButton({ active, label, onClick }) {
 }
 
 export default function AdminPage() {
-  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'mapa']);
+  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'cardapio', 'mapa']);
   const [token, setToken] = useState('');
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState('site');
@@ -68,6 +71,7 @@ export default function AdminPage() {
   const [aparencia, setAparencia] = useState({});
   const [roteiro, setRoteiro] = useState([]);
   const [etiqueta, setEtiqueta] = useState([]);
+  const [cardapio, setCardapio] = useState({ heroTitle: '', heroSubtitle: '', secoes: [] });
 
   const [statusMessage, setStatusMessage] = useState('');
   const [savingDoc, setSavingDoc] = useState('');
@@ -92,6 +96,11 @@ export default function AdminPage() {
       setAparencia(data.aparencia || {});
       setRoteiro(Array.isArray(data?.roteiro?.itens) ? data.roteiro.itens : []);
       setEtiqueta(Array.isArray(data?.etiqueta?.secoes) ? data.etiqueta.secoes : []);
+      setCardapio({
+        heroTitle: data?.cardapio?.heroTitle || '',
+        heroSubtitle: data?.cardapio?.heroSubtitle || '',
+        secoes: Array.isArray(data?.cardapio?.secoes) ? data.cardapio.secoes : []
+      });
     }
   }, [loading, data]);
 
@@ -377,6 +386,27 @@ export default function AdminPage() {
     setEtiqueta(clone);
   }
 
+  function moveCardapioSection(index, direction) {
+    const target = index + direction;
+    if (target < 0 || target >= cardapio.secoes.length) return;
+    const clone = [...cardapio.secoes];
+    const [item] = clone.splice(index, 1);
+    clone.splice(target, 0, item);
+    setCardapio((prev) => ({ ...prev, secoes: clone }));
+  }
+
+  function moveCardapioItem(sectionIndex, itemIndex, direction) {
+    const items = [...(cardapio.secoes[sectionIndex]?.items || [])];
+    const target = itemIndex + direction;
+    if (target < 0 || target >= items.length) return;
+    const [item] = items.splice(itemIndex, 1);
+    items.splice(target, 0, item);
+    setCardapio((prev) => ({
+      ...prev,
+      secoes: prev.secoes.map((section, index) => (index === sectionIndex ? { ...section, items } : section))
+    }));
+  }
+
   const tabContent = useMemo(() => {
     if (activeTab === 'site') {
       return (
@@ -404,6 +434,60 @@ export default function AdminPage() {
           ))}
           <button className="btn btn--primary" onClick={() => saveConfig('site', site)} disabled={savingDoc === 'site'}>
             {savingDoc === 'site' ? 'Salvando...' : 'Salvar Site'}
+          </button>
+        </section>
+      );
+    }
+
+    if (activeTab === 'cardapio') {
+      return (
+        <section className="space-y-3">
+          <div className="romantic-panel p-5 space-y-3">
+            <h2 className="text-2xl text-cocoa">Editor de cardapio</h2>
+            <label className="block">
+              <span className="form-label">Titulo principal</span>
+              <input className="input-elegant" value={cardapio.heroTitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroTitle: e.target.value }))} />
+            </label>
+            <label className="block">
+              <span className="form-label">Subtitulo principal</span>
+              <textarea className="input-elegant" rows={3} value={cardapio.heroSubtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroSubtitle: e.target.value }))} />
+            </label>
+            <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: [...prev.secoes, { ...EMPTY_MENU_SECTION, id: `secao-${Date.now()}` }] }))}>Adicionar secao</button>
+          </div>
+
+          {(cardapio.secoes || []).map((section, sectionIndex) => (
+            <article key={section.id || sectionIndex} className="romantic-panel p-4 space-y-3">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <input className="input-elegant" placeholder="Titulo da secao" value={section.title || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, title: e.target.value } : item)) }))} />
+                <input className="input-elegant" placeholder="ID da secao" value={section.id || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, id: e.target.value } : item)) }))} />
+              </div>
+              <textarea className="input-elegant" rows={2} placeholder="Subtitulo da secao" value={section.subtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, subtitle: e.target.value } : item)) }))} />
+
+              <div className="space-y-2">
+                {(section.items || []).map((item, itemIndex) => (
+                  <div key={`${section.id || sectionIndex}-${itemIndex}`} className="rounded-2xl border border-roseDeep/15 bg-white/70 p-3 space-y-2">
+                    <input className="input-elegant" placeholder="Nome do item" value={item.name || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, name: e.target.value } : currentItem) } : currentSection) }))} />
+                    <textarea className="input-elegant" rows={2} placeholder="Descricao do item" value={item.description || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.map((currentItem, currentItemIndex) => currentItemIndex === itemIndex ? { ...currentItem, description: e.target.value } : currentItem) } : currentSection) }))} />
+                    <div className="flex flex-wrap gap-2">
+                      <button className="btn btn--outline" onClick={() => moveCardapioItem(sectionIndex, itemIndex, -1)}>Subir item</button>
+                      <button className="btn btn--outline" onClick={() => moveCardapioItem(sectionIndex, itemIndex, 1)}>Descer item</button>
+                      <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((currentSection, currentIndex) => currentIndex === sectionIndex ? { ...currentSection, items: currentSection.items.filter((_, currentItemIndex) => currentItemIndex !== itemIndex) } : currentSection) }))}>Remover item</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => index === sectionIndex ? { ...item, items: [...(item.items || []), { ...EMPTY_MENU_ITEM }] } : item) }))}>Adicionar item</button>
+                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, -1)}>Subir secao</button>
+                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, 1)}>Descer secao</button>
+                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.filter((_, index) => index !== sectionIndex) }))}>Remover secao</button>
+              </div>
+            </article>
+          ))}
+
+          <button className="btn btn--primary" onClick={() => saveConfig('cardapio', cardapio)} disabled={savingDoc === 'cardapio'}>
+            {savingDoc === 'cardapio' ? 'Salvando...' : 'Salvar Cardapio'}
           </button>
         </section>
       );
@@ -617,7 +701,7 @@ export default function AdminPage() {
         <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
       </section>
     );
-  }, [activeTab, aparencia, etiqueta, guestFilters, guestRows, importing, loadingGuests, preview, roteiro, savingDoc, site, token]);
+  }, [activeTab, aparencia, cardapio, etiqueta, guestFilters, guestRows, importing, loadingGuests, preview, roteiro, savingDoc, site, token]);
 
   return (
     <>

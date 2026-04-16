@@ -2,6 +2,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { collection, limit, onSnapshot, query } from 'firebase/firestore';
+
+import WeddingHeader from '../components/WeddingHeader';
+import WeddingFooter from '../components/WeddingFooter';
+import GuestJourney from '../components/GuestJourney';
 import { firebaseDb } from '@/lib/firebaseClient';
 
 const DELETE_TOKENS_STORAGE_KEY = 'muralDeleteTokens';
@@ -166,6 +170,8 @@ export default function MuralPage() {
         <meta name="description" content="Mural ao vivo com as fotos dos convidados." />
       </Head>
 
+      <WeddingHeader />
+
       <main className="main" id="mural">
         <div className="hero-haze" />
 
@@ -224,8 +230,19 @@ export default function MuralPage() {
               ))}
             </div>
           )}
+
+          <div className="mt-8">
+            <GuestJourney
+              currentPath="/mural"
+              compact
+              title="Continue a acompanhar a festa"
+              subtitle="Volte ao Instacasamento para publicar outra memoria, confira sua mesa ou use o mapa do salao para se orientar no evento."
+            />
+          </div>
         </div>
       </main>
+
+      <WeddingFooter />
     </>
   );
 }

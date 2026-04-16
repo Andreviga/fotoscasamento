@@ -1,7 +1,7 @@
 import { assertAdmin } from '../../lib/adminAuth';
 import { saveConfigDocument } from '../../lib/configStore';
 
-const ALLOWED_DOCS = new Set(['site', 'aparencia', 'roteiro', 'etiqueta', 'mapa']);
+const ALLOWED_DOCS = new Set(['site', 'aparencia', 'roteiro', 'etiqueta', 'cardapio', 'mapa']);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

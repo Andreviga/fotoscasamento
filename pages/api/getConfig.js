@@ -1,10 +1,10 @@
 import { getConfigDocument, getManyConfigDocuments } from '../../lib/configStore';
 
-const ALLOWED_DOCS = new Set(['site', 'aparencia', 'roteiro', 'etiqueta', 'mapa']);
+const ALLOWED_DOCS = new Set(['site', 'aparencia', 'roteiro', 'etiqueta', 'cardapio', 'mapa']);
 
 function parseDocs(value) {
   if (!value) {
-    return ['site', 'aparencia', 'roteiro', 'etiqueta', 'mapa'];
+    return ['site', 'aparencia', 'roteiro', 'etiqueta', 'cardapio', 'mapa'];
   }
 
   return String(value)
