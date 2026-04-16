@@ -143,7 +143,7 @@ export default function MesaPage() {
                         title={`Mapa com mesa ${selected.mesa} destacada`}
                         src={`/mapa?destaque=mesa-${selected.mesa}`}
                         className="w-full border-0"
-                        style={{ height: '320px' }}
+                        style={{ height: 'clamp(420px, 62vh, 760px)' }}
                       />
                     </div>
                   </div>

@@ -382,13 +382,13 @@ export default function MapaPage() {
                 <section
                   ref={mapRef}
                   className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
-                  style={{ aspectRatio: '16 / 10' }}
+                  style={{ aspectRatio: '16 / 12', minHeight: '520px' }}
                 >
                   {layoutSettings.showBackground ? (
                     <iframe
                       title="Layout do salão"
                       src={getSalaoLayoutUrl(layoutSettings.pdfUrl)}
-                      className="absolute inset-0 h-full w-full scale-[1.01] pointer-events-none"
+                      className="absolute inset-0 h-full w-full pointer-events-none"
                       style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
                     />
                   ) : null}
