@@ -24,8 +24,9 @@ export default function CardapioPage() {
       <WeddingHeader />
 
       <main className="main" id="cardapio">
-        <div className="container">
-          <section className="menu-hero">
+        <div className="hero-haze" />
+        <div className="container relative z-10">
+          <section className="menu-hero page-section">
             <div className="section-header">
               <span className="section-kicker">André & Nathália</span>
               <h1>{heroTitle}</h1>
@@ -39,7 +40,7 @@ export default function CardapioPage() {
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
 
           {!loading && !error ? (
-            <section className="menu-sections">
+            <section className="menu-sections page-section">
               {menuSections.map((section) => (
                 <article key={section.id || section.title} className="menu-card">
                   <header className="menu-card__header">

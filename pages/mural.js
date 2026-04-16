@@ -6,6 +6,7 @@ import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import GuestJourney from '../components/GuestJourney';
+import PageTitle from '../components/PageTitle';
 import { firebaseDb } from '@/lib/firebaseClient';
 
 const DELETE_TOKENS_STORAGE_KEY = 'muralDeleteTokens';
@@ -175,12 +176,12 @@ export default function MuralPage() {
       <main className="main" id="mural">
         <div className="hero-haze" />
 
-        <div className="container">
-          <div className="section-header">
-            <span className="section-kicker">André & Nathália</span>
-            <h1 className="mt-3 text-4xl sm:text-6xl">✿ Mural ao Vivo</h1>
-            <p className="section-subtitle">Ideal para o telão: cada nova mídia publicada aparece automaticamente para todos.</p>
-          </div>
+        <div className="container relative z-10">
+          <PageTitle
+            kicker="Mural"
+            title="Mural ao Vivo"
+            subtitle="Ideal para o telao: cada nova midia publicada aparece automaticamente para todos."
+          />
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="rounded-full border border-rose/20 bg-ivory/70 px-4 py-2 text-sm text-wine/75">{status}</p>

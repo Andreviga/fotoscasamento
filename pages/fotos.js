@@ -10,6 +10,7 @@ import {
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import GuestJourney from '../components/GuestJourney';
+import PageTitle from '../components/PageTitle';
 import { firebaseDb } from '../lib/firebaseClient';
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
@@ -391,14 +392,13 @@ export default function FotosPage() {
       <WeddingHeader />
 
       <main className="main" id="fotos">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-kicker">André & Nathália</span>
-            <h1>Instacasamento</h1>
-            <p className="section-subtitle">
-              Tire foto ou grave vídeo, escolha entre vários filtros e publique direto no feed da festa.
-            </p>
-          </div>
+        <div className="hero-haze" />
+        <div className="container relative z-10">
+          <PageTitle
+            kicker="Instacasamento"
+            title="Fotos e Videos com Filtros"
+            subtitle="Tire foto ou grave video, escolha um filtro e publique direto no feed da festa."
+          />
 
           <div className="step-indicator">
             <div className={`step-indicator__item${step > 1 ? ' step-indicator__item--done' : ' step-indicator__item--active'}`}>

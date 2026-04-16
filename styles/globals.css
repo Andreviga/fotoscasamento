@@ -27,6 +27,12 @@
     min-height: 100vh;
   }
 
+  @media (max-width: 640px) {
+    body {
+      padding-bottom: 4.7rem;
+    }
+  }
+
   h1,
   h2,
   h3,
@@ -419,6 +425,10 @@
   column-gap: 0.9rem;
 }
 
+.page-section {
+  margin-top: 1.5rem;
+}
+
 .photo-feed-card {
   break-inside: avoid;
   margin-bottom: 0.9rem;
@@ -588,6 +598,39 @@
 
   .photo-feed-grid {
     column-count: 1;
+  }
+
+  .step-indicator__line {
+    max-width: 2.2rem;
+    margin-left: 0.35rem;
+    margin-right: 0.35rem;
+  }
+
+  .step-indicator__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+
+  .camera-stage,
+  .camera-stage__media,
+  .camera-stage__placeholder {
+    min-height: 300px;
+  }
+
+  .panel-title {
+    font-size: 1.35rem;
+  }
+
+  .panel-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .menu-card {
+    padding: 0.95rem;
+  }
+
+  .menu-card__header h2 {
+    font-size: 1.35rem;
   }
 }
 
