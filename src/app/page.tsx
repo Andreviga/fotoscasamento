@@ -47,92 +47,83 @@ const quickAccess = [
 
 export default function HomePage() {
   return (
-    <main className="romantic-shell">
+    <main className="romantic-shell pb-10">
       <div className="hero-haze" />
 
-      <section className="romantic-panel mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-8 sm:px-8 sm:py-10">
-        <div className="relative overflow-hidden rounded-[30px] border border-[#e7e1d4] bg-white/85 p-6 sm:p-9">
-          <div className="pointer-events-none absolute -left-8 -top-10 h-36 w-36 rounded-full bg-[#c9b37e]/15 blur-2xl" />
-          <div className="pointer-events-none absolute -right-10 bottom-0 h-36 w-36 rounded-full bg-[#6f8475]/15 blur-2xl" />
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-4 text-center lg:max-w-3xl lg:text-left">
-              <div className="mx-auto grid h-24 w-24 place-items-center rounded-full border border-gold/70 bg-white/80 font-serifRomance text-3xl tracking-[0.14em] text-wine shadow-[0_14px_34px_rgba(34,53,44,0.08)] lg:mx-0">
-                A &amp; N
-              </div>
-              <p className="text-sm uppercase tracking-[0.34em] text-wine/70">3 de maio de 2026</p>
-              <h1 className="text-5xl leading-none text-cocoa sm:text-7xl">André &amp; Nathália</h1>
-              <p className="max-w-2xl text-sm leading-7 text-wine/80 sm:text-base">
-                Um único lugar para acompanhar o cronograma, localizar a mesa, se orientar no salão, consultar o cardápio e publicar lembranças ao vivo.
-              </p>
-
-              <div className="flex flex-wrap justify-center gap-3 pt-1 lg:justify-start">
-                <Link href="/mesa" className="btn btn--primary">
-                  Encontrar minha mesa
-                </Link>
-                <Link href="/roteiro" className="btn btn--outline">
-                  Ver roteiro do dia
-                </Link>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-roseDeep/15 bg-ivory/70 p-5 shadow-[0_14px_32px_rgba(34,53,44,0.06)] lg:w-[360px]">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-wine/55">Feito com carinho para nossos convidados</p>
-              <p className="mt-3 text-sm leading-7 text-wine/80">
-                Reunimos aqui os acessos essenciais do pré-festa ao último brinde, com navegação simples e rápida.
-              </p>
-              <div className="mt-4 rounded-2xl border border-[#d7cebc] bg-white/75 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-wine/55">Lista de presentes</p>
-                <p className="mt-2 text-sm leading-6 text-wine/80">A lista oficial está no nosso site principal.</p>
-                <a
-                  href="https://andrenathalia03052026.site/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center rounded-full border border-wine/30 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-wine transition hover:border-wine hover:bg-ivory"
-                >
-                  Ver lista de presentes
-                </a>
-              </div>
-            </div>
+      <section className="gift-inspired-wrap mx-auto w-full max-w-[1100px] space-y-5 sm:space-y-7">
+        <header className="gift-hero-panel text-center">
+          <div className="mx-auto mb-3 grid h-20 w-20 place-items-center rounded-full border border-gold/70 bg-white text-2xl tracking-[0.14em] text-wine shadow-[0_10px_24px_rgba(34,53,44,0.08)] sm:h-24 sm:w-24 sm:text-3xl">
+            A &amp; N
           </div>
-        </div>
+          <h1 className="text-[clamp(2.2rem,8vw,4.5rem)] leading-none">André &amp; Nathália</h1>
+          <p className="mt-2 text-xs uppercase tracking-[0.32em] text-wine/70 sm:text-sm">3 de maio de 2026</p>
+          <div className="gift-divider mx-auto mt-4" />
 
-        <section>
-          <div className="mb-4 text-center md:text-left">
-            <p className="text-xs uppercase tracking-[0.24em] text-wine/55">Acessos rápidos</p>
-            <h2 className="mt-2 text-3xl sm:text-4xl">Tudo à mão em poucos toques</h2>
-          </div>
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-7 text-wine/80 sm:text-base">
+            Um único lugar para acompanhar o cronograma, localizar a mesa, se orientar no salão, consultar o cardápio e publicar lembranças ao vivo.
+          </p>
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {quickAccess.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group rounded-[24px] border border-roseDeep/15 bg-white/85 p-5 shadow-[0_14px_30px_rgba(34,53,44,0.07)] transition hover:-translate-y-0.5 hover:border-gold/80 hover:bg-white"
-            >
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#f4efe3] text-wine transition group-hover:bg-[#e9dec8]">
-                {item.icon}
-              </div>
-              <h3 className="mt-4 text-2xl text-cocoa">{item.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-wine/80">{item.description}</p>
-              <span className="mt-4 inline-flex text-sm font-semibold text-wine group-hover:text-cocoa">Abrir agora</span>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-7 text-wine/75">Feito com carinho para nossos convidados.</p>
+
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:mx-auto sm:max-w-[520px] sm:grid-cols-2">
+            <Link href="/mesa" className="btn btn--primary w-full">
+              Encontrar minha mesa
             </Link>
-            ))}
+            <Link href="/roteiro" className="btn btn--outline w-full">
+              Ver roteiro do dia
+            </Link>
           </div>
+        </header>
+
+        <section className="grid gap-4 xl:grid-cols-[1.45fr_0.9fr]">
+          <div className="rounded-[18px] border border-[#e8e3d7] bg-white p-4 shadow-[0_6px_18px_rgba(0,0,0,0.04)] sm:p-5">
+            <div className="mb-4 text-center sm:text-left">
+              <p className="text-xs uppercase tracking-[0.24em] text-wine/55">Acesso rápido</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl">Tudo à mão em poucos toques</h2>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {quickAccess.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group rounded-[14px] border border-[#e8e3d7] bg-[#fffdfa] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.03)] transition hover:-translate-y-0.5 hover:border-gold/80"
+                >
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5f1e8] text-wine transition group-hover:bg-[#eee5d5]">
+                    {item.icon}
+                  </div>
+                  <h3 className="mt-3 text-xl text-cocoa">{item.title}</h3>
+                  <p className="mt-1 text-sm leading-6 text-wine/80">{item.description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <aside className="rounded-[18px] border border-[#e8e3d7] bg-white p-4 shadow-[0_6px_18px_rgba(0,0,0,0.04)] sm:p-5">
+            <h2 className="text-3xl sm:text-[2rem]">Lista de presentes</h2>
+            <p className="mt-2 text-sm leading-7 text-wine/80">A página oficial de presentes está no site principal do casal.</p>
+            <a
+              href="https://andrenathalia03052026.site/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex w-full items-center justify-center rounded-[12px] border border-gold/60 bg-[#f7f1e3] px-4 py-3 text-sm font-semibold text-cocoa transition hover:bg-[#efe5d1]"
+            >
+              Abrir lista de presentes
+            </a>
+
+            <div className="mt-5 rounded-[14px] border border-[#eadfca] bg-[#faf7f0] p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-wine/60">Fluxo recomendado</p>
+              <p className="mt-2 text-sm leading-7 text-wine/80">
+                Roteiro, Mesa, Mapa, Cardápio, Instacasamento, Mural e Etiqueta para aproveitar cada momento sem perder nada.
+              </p>
+            </div>
+          </aside>
         </section>
 
-        <section className="rounded-[26px] border border-[#e4ddce] bg-[#fffdfa]/90 p-5 sm:p-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-wine/55">Antes e durante a festa</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl">Fluxo recomendado para os convidados</h2>
-            </div>
-            <div className="inline-flex items-center rounded-full border border-[#d8cfbc] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-wine/70">
-              Roteiro → Mesa → Mapa → Cardápio → Instacasamento → Mural → Etiqueta
-            </div>
-          </div>
-        </section>
-
-        <GuestJourney currentPath="/" />
+        <GuestJourney
+          currentPath="/"
+          subtitle="Navegação clara e consistente para os convidados acessarem tudo antes e durante a festa."
+        />
       </section>
     </main>
   );
