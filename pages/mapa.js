@@ -119,6 +119,7 @@ export default function MapaPage() {
   const [elementos, setElementos] = useState([]);
   const [layoutSettings, setLayoutSettings] = useState(DEFAULT_LAYOUT_SETTINGS);
   const [selectedId, setSelectedId] = useState('');
+  const [highlightedFromQueryId, setHighlightedFromQueryId] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [guestByMesa, setGuestByMesa] = useState({});
@@ -188,15 +189,22 @@ export default function MapaPage() {
   useEffect(() => {
     const highlight = String(router.query.destaque || '').toLowerCase();
     if (!highlight || !highlight.startsWith('mesa-')) {
+      setHighlightedFromQueryId('');
       return;
     }
 
     const num = Number(highlight.replace('mesa-', ''));
-    if (!num) return;
+    if (!num) {
+      setHighlightedFromQueryId('');
+      return;
+    }
 
     const target = elementos.find((item) => getMesaNumber(item) === num);
     if (target) {
       setSelectedId(target.id);
+      setHighlightedFromQueryId(target.id);
+    } else {
+      setHighlightedFromQueryId('');
     }
   }, [router.query.destaque, elementos]);
 
@@ -387,6 +395,7 @@ export default function MapaPage() {
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,239,0.2),rgba(255,250,239,0.48))]" />
                   {elementos.map((item) => {
                     const isSelected = item.id === selectedId;
+                    const isHighlightedByQuery = item.id === highlightedFromQueryId;
                     const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
 
                     return (
@@ -396,8 +405,12 @@ export default function MapaPage() {
                         title={item.nome}
                         onClick={() => setSelectedId(item.id)}
                         onPointerDown={(event) => startDrag(event, item)}
-                        className={`absolute flex items-center justify-center rounded-md border text-[10px] sm:text-xs font-semibold text-[#2c2416] shadow-sm ${
-                          isSelected ? 'ring-2 ring-wine/70' : ''
+                        className={`absolute flex items-center justify-center rounded-md border text-[10px] sm:text-xs font-semibold shadow-sm ${
+                          isHighlightedByQuery
+                            ? 'ring-2 ring-wine'
+                            : isSelected
+                            ? 'ring-2 ring-wine/70'
+                            : ''
                         }`}
                         style={{
                           left: `${item.x}%`,
@@ -405,8 +418,9 @@ export default function MapaPage() {
                           width: `${item.largura}%`,
                           height: `${item.altura}%`,
                           transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
-                          background: color,
-                          borderColor: 'rgba(44, 36, 22, 0.18)',
+                          background: isHighlightedByQuery ? '#0f4f3d' : color,
+                          color: isHighlightedByQuery ? '#fbfaf7' : '#2c2416',
+                          borderColor: isHighlightedByQuery ? 'rgba(15, 79, 61, 0.9)' : 'rgba(44, 36, 22, 0.18)',
                           touchAction: 'none'
                         }}
                       >
@@ -443,6 +457,11 @@ export default function MapaPage() {
                     <div>
                       <p className="font-semibold text-wine">{selected.nome}</p>
                       <p className="text-wine/70">Tipo: {selected.tipo}</p>
+                      {selected.id === highlightedFromQueryId ? (
+                        <p className="mt-1 inline-flex rounded-full border border-wine/25 bg-wine/10 px-2 py-0.5 text-xs font-semibold text-wine">
+                          Mesa encontrada na busca
+                        </p>
+                      ) : null}
                     </div>
 
                     {selectedMesaGuests.length > 0 ? (

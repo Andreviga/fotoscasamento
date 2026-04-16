@@ -8,20 +8,6 @@ import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
-const MAP_TYPE_COLORS = {
-  mesa_grande: '#C9A96E',
-  mesa_pequena: '#D8B774',
-  buffet: '#F0DCA8',
-  bar: '#C99358',
-  dj: '#3D3D3D',
-  bolo: '#D97B84',
-  cafe: '#A67C52',
-  sofa: '#8EA7A0',
-  bistro: '#D3874A',
-  planta: '#6F9A6E',
-  outro: '#B8A794'
-};
-
 function useDebouncedValue(value, delay = 300) {
   const [debounced, setDebounced] = useState(value);
 
@@ -33,79 +19,8 @@ function useDebouncedValue(value, delay = 300) {
   return debounced;
 }
 
-function parseMesaNumberFromText(value) {
-  const text = String(value || '').toLowerCase();
-
-  const direct = text.match(/mesa\s*[a-z_-]*\s*(\d+)/i);
-  if (direct) {
-    return Number(direct[1]);
-  }
-
-  const fromId = text.match(/mesa[-_\s]*[a-z_-]*[-_\s]*(\d+)/i);
-  if (fromId) {
-    return Number(fromId[1]);
-  }
-
-  return null;
-}
-
-function getMesaNumberFromElement(elemento) {
-  if (typeof elemento?.mesaNumero === 'number') {
-    return elemento.mesaNumero;
-  }
-
-  return parseMesaNumberFromText(elemento?.nome) ?? parseMesaNumberFromText(elemento?.id);
-}
-
-function MiniMapPreview({ elementos, mesaNumber }) {
-  if (!Array.isArray(elementos) || elementos.length === 0 || typeof mesaNumber !== 'number') {
-    return null;
-  }
-
-  const mesaAlvo = elementos.find((item) => {
-    const mesaElemento = getMesaNumberFromElement(item);
-    return mesaElemento === mesaNumber && String(item?.tipo || '').startsWith('mesa');
-  });
-
-  return (
-    <div className="mt-4 rounded-xl border border-roseDeep/20 bg-white p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-wine/60">Mini mapa</p>
-
-      <div className="relative mt-2 overflow-hidden rounded-lg border border-roseDeep/20 bg-[#fdf9ef]" style={{ aspectRatio: '16 / 10' }}>
-        <div className="absolute inset-x-0 bottom-0 h-[21%] bg-[#f4e9d0] opacity-80" />
-        {elementos.map((item) => {
-          const color = item?.cor || MAP_TYPE_COLORS[item?.tipo] || MAP_TYPE_COLORS.outro;
-          const highlighted = mesaAlvo?.id === item?.id;
-
-          return (
-            <div
-              key={item.id}
-              title={item.nome}
-              className={`absolute rounded-[4px] border border-black/10 ${highlighted ? 'z-20 animate-pulse ring-2 ring-wine' : 'z-10 opacity-85'}`}
-              style={{
-                left: `${item.x}%`,
-                top: `${item.y}%`,
-                width: `${item.largura}%`,
-                height: `${item.altura}%`,
-                transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
-                background: color
-              }}
-            />
-          );
-        })}
-      </div>
-
-      {mesaAlvo ? (
-        <p className="mt-2 text-xs text-wine/70">Mesa {mesaNumber} destacada no layout.</p>
-      ) : (
-        <p className="mt-2 text-xs text-wine/70">Mesa {mesaNumber} nao localizada no layout atual. Toque em "Ver no mapa do salao" para conferir.</p>
-      )}
-    </div>
-  );
-}
-
 export default function MesaPage() {
-  const { data } = useConfig(['site', 'aparencia', 'mapa']);
+  const { data } = useConfig(['site', 'aparencia']);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
@@ -144,7 +59,6 @@ export default function MesaPage() {
 
   const selected = results[0] || null;
   const mostrarOutros = Boolean(data?.aparencia?.mostrar_outros_na_mesa);
-  const mapaElementos = Array.isArray(data?.mapa?.elementos) ? data.mapa.elementos : [];
 
   useEffect(() => {
     async function loadOthers() {
@@ -217,11 +131,21 @@ export default function MesaPage() {
                   <div className="mt-4 rounded-2xl border border-gold/40 bg-[#fff9eb] p-4">
                     <p className="text-sm text-wine/70">Voce esta na</p>
                     <p className="text-3xl font-semibold text-cocoa">Mesa {selected.mesa}</p>
-                    <Link href={`/mapa?destaque=mesa-${selected.mesa}`} className="mt-3 inline-flex text-sm font-semibold text-wine hover:underline">
-                      Ver no mapa do salao →
-                    </Link>
 
-                    <MiniMapPreview elementos={mapaElementos} mesaNumber={selected.mesa} />
+                    <div className="mt-4 overflow-hidden rounded-2xl border border-roseDeep/20 bg-white shadow-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-roseDeep/15 px-3 py-2">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-wine/70">Mapa com mesa destacada</p>
+                        <Link href={`/mapa?destaque=mesa-${selected.mesa}`} className="text-xs font-semibold text-wine hover:underline">
+                          Abrir mapa completo →
+                        </Link>
+                      </div>
+                      <iframe
+                        title={`Mapa com mesa ${selected.mesa} destacada`}
+                        src={`/mapa?destaque=mesa-${selected.mesa}`}
+                        className="w-full border-0"
+                        style={{ height: '320px' }}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <p className="mt-3 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
