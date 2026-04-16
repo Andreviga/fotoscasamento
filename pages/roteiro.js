@@ -4,6 +4,7 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
+import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
 function TimelineItem({ item, index }) {
@@ -58,11 +59,22 @@ export default function RoteiroPage() {
           ) : null}
 
           {!loading && !error ? (
-            <div className="mx-auto max-w-3xl space-y-4">
-              {items.map((item, index) => (
-                <TimelineItem key={`${item.horario}-${index}`} item={item} index={index} />
-              ))}
-            </div>
+            <>
+              <div className="mx-auto max-w-3xl space-y-4">
+                {items.map((item, index) => (
+                  <TimelineItem key={`${item.horario}-${index}`} item={item} index={index} />
+                ))}
+              </div>
+
+              <div className="mx-auto mt-8 max-w-5xl">
+                <GuestJourney
+                  currentPath="/roteiro"
+                  compact
+                  title="Planeje seus proximos passos"
+                  subtitle="Depois do cronograma, consulte sua mesa, veja o mapa do salao e acompanhe o cardapio da noite."
+                />
+              </div>
+            </>
           ) : null}
         </div>
       </main>

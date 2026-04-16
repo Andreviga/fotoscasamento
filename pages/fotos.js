@@ -7,8 +7,9 @@ import {
   query
 } from 'firebase/firestore';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import WeddingHeader from '../components/WeddingHeader';
+import WeddingFooter from '../components/WeddingFooter';
+import GuestJourney from '../components/GuestJourney';
 import { firebaseDb } from '../lib/firebaseClient';
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
@@ -387,7 +388,7 @@ export default function FotosPage() {
         />
       </Head>
 
-      <Header />
+      <WeddingHeader />
 
       <main className="main" id="fotos">
         <div className="container">
@@ -626,10 +627,19 @@ export default function FotosPage() {
               </div>
             )}
           </section>
+
+          <div className="mt-8">
+            <GuestJourney
+              currentPath="/fotos"
+              compact
+              title="Depois da foto, siga por aqui"
+              subtitle="Publique no mural, consulte sua mesa e use o mapa do salao para se localizar durante a festa."
+            />
+          </div>
         </div>
       </main>
 
-      <Footer />
+      <WeddingFooter />
     </>
   );
 }

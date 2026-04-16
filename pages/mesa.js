@@ -1,10 +1,12 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
+import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
 const MAP_TYPE_COLORS = {
@@ -214,9 +216,9 @@ export default function MesaPage() {
                   <div className="mt-4 rounded-2xl border border-gold/40 bg-[#fff9eb] p-4">
                     <p className="text-sm text-wine/70">Voce esta na</p>
                     <p className="text-3xl font-semibold text-cocoa">Mesa {selected.mesa}</p>
-                    <a href={`/mapa?destaque=mesa-${selected.mesa}`} className="mt-3 inline-flex text-sm font-semibold text-wine hover:underline">
+                    <Link href={`/mapa?destaque=mesa-${selected.mesa}`} className="mt-3 inline-flex text-sm font-semibold text-wine hover:underline">
                       Ver no mapa do salao →
-                    </a>
+                    </Link>
 
                     <MiniMapPreview elementos={mapaElementos} mesaNumber={selected.mesa} />
                   </div>
@@ -245,6 +247,13 @@ export default function MesaPage() {
                 <p className="mt-2">Contato de emergencia: {data?.site?.contato_emergencia || 'consulte a equipe do evento.'}</p>
               </div>
             ) : null}
+
+            <GuestJourney
+              currentPath="/mesa"
+              compact
+              title="Depois de encontrar sua mesa"
+              subtitle="Confira o mapa do salao, o roteiro do dia e o cardapio para seguir pela festa sem se perder."
+            />
           </div>
         </div>
       </main>

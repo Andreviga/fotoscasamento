@@ -1,7 +1,8 @@
 import Head from 'next/head';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import WeddingHeader from '../components/WeddingHeader';
+import WeddingFooter from '../components/WeddingFooter';
+import GuestJourney from '../components/GuestJourney';
 
 const MENU_SECTIONS = [
   {
@@ -112,7 +113,7 @@ export default function CardapioPage() {
         />
       </Head>
 
-      <Header />
+      <WeddingHeader />
 
       <main className="main" id="cardapio">
         <div className="container">
@@ -145,10 +146,19 @@ export default function CardapioPage() {
               </article>
             ))}
           </section>
+
+          <div className="mt-8">
+            <GuestJourney
+              currentPath="/cardapio"
+              compact
+              title="Continue pelo guia da festa"
+              subtitle="Do cardapio voce pode seguir para sua mesa, ver o mapa do salao ou publicar uma foto no mural."
+            />
+          </div>
         </div>
       </main>
 
-      <Footer />
+      <WeddingFooter />
     </>
   );
 }

@@ -4,6 +4,7 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
+import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
 function shareOnWhatsApp() {
@@ -44,23 +45,34 @@ export default function EtiquetaPage() {
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
 
           {!loading && !error ? (
-            <section className="grid gap-4 sm:grid-cols-2">
-              {secoes.map((secao, index) => (
-                <article
-                  key={`${secao.titulo}-${index}`}
-                  className="romantic-panel p-5"
-                  style={{ animation: `cardRise 0.4s ease ${index * 60}ms both` }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/20 text-lg">
-                      {secao.icone || '✨'}
+            <>
+              <section className="grid gap-4 sm:grid-cols-2">
+                {secoes.map((secao, index) => (
+                  <article
+                    key={`${secao.titulo}-${index}`}
+                    className="romantic-panel p-5"
+                    style={{ animation: `cardRise 0.4s ease ${index * 60}ms both` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/20 text-lg">
+                        {secao.icone || '✨'}
+                      </div>
+                      <h2 className="text-xl text-cocoa">{secao.titulo}</h2>
                     </div>
-                    <h2 className="text-xl text-cocoa">{secao.titulo}</h2>
-                  </div>
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-wine/80">{secao.conteudo}</p>
-                </article>
-              ))}
-            </section>
+                    <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-wine/80">{secao.conteudo}</p>
+                  </article>
+                ))}
+              </section>
+
+              <div className="mt-8">
+                <GuestJourney
+                  currentPath="/etiqueta"
+                  compact
+                  title="Guia completo do convidado"
+                  subtitle="Se precisar, siga daqui para o roteiro, localize sua mesa ou veja o mapa do salao com o layout da festa."
+                />
+              </div>
+            </>
           ) : null}
 
           <div className="mt-8 text-center text-sm text-wine/70">

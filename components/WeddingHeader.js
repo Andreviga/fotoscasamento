@@ -18,19 +18,22 @@ export default function WeddingHeader() {
 
   return (
     <header className="site-header">
-      <div className="container site-header__inner" style={{ gap: '0.8rem' }}>
-        <Link href="/" className="site-brand" aria-label="Pagina inicial">
-          {site.nome_noivos || 'Andre & Nathalia'}
-        </Link>
-        <nav className="site-nav" aria-label="Navegacao principal" style={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+      <div className="container site-header__inner">
+        <div className="flex min-w-0 flex-col gap-1">
+          <Link href="/" className="site-brand" aria-label="Pagina inicial">
+            {site.nome_noivos || 'Andre & Nathalia'}
+          </Link>
+          <p className="text-xs uppercase tracking-[0.22em] text-wine/55">
+            {site.data_casamento || '03 de maio de 2026'}
+          </p>
+        </div>
+
+        <nav className="site-nav" aria-label="Navegacao principal">
           {LINKS.map((item) => (
             <Link key={item.href} href={item.href} className="site-nav__link">
               {item.label}
             </Link>
           ))}
-          <Link href="/admin" className="site-nav__link">
-            Admin
-          </Link>
         </nav>
       </div>
     </header>

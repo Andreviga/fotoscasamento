@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -6,7 +7,10 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
+import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
+
+const SALAO_LAYOUT_URL = '/layout-salao.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH';
 
 const TYPE_COLORS = {
   mesa_grande: '#C9A96E',
@@ -326,51 +330,68 @@ export default function MapaPage() {
           <PageTitle
             kicker="Visual"
             title="Mapa do Salao"
-            subtitle="Passe o mouse para ver os elementos e clique nas mesas para detalhes."
+            subtitle="Use o layout real do salao para se orientar e clique nas mesas para ver detalhes."
           />
+
+          <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <p>
+                Este mapa usa o layout do salao como base visual. Se preferir, voce tambem pode abrir o PDF completo em outra aba para ampliar a orientacao.
+              </p>
+              <a href="/layout-salao.pdf" target="_blank" rel="noreferrer" className="btn btn--outline">
+                Abrir layout completo
+              </a>
+            </div>
+          </div>
 
           {loading ? <LoadingSpinner label="Carregando mapa" /> : null}
 
           {!loading ? (
-            <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-              <section
-                ref={mapRef}
-                className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef]"
-                style={{ aspectRatio: '16 / 10' }}
-              >
-                <div className="absolute inset-x-0 bottom-0 h-[21%] bg-[#f4e9d0] opacity-80" />
-                {elementos.map((item) => {
-                  const isSelected = item.id === selectedId;
-                  const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
+            <div className="space-y-5">
+              <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+                <section
+                  ref={mapRef}
+                  className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
+                  style={{ aspectRatio: '16 / 10' }}
+                >
+                  <iframe
+                    title="Layout do salao"
+                    src={SALAO_LAYOUT_URL}
+                    className="absolute inset-0 h-full w-full scale-[1.01] opacity-50 pointer-events-none"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,239,0.2),rgba(255,250,239,0.48))]" />
+                  {elementos.map((item) => {
+                    const isSelected = item.id === selectedId;
+                    const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
 
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      title={item.nome}
-                      onClick={() => setSelectedId(item.id)}
-                      onPointerDown={(event) => startDrag(event, item)}
-                      className={`absolute flex items-center justify-center rounded-md border text-[10px] sm:text-xs font-semibold text-[#2c2416] ${
-                        isSelected ? 'ring-2 ring-wine/70' : ''
-                      }`}
-                      style={{
-                        left: `${item.x}%`,
-                        top: `${item.y}%`,
-                        width: `${item.largura}%`,
-                        height: `${item.altura}%`,
-                        transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
-                        background: color,
-                        borderColor: 'rgba(44, 36, 22, 0.18)',
-                        touchAction: 'none'
-                      }}
-                    >
-                      <span className="pointer-events-none max-w-full truncate px-1">{item.nome}</span>
-                    </button>
-                  );
-                })}
-              </section>
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        title={item.nome}
+                        onClick={() => setSelectedId(item.id)}
+                        onPointerDown={(event) => startDrag(event, item)}
+                        className={`absolute flex items-center justify-center rounded-md border text-[10px] sm:text-xs font-semibold text-[#2c2416] shadow-sm ${
+                          isSelected ? 'ring-2 ring-wine/70' : ''
+                        }`}
+                        style={{
+                          left: `${item.x}%`,
+                          top: `${item.y}%`,
+                          width: `${item.largura}%`,
+                          height: `${item.altura}%`,
+                          transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
+                          background: color,
+                          borderColor: 'rgba(44, 36, 22, 0.18)',
+                          touchAction: 'none'
+                        }}
+                      >
+                        <span className="pointer-events-none max-w-full truncate px-1">{item.nome}</span>
+                      </button>
+                    );
+                  })}
+                </section>
 
-              <aside className="romantic-panel p-4">
+                <aside className="romantic-panel p-4">
                 <h2 className="text-xl text-cocoa">Detalhes</h2>
                 {selected ? (
                   <div className="mt-3 space-y-3 text-sm">
@@ -391,6 +412,12 @@ export default function MapaPage() {
                     ) : (
                       <p className="text-wine/70">Sem convidados mapeados para esta mesa.</p>
                     )}
+
+                    {typeof getMesaNumber(selected) === 'number' ? (
+                      <Link href={`/mesa?q=${encodeURIComponent(selected.nome || `Mesa ${getMesaNumber(selected)}`)}`} className="inline-flex text-sm font-semibold text-wine hover:underline">
+                        Ver busca da mesa relacionada →
+                      </Link>
+                    ) : null}
 
                     {adminEnabled ? (
                       <div className="space-y-2 border-t border-roseDeep/20 pt-3">
@@ -443,7 +470,15 @@ export default function MapaPage() {
                 ) : (
                   <p className="mt-2 text-sm text-wine/70">Selecione um item no mapa.</p>
                 )}
-              </aside>
+                </aside>
+              </div>
+
+              <GuestJourney
+                currentPath="/mapa"
+                compact
+                title="Siga pelo casamento sem perder o fio"
+                subtitle="Do mapa voce pode buscar sua mesa, acompanhar o roteiro do dia e voltar ao Instacasamento quando quiser publicar uma memoria."
+              />
             </div>
           ) : null}
         </div>
