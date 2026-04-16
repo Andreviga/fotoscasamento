@@ -2,14 +2,14 @@ import Link from 'next/link';
 
 export default function Header() {
   const links = [
-    { href: '/', label: 'Inicio' },
+    { href: '/', label: 'Início' },
     { href: '/fotos', label: 'Instacasamento' },
     { href: '/mural', label: 'Mural' },
     { href: '/roteiro', label: 'Roteiro' },
     { href: '/mesa', label: 'Mesa' },
     { href: '/mapa', label: 'Mapa' },
     { href: '/etiqueta', label: 'Etiqueta' },
-    { href: '/cardapio', label: 'Cardapio' },
+    { href: '/cardapio', label: 'Cardápio' },
     { href: '/admin', label: 'Admin' }
   ];
 

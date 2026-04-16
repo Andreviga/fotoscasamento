@@ -129,7 +129,7 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
 
         {!loading && query.trim() && results.length === 0 ? (
           <div className="romantic-panel p-5 text-sm text-cocoa/75">
-            <p>Nome nao encontrado.</p>
+            <p>Nome não encontrado.</p>
             <p className="mt-1">Tente buscar pelo nome do convite ou verifique a grafia.</p>
           </div>
         ) : null}
@@ -137,7 +137,7 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
         {!loading && !query.trim() ? (
           <div className="romantic-panel p-5 text-sm text-cocoa/75">
             <p>Busque pelo seu nome completo</p>
-            <p className="mt-1">ou pelo nome que esta no convite.</p>
+            <p className="mt-1">ou pelo nome que está no convite.</p>
           </div>
         ) : null}
       </div>

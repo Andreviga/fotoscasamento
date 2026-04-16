@@ -41,9 +41,9 @@ export default function EtiquetaPage() {
         <div className="hero-haze" />
         <div className="container relative z-10">
           <PageTitle
-            kicker="Boas praticas"
+            kicker="Boas práticas"
             title="Etiqueta e Comportamento"
-            subtitle="Orientacoes para que todos aproveitem esse dia inesquecivel com leveza e carinho."
+            subtitle="Orientações para que todos aproveitem esse dia inesquecível com leveza e carinho."
           />
 
           <div className="mb-6 flex justify-center">

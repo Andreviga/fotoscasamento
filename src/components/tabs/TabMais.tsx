@@ -18,17 +18,17 @@ type SubTab = 'roteiro' | 'mapa' | 'cardapio' | 'extra';
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '17:00', titulo: 'Chegada e welcome drink',     destaque: false },
-  { horario: '17:30', titulo: 'Abertura do salao',           destaque: false },
+  { horario: '17:30', titulo: 'Abertura do salão',           destaque: false },
   { horario: '18:00', titulo: 'Entrada dos padrinhos',       destaque: true  },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos', destaque: true  },
   { horario: '18:30', titulo: 'Entrada da noiva',            destaque: true  },
-  { horario: '18:35', titulo: 'Cerimonia',                   destaque: true  },
-  { horario: '19:00', titulo: 'Troca de aliancas',           destaque: true  },
+  { horario: '18:35', titulo: 'Cerimônia',                   destaque: true  },
+  { horario: '19:00', titulo: 'Troca de alianças',           destaque: true  },
   { horario: '19:10', titulo: 'Primeiro beijo',              destaque: true  },
-  { horario: '19:15', titulo: 'Fotos com familia',           destaque: false },
+  { horario: '19:15', titulo: 'Fotos com família',           destaque: false },
   { horario: '19:30', titulo: 'Abertura do buffet',          destaque: false },
   { horario: '20:00', titulo: 'Brinde',                      destaque: true  },
-  { horario: '20:30', titulo: 'Pista de danca',              destaque: true  },
+  { horario: '20:30', titulo: 'Pista de dança',              destaque: true  },
   { horario: '21:00', titulo: 'Corte do bolo',               destaque: true  },
   { horario: '21:15', titulo: 'Bouquet da noiva',            destaque: true  },
   { horario: '23:00', titulo: 'Encerramento',                destaque: false },
@@ -55,7 +55,7 @@ function getHorarioAtual(items: RoteiroItem[]): string | null {
 const SUB_TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'roteiro',  label: 'Roteiro',  icon: '🗓' },
   { id: 'mapa',     label: 'Mapa',     icon: '🗺' },
-  { id: 'cardapio', label: 'Cardapio', icon: '🍽' },
+  { id: 'cardapio', label: 'Cardápio', icon: '🍽' },
   { id: 'extra',    label: 'Mais',     icon: '✦'  },
 ];
 
@@ -185,7 +185,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
           {mapaMounted ? (
             <iframe
               src="/mapa"
-              title="Mapa do Salao"
+              title="Mapa do Salão"
               className="w-full flex-1 border-0"
               style={{ height: 'calc(100dvh - 8rem)' }}
             />
@@ -206,7 +206,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
           {cardapioMounted ? (
             <iframe
               src="/cardapio"
-              title="Cardapio"
+              title="Cardápio"
               className="w-full flex-1 border-0"
               style={{ height: 'calc(100dvh - 8rem)' }}
             />
@@ -224,7 +224,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">🎩</span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-cocoa">Etiqueta</p>
-                <p className="text-xs text-wine/65">Traje, horarios e orientacoes</p>
+                <p className="text-xs text-wine/65">Traje, horários e orientações</p>
               </div>
               <span className="text-roseDeep/40">›</span>
             </a>
@@ -245,14 +245,14 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">📋</span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-cocoa">Roteiro completo</p>
-                <p className="text-xs text-wine/65">Versao detalhada em pagina propria</p>
+                <p className="text-xs text-wine/65">Versão detalhada em página própria</p>
               </div>
               <span className="text-roseDeep/40">›</span>
             </a>
             <a href="/cardapio" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">🍽</span>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-cocoa">Cardapio da noite</p>
+                <p className="font-semibold text-cocoa">Cardápio da noite</p>
                 <p className="text-xs text-wine/65">Entradas, pratos e bebidas</p>
               </div>
               <span className="text-roseDeep/40">›</span>
@@ -263,7 +263,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
                 onClick={() => onNavigate('info')}
                 className="w-full rounded-2xl border border-wine/30 bg-wine/5 py-3 text-sm font-semibold text-wine transition-colors active:bg-wine/10"
               >
-                Voltar para a pagina inicial
+                Voltar para a página inicial
               </button>
             </div>
           </div>

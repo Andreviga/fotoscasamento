@@ -6,10 +6,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const CARDAPIO_FALLBACK = {
-  heroTitle: 'Cardápio Digital da Festa',
+  heroTitle: 'Cardápio da Celebração',
   heroSubtitle: 'Uma seleção pensada com carinho para tornar essa noite ainda mais inesquecível.',
   secoes: [
-    { id: 'recepcao', title: 'Recepção', subtitle: '', items: [{ name: 'Welcome drink', description: '' }, { name: 'Can apés de boas-vindas', description: '' }] },
+    { id: 'recepcao', title: 'Recepção', subtitle: 'Boas-vindas', items: [{ name: 'Welcome drink', description: '' }, { name: 'Canapés de boas-vindas', description: '' }] },
     { id: 'jantar', title: 'Jantar', subtitle: '', items: [{ name: 'Buffet completo com opções quentes e frias', description: '' }, { name: 'Opções vegetarianas disponíveis', description: '' }] },
     { id: 'sobremesa', title: 'Sobremesa', subtitle: '', items: [{ name: 'Bolo dos noivos', description: '' }, { name: 'Bem-casados', description: '' }, { name: 'Mesa de doces', description: '' }] },
     { id: 'bebidas', title: 'Bebidas', subtitle: '', items: [{ name: 'Espumante para o brinde', description: '' }, { name: 'Vinhos', description: '' }, { name: 'Sucos naturais', description: '' }, { name: 'Refrigerantes', description: '' }, { name: 'Água', description: '' }] },
@@ -39,38 +39,52 @@ export default function CardapioPage() {
         <div className="hero-haze" />
         <div className="container relative z-10">
           <section className="menu-hero page-section">
-            <div className="section-header">
-              <span className="section-kicker">André & Nathália</span>
-              <h1>{heroTitle}</h1>
-              <p className="section-subtitle">
-                {heroSubtitle}
-              </p>
+            <div className="menu-hero--wedding">
+              <div className="menu-hero__ornament" aria-hidden="true">✿</div>
+              <p className="menu-hero__date">03 de maio de 2026</p>
+              <div className="section-header">
+                <span className="section-kicker">André & Nathália</span>
+                <h1>{heroTitle}</h1>
+                <p className="section-subtitle">
+                  {heroSubtitle}
+                </p>
+              </div>
+              <p className="menu-hero__signature">Com carinho, preparado para a nossa noite</p>
             </div>
           </section>
 
-          {loading ? <LoadingSpinner label="Carregando cardapio" /> : null}
+          {loading ? <LoadingSpinner label="Carregando cardápio" /> : null}
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
 
           {!loading && !error ? (
             <section className="menu-sections page-section">
-              {menuSections.map((section) => (
-                <article key={section.id || section.title} className="menu-card">
+              {menuSections.map((section, index) => (
+                <article key={section.id || section.title} className="menu-card menu-card--wedding">
                   <header className="menu-card__header">
+                    <p className="menu-card__course">Etapa {String(index + 1).padStart(2, '0')}</p>
                     <h2>{section.title}</h2>
-                    <p>{section.subtitle}</p>
+                    {section.subtitle ? <p>{section.subtitle}</p> : null}
                   </header>
 
                   <ul className="menu-list">
                     {(section.items || []).map((item) => (
                       <li key={`${section.id || section.title}-${item.name}`} className="menu-list__item">
                         <h3>{item.name}</h3>
-                        <p>{item.description}</p>
+                        {item.description ? <p>{item.description}</p> : null}
                       </li>
                     ))}
                   </ul>
                 </article>
               ))}
             </section>
+          ) : null}
+
+          {!loading ? (
+            <div className="menu-note">
+              <p>
+                Em caso de restrições alimentares, avise a equipe de recepção.
+              </p>
+            </div>
           ) : null}
         </div>
       </main>

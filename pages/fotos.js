@@ -395,8 +395,8 @@ export default function FotosPage() {
         <div className="container relative z-10">
           <PageTitle
             kicker="Instacasamento"
-            title="Fotos e Videos com Filtros"
-            subtitle="Tire foto ou grave video, escolha um filtro e publique direto no feed da festa."
+            title="Fotos e Vídeos com Filtros"
+            subtitle="Tire foto ou grave vídeo, escolha um filtro e publique direto no feed da festa."
           />
 
           <div className="step-indicator">

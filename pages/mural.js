@@ -179,7 +179,7 @@ export default function MuralPage() {
           <PageTitle
             kicker="Mural"
             title="Mural ao Vivo"
-            subtitle="Ideal para o telao: cada nova midia publicada aparece automaticamente para todos."
+            subtitle="Ideal para o telão: cada nova mídia publicada aparece automaticamente para todos."
           />
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

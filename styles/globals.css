@@ -465,6 +465,44 @@
   margin-bottom: 1.4rem;
 }
 
+.menu-hero--wedding {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201, 179, 126, 0.42);
+  border-radius: 1.4rem;
+  background:
+    radial-gradient(circle at 10% 15%, rgba(201, 179, 126, 0.18), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(111, 132, 117, 0.14), transparent 28%),
+    linear-gradient(180deg, #fffdf7 0%, #fff9ee 100%);
+  box-shadow: 0 20px 42px rgba(34, 53, 44, 0.09);
+  padding: 1.2rem 1rem 1rem;
+}
+
+.menu-hero__ornament {
+  text-align: center;
+  color: var(--color-gold);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.menu-hero__date {
+  margin: 0.45rem 0 0;
+  text-align: center;
+  color: rgba(34, 53, 44, 0.68);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+}
+
+.menu-hero__signature {
+  margin: 0.8rem auto 0;
+  text-align: center;
+  color: rgba(34, 53, 44, 0.74);
+  font-size: 0.9rem;
+  max-width: 520px;
+}
+
 .menu-sections {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -477,6 +515,21 @@
   border-radius: 1.2rem;
   padding: 1.1rem;
   box-shadow: 0 14px 28px rgba(34, 53, 44, 0.08);
+}
+
+.menu-card--wedding {
+  border-color: rgba(201, 179, 126, 0.35);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 238, 0.96) 100%);
+}
+
+.menu-card__course {
+  margin: 0 0 0.25rem;
+  color: rgba(15, 79, 61, 0.74);
+  font-size: 0.69rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
 }
 
 .menu-card__header h2 {
@@ -511,7 +564,7 @@
 
 .menu-list__item h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   color: var(--color-cocoa);
 }
 
@@ -520,6 +573,14 @@
   font-size: 0.9rem;
   color: rgba(34, 53, 44, 0.76);
   line-height: 1.45;
+}
+
+.menu-note {
+  margin: 1.1rem auto 0;
+  max-width: 760px;
+  text-align: center;
+  color: rgba(34, 53, 44, 0.68);
+  font-size: 0.87rem;
 }
 
 @media (max-width: 980px) {

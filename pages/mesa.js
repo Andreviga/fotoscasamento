@@ -86,7 +86,7 @@ export default function MesaPage() {
   const emptyMessage = useMemo(() => {
     if (!debounced.trim() || loading) return '';
     if (results.length > 0) return '';
-    return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
+    return 'Não encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
   }, [debounced, loading, results.length]);
 
   return (
@@ -101,7 +101,7 @@ export default function MesaPage() {
           <PageTitle
             kicker="Descubra sua mesa"
             title="Busca de Mesa"
-            subtitle="Digite seu nome para encontrar rapidamente onde voce vai sentar."
+            subtitle="Digite seu nome para encontrar rapidamente onde você vai sentar."
           />
 
           <section className="mx-auto max-w-2xl romantic-panel p-5 sm:p-7">
@@ -126,10 +126,10 @@ export default function MesaPage() {
             {selected ? (
               <article className="romantic-panel p-5 sm:p-7">
                 <div className="text-3xl">🎉</div>
-                <h2 className="mt-2 text-2xl text-cocoa">Ola, {selected.nomeOriginal}!</h2>
+                <h2 className="mt-2 text-2xl text-cocoa">Olá, {selected.nomeOriginal}!</h2>
                 {typeof selected.mesa === 'number' ? (
                   <div className="mt-4 rounded-2xl border border-gold/40 bg-[#fff9eb] p-4">
-                    <p className="text-sm text-wine/70">Voce esta na</p>
+                    <p className="text-sm text-wine/70">Você está na</p>
                     <p className="text-3xl font-semibold text-cocoa">Mesa {selected.mesa}</p>
 
                     <div className="mt-4 overflow-hidden rounded-2xl border border-roseDeep/20 bg-white shadow-sm">
@@ -148,7 +148,7 @@ export default function MesaPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="mt-3 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
+                  <p className="mt-3 text-sm text-wine/80">Sua mesa ainda não foi definida. Procure a recepção ao chegar.</p>
                 )}
 
                 <p className="mt-3 text-sm text-wine/80">Grupo: {selected.grupo || selected.nomeConvite || '-'}</p>
@@ -169,7 +169,7 @@ export default function MesaPage() {
             {emptyMessage ? (
               <div className="romantic-panel p-5 text-sm text-wine/80">
                 <p>{emptyMessage}</p>
-                <p className="mt-2">Contato de emergencia: {data?.site?.contato_emergencia || 'consulte a equipe do evento.'}</p>
+                <p className="mt-2">Contato de emergência: {data?.site?.contato_emergencia || 'consulte a equipe do evento.'}</p>
               </div>
             ) : null}
 

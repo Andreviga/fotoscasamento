@@ -91,7 +91,7 @@ export default function RoteiroPage() {
           <PageTitle
             kicker="Cronograma"
             title="Roteiro do Casamento"
-            subtitle="Acompanhe cada momento do nosso grande dia em ordem cronologica."
+            subtitle="Acompanhe cada momento do nosso grande dia em ordem cronológica."
           />
 
           {loading ? <LoadingSpinner label="Carregando roteiro" /> : null}

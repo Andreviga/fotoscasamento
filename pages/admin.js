@@ -9,10 +9,10 @@ import useConfig from '../lib/useConfig';
 
 const TABS = [
   { id: 'site', label: 'Site' },
-  { id: 'cardapio', label: 'Cardapio' },
+  { id: 'cardapio', label: 'Cardápio' },
   { id: 'roteiro', label: 'Roteiro' },
   { id: 'etiqueta', label: 'Etiqueta' },
-  { id: 'aparencia', label: 'Aparencia' },
+  { id: 'aparencia', label: 'Aparência' },
   { id: 'convidados', label: 'Convidados' },
   { id: 'mapa', label: 'Mapa' }
 ];
@@ -121,12 +121,12 @@ export default function AdminPage() {
 
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || 'Senha invalida');
+        throw new Error(payload.error || 'Senha inválida');
       }
 
       localStorage.setItem('adminToken', nextToken);
       setToken(nextToken);
-      setStatusMessage('Sessao iniciada com sucesso.');
+      setStatusMessage('Sessão iniciada com sucesso.');
     } catch (requestError) {
       setAuthError(requestError.message);
     }
@@ -135,7 +135,7 @@ export default function AdminPage() {
   function logout() {
     localStorage.removeItem('adminToken');
     setToken('');
-    setStatusMessage('Sessao encerrada.');
+    setStatusMessage('Sessão encerrada.');
   }
 
   async function saveConfig(docId, payload) {
@@ -157,7 +157,7 @@ export default function AdminPage() {
         throw new Error(body.error || 'Falha ao salvar');
       }
 
-      setStatusMessage(`Configuracao ${docId} salva.`);
+      setStatusMessage(`Configuração ${docId} salva.`);
     } catch (requestError) {
       setStatusMessage(requestError.message);
     } finally {
@@ -167,7 +167,7 @@ export default function AdminPage() {
 
   async function runConfigSeed(force = false) {
     if (!token) {
-      setStatusMessage('Sessao admin ausente para inicializar configuracoes.');
+      setStatusMessage('Sessão admin ausente para inicializar configurações.');
       return;
     }
 
@@ -186,7 +186,7 @@ export default function AdminPage() {
 
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || 'Falha ao inicializar configuracoes');
+        throw new Error(payload.error || 'Falha ao inicializar configurações');
       }
 
       const summary = [
@@ -215,7 +215,7 @@ export default function AdminPage() {
       const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
       if (!cloudName || !uploadPreset) {
-        throw new Error('Cloudinary nao configurado');
+        throw new Error('Cloudinary não configurado');
       }
 
       const formData = new FormData();
@@ -411,17 +411,17 @@ export default function AdminPage() {
     if (activeTab === 'site') {
       return (
         <section className="romantic-panel p-5 space-y-3">
-          <h2 className="text-2xl text-cocoa">Conteudo principal</h2>
+          <h2 className="text-2xl text-cocoa">Conteúdo principal</h2>
           {[
-            ['titulo_site', 'Titulo do site'],
+            ['titulo_site', 'Título do site'],
             ['nome_noivos', 'Nome dos noivos'],
             ['data_casamento', 'Data do casamento'],
-            ['local_cerimonia', 'Local da cerimonia'],
-            ['local_recepcao', 'Local da recepcao'],
+            ['local_cerimonia', 'Local da cerimônia'],
+            ['local_recepcao', 'Local da recepção'],
             ['mensagem_boas_vindas', 'Mensagem de boas-vindas'],
             ['hashtag', 'Hashtag'],
             ['pix_key', 'Chave PIX'],
-            ['contato_emergencia', 'Contato de emergencia']
+            ['contato_emergencia', 'Contato de emergência']
           ].map(([field, label]) => (
             <label className="block" key={field}>
               <span className="form-label">{label}</span>
@@ -443,25 +443,25 @@ export default function AdminPage() {
       return (
         <section className="space-y-3">
           <div className="romantic-panel p-5 space-y-3">
-            <h2 className="text-2xl text-cocoa">Editor de cardapio</h2>
+            <h2 className="text-2xl text-cocoa">Editor de cardápio</h2>
             <label className="block">
-              <span className="form-label">Titulo principal</span>
+              <span className="form-label">Título principal</span>
               <input className="input-elegant" value={cardapio.heroTitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroTitle: e.target.value }))} />
             </label>
             <label className="block">
-              <span className="form-label">Subtitulo principal</span>
+              <span className="form-label">Subtítulo principal</span>
               <textarea className="input-elegant" rows={3} value={cardapio.heroSubtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, heroSubtitle: e.target.value }))} />
             </label>
-            <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: [...prev.secoes, { ...EMPTY_MENU_SECTION, id: `secao-${Date.now()}` }] }))}>Adicionar secao</button>
+            <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: [...prev.secoes, { ...EMPTY_MENU_SECTION, id: `secao-${Date.now()}` }] }))}>Adicionar seção</button>
           </div>
 
           {(cardapio.secoes || []).map((section, sectionIndex) => (
             <article key={section.id || sectionIndex} className="romantic-panel p-4 space-y-3">
               <div className="grid gap-2 sm:grid-cols-2">
-                <input className="input-elegant" placeholder="Titulo da secao" value={section.title || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, title: e.target.value } : item)) }))} />
-                <input className="input-elegant" placeholder="ID da secao" value={section.id || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, id: e.target.value } : item)) }))} />
+                <input className="input-elegant" placeholder="Título da seção" value={section.title || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, title: e.target.value } : item)) }))} />
+                <input className="input-elegant" placeholder="ID da seção" value={section.id || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, id: e.target.value } : item)) }))} />
               </div>
-              <textarea className="input-elegant" rows={2} placeholder="Subtitulo da secao" value={section.subtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, subtitle: e.target.value } : item)) }))} />
+              <textarea className="input-elegant" rows={2} placeholder="Subtítulo da seção" value={section.subtitle || ''} onChange={(e) => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => (index === sectionIndex ? { ...item, subtitle: e.target.value } : item)) }))} />
 
               <div className="space-y-2">
                 {(section.items || []).map((item, itemIndex) => (
@@ -479,15 +479,15 @@ export default function AdminPage() {
 
               <div className="flex flex-wrap gap-2">
                 <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.map((item, index) => index === sectionIndex ? { ...item, items: [...(item.items || []), { ...EMPTY_MENU_ITEM }] } : item) }))}>Adicionar item</button>
-                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, -1)}>Subir secao</button>
-                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, 1)}>Descer secao</button>
-                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.filter((_, index) => index !== sectionIndex) }))}>Remover secao</button>
+                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, -1)}>Subir seção</button>
+                <button className="btn btn--outline" onClick={() => moveCardapioSection(sectionIndex, 1)}>Descer seção</button>
+                <button className="btn btn--outline" onClick={() => setCardapio((prev) => ({ ...prev, secoes: prev.secoes.filter((_, index) => index !== sectionIndex) }))}>Remover seção</button>
               </div>
             </article>
           ))}
 
           <button className="btn btn--primary" onClick={() => saveConfig('cardapio', cardapio)} disabled={savingDoc === 'cardapio'}>
-            {savingDoc === 'cardapio' ? 'Salvando...' : 'Salvar Cardapio'}
+            {savingDoc === 'cardapio' ? 'Salvando...' : 'Salvar Cardápio'}
           </button>
         </section>
       );
@@ -503,14 +503,14 @@ export default function AdminPage() {
 
           {roteiro.map((item, index) => (
             <article key={index} className="romantic-panel p-4 grid gap-2 sm:grid-cols-2">
-              <input className="input-elegant" placeholder="Horario" value={item.horario || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, horario: e.target.value } : x))} />
-              <input className="input-elegant" placeholder="Titulo" value={item.titulo || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, titulo: e.target.value } : x))} />
-              <input className="input-elegant" placeholder="Icone" value={item.icone || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, icone: e.target.value } : x))} />
+              <input className="input-elegant" placeholder="Horário" value={item.horario || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, horario: e.target.value } : x))} />
+              <input className="input-elegant" placeholder="Título" value={item.titulo || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, titulo: e.target.value } : x))} />
+              <input className="input-elegant" placeholder="Ícone" value={item.icone || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, icone: e.target.value } : x))} />
               <label className="flex items-center gap-2 text-sm text-wine">
                 <input type="checkbox" checked={Boolean(item.destaque)} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, destaque: e.target.checked } : x))} />
                 Destaque
               </label>
-              <textarea className="input-elegant sm:col-span-2" rows={2} placeholder="Descricao" value={item.descricao || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, descricao: e.target.value } : x))} />
+              <textarea className="input-elegant sm:col-span-2" rows={2} placeholder="Descrição" value={item.descricao || ''} onChange={(e) => setRoteiro((prev) => prev.map((x, i) => i === index ? { ...x, descricao: e.target.value } : x))} />
               <div className="sm:col-span-2 flex flex-wrap gap-2">
                 <button className="btn btn--outline" onClick={() => moveRoteiro(index, -1)}>Subir</button>
                 <button className="btn btn--outline" onClick={() => moveRoteiro(index, 1)}>Descer</button>

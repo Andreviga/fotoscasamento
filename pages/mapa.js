@@ -365,7 +365,7 @@ export default function MapaPage() {
           <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <p>
-                Este mapa usa o layout do salao como base visual. Se preferir, voce tambem pode abrir o PDF completo em outra aba para ampliar a orientacao.
+                Este mapa usa o layout do salão como base visual. Se preferir, você também pode abrir o PDF completo em outra aba para ampliar a orientação.
               </p>
               <a href={layoutSettings.pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
                 Abrir layout em nova aba (PDF) →
@@ -386,7 +386,7 @@ export default function MapaPage() {
                 >
                   {layoutSettings.showBackground ? (
                     <iframe
-                      title="Layout do salao"
+                      title="Layout do salão"
                       src={getSalaoLayoutUrl(layoutSettings.pdfUrl)}
                       className="absolute inset-0 h-full w-full scale-[1.01] pointer-events-none"
                       style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
@@ -489,7 +489,7 @@ export default function MapaPage() {
                           <p className="text-sm font-semibold text-cocoa">Base do PDF</p>
                           <label className="flex items-center gap-2 text-sm text-wine">
                             <input type="checkbox" checked={Boolean(layoutSettings.showBackground)} onChange={(e) => setLayoutSettings((prev) => ({ ...prev, showBackground: e.target.checked }))} />
-                            Mostrar PDF do salao no fundo
+                            Mostrar PDF do salão no fundo
                           </label>
                           <label className="block">
                             <span className="form-label">Opacidade do PDF</span>
@@ -566,7 +566,7 @@ export default function MapaPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-xs text-wine/60">Modo publico. Para editar, acesse /mapa?admin=true com sessao admin ativa.</p>
+                      <p className="text-xs text-wine/60">Modo público. Para editar, acesse /mapa?admin=true com sessão admin ativa.</p>
                     )}
 
                     {message ? <p className="text-xs text-wine/80">{message}</p> : null}

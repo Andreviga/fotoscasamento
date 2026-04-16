@@ -31,11 +31,11 @@ const TARGET_DATE = '2026-05-03T17:00:00-03:00';
 
 const FALLBACK_ETIQUETA: EtiquetteItem[] = [
   { icon: '👔', title: 'Traje', content: 'Esporte fino. Por favor, evite branco ou creme.' },
-  { icon: '⏰', title: 'Horarios', content: 'Festa: 17h · Cerimonia: 18h. Chegue 20min antes.' },
-  { icon: '🔕', title: 'Cerimonia', content: 'Celular no silencioso. Aguarde a noiva entrar antes de sentar. Nao passe na frente do fotografo.' },
-  { icon: '📷', title: 'Fotos', content: 'Use #andreanathalia2026 nas redes. O photobooth esta disponivel no app.' },
-  { icon: '🎁', title: 'Presente', content: 'Sua presenca e o nosso presente. Se quiser nos presentear, consulte a lista.' },
-  { icon: '👶', title: 'Criancas', content: '' },
+  { icon: '⏰', title: 'Horários', content: 'Festa: 17h · Cerimônia: 18h. Chegue 20min antes.' },
+  { icon: '🔕', title: 'Cerimônia', content: 'Celular no silencioso. Aguarde a noiva entrar antes de sentar. Não passe na frente do fotógrafo.' },
+  { icon: '📷', title: 'Fotos', content: 'Use #andreanathalia2026 nas redes. O photobooth está disponível no app.' },
+  { icon: '🎁', title: 'Presente', content: 'Sua presença é o nosso presente. Se quiser nos presentear, consulte a lista.' },
+  { icon: '👶', title: 'Crianças', content: '' },
   { icon: '🅿️', title: 'Estacionamento', content: '' }
 ];
 
@@ -117,7 +117,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
       try {
         const response = await fetch('/api/getConfig?docs=etiqueta,roteiro', { cache: 'no-store' });
         if (!response.ok) {
-          throw new Error('Config indisponivel');
+          throw new Error('Config indisponível');
         }
 
         const payload = await response.json();
@@ -170,13 +170,13 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-gold text-xl tracking-[0.12em] text-gold sm:h-20 sm:w-20 sm:text-2xl">
             A&amp;N
           </div>
-          <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl">Andre &amp; Nathalia</h1>
+          <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl">André &amp; Nathália</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.3em] text-roseDeep/75">3 de maio de 2026</p>
           <div className="mx-auto mt-3 h-[1px] w-40 bg-gold/55" />
 
           <div aria-live="polite" className="mx-auto mt-4 max-w-xl rounded-2xl border border-roseDeep/20 bg-white/75 px-3 py-3">
             {timeLeft.started ? (
-              <p className="font-serifRomance text-2xl text-wine">A festa comecou! 🎉</p>
+              <p className="font-serifRomance text-2xl text-wine">A festa começou! 🎉</p>
             ) : (
               <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {[
@@ -225,7 +225,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             </div>
           ) : (
             <>
-              <h2 className="text-2xl text-cocoa">Proximos momentos</h2>
+              <h2 className="text-2xl text-cocoa">Próximos momentos</h2>
               <div className="mt-3 space-y-3">
                 {upcomingRoteiro.map((item, index) => (
                   <div key={`${item.horario || 'hora'}-${index}`} className="grid grid-cols-[64px_18px_1fr] items-start gap-2">
@@ -237,7 +237,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
                     <p className="text-sm text-cocoa">{item.titulo || 'Momento especial'}</p>
                   </div>
                 ))}
-                {upcomingRoteiro.length === 0 ? <p className="text-sm text-cocoa/70">Roteiro sera exibido aqui automaticamente.</p> : null}
+                {upcomingRoteiro.length === 0 ? <p className="text-sm text-cocoa/70">Roteiro será exibido aqui automaticamente.</p> : null}
               </div>
               <button type="button" onClick={() => onNavigate('mais')} className="mt-3 text-sm font-semibold text-wine">
                 Ver roteiro completo →

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 const MAIN_LINKS = [
-  { href: '/', label: 'Inicio' },
+  { href: '/', label: 'Início' },
   { href: '/mesa', label: 'Mesa' },
   { href: '/fotos', label: 'Fotos' }
 ];
@@ -26,7 +26,7 @@ export default function MobileTabBar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-roseDeep/20 bg-ivory/95 pb-safe backdrop-blur sm:hidden" aria-label="Navegacao rapida mobile">
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-roseDeep/20 bg-ivory/95 pb-safe backdrop-blur sm:hidden" aria-label="Navegação rápida mobile">
         <div className="mx-auto grid h-16 max-w-2xl grid-cols-4">
           {MAIN_LINKS.map((item) => (
             <Link
