@@ -7,7 +7,6 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
-import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
 const DEFAULT_LAYOUT_SETTINGS = {
@@ -559,12 +558,6 @@ export default function MapaPage() {
                 </aside>
               </div>
 
-              <GuestJourney
-                currentPath="/mapa"
-                compact
-                title="Siga pelo casamento sem perder o fio"
-                subtitle="Do mapa voce pode buscar sua mesa, acompanhar o roteiro do dia e voltar ao Instacasamento quando quiser publicar uma memoria."
-              />
             </div>
           ) : null}
         </div>

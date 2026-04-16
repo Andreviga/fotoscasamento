@@ -1,20 +1,27 @@
 import '../styles/globals.css';
-import { Lato, Playfair_Display } from 'next/font/google';
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 
-const titleFont = Playfair_Display({
+const titleFont = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-wedding-title'
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-romance'
 });
 
-const bodyFont = Lato({
+const bodyFont = DM_Sans({
   subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-wedding-body'
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-clean'
 });
 
 export default function App({ Component, pageProps }) {
   return (
-    <div className={`${titleFont.variable} ${bodyFont.variable}`}>
+    <div
+      className={`${titleFont.variable} ${bodyFont.variable}`}
+      style={{
+        '--font-wedding-title': 'var(--font-romance)',
+        '--font-wedding-body': 'var(--font-clean)'
+      }}
+    >
       <Component {...pageProps} />
     </div>
   );
