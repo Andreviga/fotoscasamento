@@ -10,13 +10,17 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const DEFAULT_LAYOUT_SETTINGS = {
-  pdfUrl: '/layout-salao.pdf',
+  backgroundUrl: '/layout-salao.png',
   showBackground: true,
   opacity: 0.5
 };
 
-function getSalaoLayoutUrl(pdfUrl) {
-  return `${pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+function normalizeLayoutSettings(layout) {
+  return {
+    ...DEFAULT_LAYOUT_SETTINGS,
+    ...(layout || {}),
+    backgroundUrl: layout?.backgroundUrl || DEFAULT_LAYOUT_SETTINGS.backgroundUrl
+  };
 }
 
 const TYPE_COLORS = {
@@ -146,7 +150,7 @@ export default function MapaPage() {
     if (Array.isArray(configElements) && configElements.length > 0) {
       setElementos(configElements);
       setSelectedId(configElements[0].id);
-      setLayoutSettings({ ...DEFAULT_LAYOUT_SETTINGS, ...(configLayout || {}) });
+      setLayoutSettings(normalizeLayoutSettings(configLayout));
       return;
     }
 
@@ -154,7 +158,7 @@ export default function MapaPage() {
       const defaults = makeDefaultMapElementos();
       setElementos(defaults);
       setSelectedId(defaults[0].id);
-      setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
+      setLayoutSettings(normalizeLayoutSettings());
     }
   }, [data, loading]);
 
@@ -336,7 +340,7 @@ export default function MapaPage() {
     const defaults = makeDefaultMapElementos();
     setElementos(defaults);
     setSelectedId(defaults[0].id);
-    setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
+    setLayoutSettings(normalizeLayoutSettings());
   }
 
   function nudgeSelected(dx, dy) {
@@ -363,14 +367,9 @@ export default function MapaPage() {
           />
 
           <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <p>
-                Este mapa usa o layout do salão como base visual. Se preferir, você também pode abrir o PDF completo em outra aba para ampliar a orientação.
-              </p>
-              <a href={layoutSettings.pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
-                Abrir layout em nova aba (PDF) →
-              </a>
-            </div>
+            <p>
+              Este mapa usa a imagem do layout do salão como base visual para facilitar o posicionamento das mesas e a sua orientação.
+            </p>
             <p className="mt-2 text-xs text-wine/60">Dica: use dois dedos para dar zoom no mapa.</p>
           </div>
 
@@ -385,10 +384,10 @@ export default function MapaPage() {
                   style={{ aspectRatio: '16 / 12', minHeight: '520px' }}
                 >
                   {layoutSettings.showBackground ? (
-                    <iframe
-                      title="Layout do salão"
-                      src={getSalaoLayoutUrl(layoutSettings.pdfUrl)}
-                      className="absolute inset-0 h-full w-full pointer-events-none"
+                    <img
+                      alt="Layout do salão"
+                      src={layoutSettings.backgroundUrl || DEFAULT_LAYOUT_SETTINGS.backgroundUrl}
+                      className="absolute inset-0 h-full w-full pointer-events-none object-cover"
                       style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
                     />
                   ) : null}
@@ -486,13 +485,13 @@ export default function MapaPage() {
                     {adminEnabled ? (
                       <div className="space-y-3 border-t border-roseDeep/20 pt-3">
                         <div className="rounded-2xl border border-roseDeep/15 bg-white/70 p-3 space-y-2">
-                          <p className="text-sm font-semibold text-cocoa">Base do PDF</p>
+                          <p className="text-sm font-semibold text-cocoa">Base do layout</p>
                           <label className="flex items-center gap-2 text-sm text-wine">
                             <input type="checkbox" checked={Boolean(layoutSettings.showBackground)} onChange={(e) => setLayoutSettings((prev) => ({ ...prev, showBackground: e.target.checked }))} />
-                            Mostrar PDF do salão no fundo
+                            Mostrar imagem do salão no fundo
                           </label>
                           <label className="block">
-                            <span className="form-label">Opacidade do PDF</span>
+                            <span className="form-label">Opacidade da imagem</span>
                             <input type="range" min="0" max="0.9" step="0.05" value={layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity} onChange={(e) => setLayoutSettings((prev) => ({ ...prev, opacity: Number(e.target.value) }))} className="w-full" />
                             <p className="mt-1 text-xs text-wine/60">Atual: {Math.round(Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) * 100)}%</p>
                           </label>
