@@ -1,0 +1,22 @@
+[
+  { "id": "g1", "title": "Cota Lua de Mel", "price": 150, "active": true },
+  { "id": "g2", "title": "Jantar Especial", "price": 250, "active": true },
+  { "id": "g3", "title": "Ajuda com a Casa Nova", "price": 300, "active": true },
+  { "id": "g4", "title": "Passeio Romântico", "price": 180, "active": true },
+  { "id": "g5", "title": "Café da Manhã Especial", "price": 120, "active": true },
+  { "id": "g6", "title": "Brinde para a Casa Nova", "price": 90, "active": true },
+  { "id": "g7", "title": "Kit Vinho & Queijos", "price": 220, "active": true },
+  { "id": "g8", "title": "Noite de Cinema em Casa", "price": 140, "active": true },
+  { "id": "g9", "title": "Ajuda com a Reforma", "price": 350, "active": true },
+  { "id": "g10", "title": "Experiência Gastronômica", "price": 280, "active": true },
+  { "id": "g11", "title": "Day Spa para o Casal", "price": 400, "active": true },
+  { "id": "g12", "title": "Aula de Culinária a Dois", "price": 260, "active": true },
+  { "id": "g13", "title": "Assinatura de Streaming (3 meses)", "price": 150, "active": true },
+  { "id": "g14", "title": "Jardim na Varanda", "price": 110, "active": true },
+  { "id": "g15", "title": "Kit Café Gourmet", "price": 130, "active": true },
+  { "id": "g16", "title": "Cota Pôr do Sol", "price": 160, "active": true },
+  { "id": "g17", "title": "Álbum de Fotos do Casamento", "price": 200, "active": true },
+  { "id": "g18", "title": "Cota Passeio de Barco", "price": 320, "active": true },
+  { "id": "g19", "title": "Cota Massagem Relaxante", "price": 190, "active": true },
+  { "id": "g20", "title": "Contribuição Livre", "price": 100, "active": true }
+]

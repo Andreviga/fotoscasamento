@@ -33,7 +33,7 @@ const JOURNEY_LINKS = [
   {
     href: '/mapa',
     label: 'Mapa',
-    title: 'Mapa do salao',
+    title: 'Mapa do Salão',
     sublabel: 'Orientacao no espaco',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -43,8 +43,8 @@ const JOURNEY_LINKS = [
   },
   {
     href: '/cardapio',
-    label: 'Cardapio',
-    title: 'Cardapio digital',
+    label: 'Cardápio',
+    title: 'Cardápio digital',
     sublabel: 'Pratos e bebidas',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">

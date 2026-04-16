@@ -5,7 +5,6 @@ import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
-import GuestJourney from '../components/GuestJourney';
 import PageTitle from '../components/PageTitle';
 import { firebaseDb } from '@/lib/firebaseClient';
 
@@ -167,7 +166,7 @@ export default function MuralPage() {
   return (
     <>
       <Head>
-        <title>Mural ao Vivo ✿ André & Nathália</title>
+        <title>Mural ao Vivo ✿ — André & Nathália</title>
         <meta name="description" content="Mural ao vivo com as fotos dos convidados." />
       </Head>
 
@@ -232,14 +231,6 @@ export default function MuralPage() {
             </div>
           )}
 
-          <div className="mt-8">
-            <GuestJourney
-              currentPath="/mural"
-              compact
-              title="Continue a acompanhar a festa"
-              subtitle="Volte ao Instacasamento para publicar outra memoria, confira sua mesa ou use o mapa do salao para se orientar no evento."
-            />
-          </div>
         </div>
       </main>
 

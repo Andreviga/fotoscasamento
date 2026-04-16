@@ -9,7 +9,6 @@ import {
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
-import GuestJourney from '../components/GuestJourney';
 import PageTitle from '../components/PageTitle';
 import { firebaseDb } from '../lib/firebaseClient';
 
@@ -382,7 +381,7 @@ export default function FotosPage() {
   return (
     <>
       <Head>
-        <title>Instacasamento ✿ André & Nathália</title>
+        <title>Instacasamento ✿ — André & Nathália</title>
         <meta
           name="description"
           content="Instacasamento com foto e vídeo, filtros divertidos e mural em tempo real para o casamento."
@@ -627,15 +626,6 @@ export default function FotosPage() {
               </div>
             )}
           </section>
-
-          <div className="mt-8">
-            <GuestJourney
-              currentPath="/fotos"
-              compact
-              title="Depois da foto, siga por aqui"
-              subtitle="Publique no mural, consulte sua mesa e use o mapa do salao para se localizar durante a festa."
-            />
-          </div>
         </div>
       </main>
 

@@ -5,16 +5,51 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
-import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
-function TimelineItem({ item, index }) {
+const ROTEIRO_FALLBACK = [
+  { horario: '17:00', titulo: 'Chegada e welcome drink',      descricao: 'Recepção na varanda com drinks de boas-vindas', destaque: false },
+  { horario: '17:30', titulo: 'Abertura do salão',            descricao: 'Convidados são convidados a se acomodar',       destaque: false },
+  { horario: '18:00', titulo: 'Entrada dos padrinhos',        descricao: 'Cortejo ao som da trilha escolhida',            destaque: true  },
+  { horario: '18:15', titulo: 'Entrada dos pais dos noivos',  descricao: 'Momento especial com a família',                destaque: true  },
+  { horario: '18:30', titulo: 'Entrada da noiva',             descricao: 'O grande momento — Nathália chega ao altar',    destaque: true  },
+  { horario: '18:35', titulo: 'Cerimônia',                   descricao: 'Celebração do casamento',                      destaque: true  },
+  { horario: '19:00', titulo: 'Troca de alianças',           descricao: 'O momento mais aguardado',                     destaque: true  },
+  { horario: '19:10', titulo: 'Primeiro beijo',               descricao: 'André & Nathália, agora casados',              destaque: true  },
+  { horario: '19:15', titulo: 'Fotos com família',            descricao: 'Sessão de fotos com família e padrinhos',      destaque: false },
+  { horario: '19:30', titulo: 'Abertura do buffet',           descricao: 'Convidados são convidados a servir-se',        destaque: false },
+  { horario: '20:00', titulo: 'Brinde',                       descricao: 'Discurso dos padrinhos e espumante',           destaque: true  },
+  { horario: '20:30', titulo: 'Pista de dança',               descricao: 'DJ/Banda dá início à festa',                  destaque: true  },
+  { horario: '21:00', titulo: 'Corte do bolo',               descricao: 'Hora do bolo com os noivos',                  destaque: true  },
+  { horario: '21:15', titulo: 'Bouquet da noiva',             descricao: 'Arremesso do buquê',                          destaque: true  },
+  { horario: '23:00', titulo: 'Encerramento',                 descricao: 'Últimas músicas e despedida',                 destaque: false },
+];
+
+const DIA_FESTA = new Date('2026-05-03');
+
+function getItemAtual(items) {
+  const agora = new Date();
+  if (agora < DIA_FESTA) return null;
+  let current = null;
+  for (const item of items) {
+    const [h, m] = (item.horario || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) continue;
+    const t = new Date(DIA_FESTA);
+    t.setHours(h, m, 0);
+    if (t <= agora) current = item.horario;
+  }
+  return current;
+}
+
+function TimelineItem({ item, index, isAtual }) {
   const isHighlight = Boolean(item?.destaque);
 
   return (
     <article
       className={`relative rounded-2xl border p-4 sm:p-5 shadow-sm ${
-        isHighlight
+        isAtual
+          ? 'border-wine/60 bg-wine/5 ring-2 ring-wine/20'
+          : isHighlight
           ? 'border-gold/40 bg-[#fff9eb]'
           : 'border-roseDeep/20 bg-white/85'
       }`}
@@ -39,13 +74,15 @@ export default function RoteiroPage() {
 
   const items = useMemo(() => {
     const raw = data?.roteiro?.itens;
-    return Array.isArray(raw) ? raw : [];
+    return Array.isArray(raw) && raw.length > 0 ? raw : ROTEIRO_FALLBACK;
   }, [data]);
+
+  const itemAtualHorario = useMemo(() => getItemAtual(items), [items]);
 
   return (
     <>
       <Head>
-        <title>Roteiro do Casamento</title>
+        <title>Roteiro — André & Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">
@@ -63,22 +100,16 @@ export default function RoteiroPage() {
           ) : null}
 
           {!loading && !error ? (
-            <>
-              <div className="mx-auto max-w-3xl space-y-4">
-                {items.map((item, index) => (
-                  <TimelineItem key={`${item.horario}-${index}`} item={item} index={index} />
-                ))}
-              </div>
-
-              <div className="mx-auto mt-8 max-w-5xl">
-                <GuestJourney
-                  currentPath="/roteiro"
-                  compact
-                  title="Planeje seus proximos passos"
-                  subtitle="Depois do cronograma, consulte sua mesa, veja o mapa do salao e acompanhe o cardapio da noite."
+            <div className="mx-auto max-w-3xl space-y-4">
+              {items.map((item, index) => (
+                <TimelineItem
+                  key={`${item.horario}-${index}`}
+                  item={item}
+                  index={index}
+                  isAtual={itemAtualHorario === item.horario}
                 />
-              </div>
-            </>
+              ))}
+            </div>
           ) : null}
         </div>
       </main>

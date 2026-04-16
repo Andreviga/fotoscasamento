@@ -2,19 +2,31 @@ import Head from 'next/head';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
-import GuestJourney from '../components/GuestJourney';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
+const CARDAPIO_FALLBACK = {
+  heroTitle: 'Cardápio Digital da Festa',
+  heroSubtitle: 'Uma seleção pensada com carinho para tornar essa noite ainda mais inesquecível.',
+  secoes: [
+    { id: 'recepcao', title: 'Recepção', subtitle: '', items: [{ name: 'Welcome drink', description: '' }, { name: 'Can apés de boas-vindas', description: '' }] },
+    { id: 'jantar', title: 'Jantar', subtitle: '', items: [{ name: 'Buffet completo com opções quentes e frias', description: '' }, { name: 'Opções vegetarianas disponíveis', description: '' }] },
+    { id: 'sobremesa', title: 'Sobremesa', subtitle: '', items: [{ name: 'Bolo dos noivos', description: '' }, { name: 'Bem-casados', description: '' }, { name: 'Mesa de doces', description: '' }] },
+    { id: 'bebidas', title: 'Bebidas', subtitle: '', items: [{ name: 'Espumante para o brinde', description: '' }, { name: 'Vinhos', description: '' }, { name: 'Sucos naturais', description: '' }, { name: 'Refrigerantes', description: '' }, { name: 'Água', description: '' }] },
+  ],
+};
+
 export default function CardapioPage() {
   const { loading, error, data } = useConfig(['site', 'cardapio']);
-  const heroTitle = data?.cardapio?.heroTitle || 'Cardapio Digital da Festa';
-  const heroSubtitle = data?.cardapio?.heroSubtitle || 'Uma selecao pensada com carinho para tornar essa noite ainda mais inesquecivel.';
-  const menuSections = Array.isArray(data?.cardapio?.secoes) ? data.cardapio.secoes : [];
+  const heroTitle = data?.cardapio?.heroTitle || CARDAPIO_FALLBACK.heroTitle;
+  const heroSubtitle = data?.cardapio?.heroSubtitle || CARDAPIO_FALLBACK.heroSubtitle;
+  const menuSections = Array.isArray(data?.cardapio?.secoes) && data.cardapio.secoes.length > 0
+    ? data.cardapio.secoes
+    : CARDAPIO_FALLBACK.secoes;
   return (
     <>
       <Head>
-        <title>Cardápio Digital ✿ André & Nathália</title>
+        <title>Cardápio — André & Nathália</title>
         <meta
           name="description"
           content="Cardápio digital da noite com entradas, pratos principais, sobremesas e bebidas."
@@ -60,15 +72,6 @@ export default function CardapioPage() {
               ))}
             </section>
           ) : null}
-
-          <div className="mt-8">
-            <GuestJourney
-              currentPath="/cardapio"
-              compact
-              title="Continue pelo guia da festa"
-              subtitle="Do cardapio voce pode seguir para sua mesa, ver o mapa do salao ou publicar uma foto no mural."
-            />
-          </div>
         </div>
       </main>
 

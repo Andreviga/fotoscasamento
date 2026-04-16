@@ -11,7 +11,7 @@ const MAIN_LINKS = [
 const EXTRA_LINKS = [
   { href: '/roteiro', label: 'Roteiro' },
   { href: '/mapa', label: 'Mapa' },
-  { href: '/cardapio', label: 'Cardapio' },
+  { href: '/cardapio', label: 'Cardápio' },
   { href: '/mural', label: 'Mural' },
   { href: '/etiqueta', label: 'Etiqueta' }
 ];

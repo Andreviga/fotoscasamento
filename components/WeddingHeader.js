@@ -9,7 +9,7 @@ const LINKS = [
   { href: '/mesa', label: 'Mesa' },
   { href: '/mapa', label: 'Mapa' },
   { href: '/etiqueta', label: 'Etiqueta' },
-  { href: '/cardapio', label: 'Cardapio' }
+  { href: '/cardapio', label: 'Cardápio' }
 ];
 
 export default function WeddingHeader() {

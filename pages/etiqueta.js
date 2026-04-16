@@ -4,8 +4,17 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
-import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
+
+const ETIQUETA_FALLBACK = [
+  { icone: '👔', titulo: 'Traje', conteudo: 'Esporte fino. Pedimos gentilmente que as convidadas evitem vestidos brancos, creme ou na cor da noiva.' },
+  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 17h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com 20 minutos de antecedência.' },
+  { icone: '🔕', titulo: 'Durante a cerimônia', conteudo: 'Deixe o celular no silencioso. Aguarde a entrada da noiva antes de se sentar. Evite passar na frente do fotógrafo e videomaker.' },
+  { icone: '📷', titulo: 'Fotos e redes sociais', conteudo: 'Use o Instacasamento no app para publicar fotos no mural ao vivo da festa! Na hashtag #andreanathalia2026 poderemos encontrar suas fotos.' },
+  { icone: '🎁', titulo: 'Presente', conteudo: 'Sua presença já é o nosso presente! Se quiser nos presentear, acesse a lista de presentes pelo site.' },
+  { icone: '👶', titulo: 'Crianças', conteudo: 'Crianças são bem-vindas! Por favor, verifique no convite se há indicação de faixa etária para este evento.' },
+  { icone: '🅿️', titulo: 'Estacionamento', conteudo: 'Serviço de valet disponível no local. Confirme os detalhes com a organização do evento.' },
+];
 
 function shareOnWhatsApp() {
   if (typeof window === 'undefined') {
@@ -18,12 +27,14 @@ function shareOnWhatsApp() {
 
 export default function EtiquetaPage() {
   const { loading, error, data } = useConfig(['site', 'etiqueta']);
-  const secoes = Array.isArray(data?.etiqueta?.secoes) ? data.etiqueta.secoes : [];
+  const secoes = Array.isArray(data?.etiqueta?.secoes) && data.etiqueta.secoes.length > 0
+    ? data.etiqueta.secoes
+    : ETIQUETA_FALLBACK;
 
   return (
     <>
       <Head>
-        <title>Etiqueta e Comportamento</title>
+        <title>Etiqueta — André & Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">
@@ -63,15 +74,6 @@ export default function EtiquetaPage() {
                   </article>
                 ))}
               </section>
-
-              <div className="mt-8">
-                <GuestJourney
-                  currentPath="/etiqueta"
-                  compact
-                  title="Guia completo do convidado"
-                  subtitle="Se precisar, siga daqui para o roteiro, localize sua mesa ou veja o mapa do salao com o layout da festa."
-                />
-              </div>
             </>
           ) : null}
 

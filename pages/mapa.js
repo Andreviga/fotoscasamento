@@ -343,7 +343,7 @@ export default function MapaPage() {
   return (
     <>
       <Head>
-        <title>Mapa do Salao</title>
+        <title>Mapa do Salão — André & Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">
@@ -351,8 +351,8 @@ export default function MapaPage() {
         <div className="container relative z-10">
           <PageTitle
             kicker="Visual"
-            title="Mapa do Salao"
-            subtitle="Use o layout real do salao para se orientar e clique nas mesas para ver detalhes."
+            title="Mapa do Salão"
+            subtitle="Use o layout real do salão para se orientar e clique nas mesas para ver detalhes."
           />
 
           <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
@@ -360,10 +360,11 @@ export default function MapaPage() {
               <p>
                 Este mapa usa o layout do salao como base visual. Se preferir, voce tambem pode abrir o PDF completo em outra aba para ampliar a orientacao.
               </p>
-              <a href={layoutSettings.pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl} target="_blank" rel="noreferrer" className="btn btn--outline">
-                Abrir layout completo
+              <a href={layoutSettings.pdfUrl || DEFAULT_LAYOUT_SETTINGS.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
+                Abrir layout em nova aba (PDF) →
               </a>
             </div>
+            <p className="mt-2 text-xs text-wine/60">Dica: use dois dedos para dar zoom no mapa.</p>
           </div>
 
           {loading ? <LoadingSpinner label="Carregando mapa" /> : null}

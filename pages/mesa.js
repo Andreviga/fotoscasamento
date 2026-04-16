@@ -6,7 +6,6 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
-import GuestJourney from '../components/GuestJourney';
 import useConfig from '../lib/useConfig';
 
 const MAP_TYPE_COLORS = {
@@ -179,7 +178,7 @@ export default function MesaPage() {
   return (
     <>
       <Head>
-        <title>Busca de Mesa</title>
+        <title>Minha Mesa — André & Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">
@@ -200,6 +199,8 @@ export default function MesaPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               autoComplete="off"
+              autoFocus
+              inputMode="search"
             />
             <p className="mt-2 text-xs text-wine/65">Busca inteligente por nome do convidado ou nome do convite.</p>
           </section>
@@ -248,12 +249,6 @@ export default function MesaPage() {
               </div>
             ) : null}
 
-            <GuestJourney
-              currentPath="/mesa"
-              compact
-              title="Depois de encontrar sua mesa"
-              subtitle="Confira o mapa do salao, o roteiro do dia e o cardapio para seguir pela festa sem se perder."
-            />
           </div>
         </div>
       </main>

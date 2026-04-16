@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Presentes</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Admin — Presentes</h1>
+      <p class="center date">André & Nathália</p>
+      <div class="divider"></div>
+    </header>
+    <p class="muted center">Edite os presentes aqui. Você só precisa da senha do admin.</p>
+
+    <div class="card">
+      <label><b>Senha do Admin</b></label>
+      <input id="pass" type="text" placeholder="ADMIN_PASSWORD" />
+      <div style="height:10px"></div>
+      <button class="btn" id="load">Carregar presentes</button>
+    </div>
+
+    <div style="height:16px"></div>
+
+    <div class="card">
+      <div class="row">
+        <h3>Lista</h3>
+        <button class="btn2" id="add">Adicionar presente</button>
+      </div>
+      <div class="hr"></div>
+      <div id="table"></div>
+      <div class="hr"></div>
+      <button class="btn" id="save">Salvar</button>
+      <p class="muted small" style="margin-top:10px">
+        Dica: para “ocultar” um presente, desative em “Ativo”.
+      </p>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
