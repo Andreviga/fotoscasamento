@@ -59,16 +59,16 @@ export default function GuestJourney({
   compact = false
 }: GuestJourneyProps) {
   return (
-    <section className="rounded-[28px] border border-roseDeep/15 bg-white/75 p-5 shadow-[0_18px_44px_rgba(34,53,44,0.08)] backdrop-blur-sm sm:p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <section className="romantic-panel rounded-2xl p-4 sm:p-6">
+      <div className="flex flex-col gap-2 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-wine/55">Jornada do convidado</p>
-          <h2 className="mt-2 text-2xl text-cocoa sm:text-3xl">{title}</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-roseDeep/70">Jornada do convidado</p>
+          <h2 className="mt-2 text-3xl text-cocoa sm:text-4xl">{title}</h2>
         </div>
-        <p className="max-w-2xl text-sm leading-6 text-wine/75">{subtitle}</p>
+        <p className="max-w-2xl text-sm leading-6 text-cocoa/75">{subtitle}</p>
       </div>
 
-      <div className={`mt-5 grid gap-3 grid-cols-2 ${compact ? 'xl:grid-cols-3' : 'lg:grid-cols-3'}`}>
+      <div className={`mt-5 grid grid-cols-2 gap-3 ${compact ? 'xl:grid-cols-3' : 'lg:grid-cols-3'}`}>
         {JOURNEY_LINKS.map((item, index) => {
           const active = item.href === currentPath;
 
@@ -76,22 +76,22 @@ export default function GuestJourney({
             <Link
               key={item.href}
               href={item.href}
-              className={`group rounded-3xl border px-3 py-3 sm:px-4 sm:py-4 transition ${
+              className={`group rounded-2xl border p-4 transition ${
                 active
-                  ? 'border-wine bg-wine text-white shadow-[0_18px_34px_rgba(15,79,61,0.18)]'
-                  : 'border-roseDeep/15 bg-white/80 text-cocoa hover:-translate-y-0.5 hover:border-gold/70 hover:bg-white'
+                  ? 'border-wine/35 bg-wine/10 text-cocoa'
+                  : 'border-roseDeep/20 bg-white/85 text-cocoa hover:-translate-y-0.5 hover:border-gold/70 hover:bg-linen/60'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className={`text-[10px] font-bold uppercase tracking-[0.16em] ${active ? 'text-white/70' : 'text-wine/50'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.16em] ${active ? 'text-wine/75' : 'text-roseDeep/70'}`}>
                   Etapa {String(index + 1).padStart(2, '0')}
                 </span>
-                <span className={`text-xs sm:text-sm font-semibold ${active ? 'text-white' : 'text-wine group-hover:text-cocoa'}`}>
+                <span className={`text-xs font-semibold sm:text-sm ${active ? 'text-wine' : 'text-wine group-hover:text-cocoa'}`}>
                   {item.label}
                 </span>
               </div>
-              <h3 className={`mt-2 text-base sm:text-xl ${active ? 'text-white' : 'text-cocoa'}`}>{item.title}</h3>
-              <p className={`mt-1 hidden sm:block text-sm leading-6 ${active ? 'text-white/85' : 'text-wine/75'}`}>{item.description}</p>
+              <h3 className="mt-2 text-lg text-cocoa sm:text-[1.6rem]">{item.title}</h3>
+              <p className={`mt-1 hidden text-sm leading-6 text-cocoa/75 sm:block ${active ? 'text-cocoa/80' : ''}`}>{item.description}</p>
             </Link>
           );
         })}
