@@ -23,7 +23,7 @@
       radial-gradient(circle at top, rgba(201, 179, 126, 0.18), transparent 28%),
       radial-gradient(circle at 14% 10%, rgba(111, 132, 117, 0.1), transparent 18%),
       linear-gradient(180deg, #fdfcf8 0%, #f7f6f2 52%, #efecdf 100%);
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-wedding-body), 'DM Sans', sans-serif;
     min-height: 100vh;
   }
 
@@ -34,6 +34,7 @@
   h5,
   h6 {
     @apply font-serifRomance font-semibold;
+    font-family: var(--font-wedding-title), 'Cormorant Garamond', serif;
   }
 
   button {

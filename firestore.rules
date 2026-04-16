@@ -41,5 +41,15 @@ service cloud.firestore {
       && request.resource.data.createdAtMs is int;
       allow update, delete: if false;
     }
+
+    match /config/{documentId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /convidados/{documentId} {
+      allow read: if true;
+      allow write: if false;
+    }
   }
 }
