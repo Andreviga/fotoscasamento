@@ -1,82 +1,106 @@
 'use client';
 
-import Link from 'next/link';
-import { useState } from 'react';
+export type AppTab = 'info' | 'mesa' | 'fotos' | 'mural' | 'mais';
 
-const MAIN_LINKS = [
-  { href: '/', label: 'Inicio' },
-  { href: '/mesa', label: 'Mesa' },
-  { href: '/fotos', label: 'Fotos' }
+type TabBarProps = {
+  active: AppTab;
+  onChange: (tab: AppTab) => void;
+};
+
+type TabItem = {
+  key: AppTab;
+  label: string;
+  icon: JSX.Element;
+};
+
+const TABS: TabItem[] = [
+  {
+    key: 'info',
+    label: 'Info',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-1 2v6h2v-6h-2z" />
+      </svg>
+    )
+  },
+  {
+    key: 'mesa',
+    label: 'Mesa',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 2.2A4.8 4.8 0 0 0 7.2 9c0 2.9 3.2 7.6 4.8 9.7 1.6-2.1 4.8-6.8 4.8-9.7A4.8 4.8 0 0 0 12 4.2z" />
+      </svg>
+    )
+  },
+  {
+    key: 'fotos',
+    label: 'Fotos',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M9 5a2 2 0 0 1 1.6-.8h2.8A2 2 0 0 1 15 5l.6 1H19a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3h3.4L9 5zm3 3.2A4.8 4.8 0 1 0 12 18a4.8 4.8 0 0 0 0-9.8z" />
+      </svg>
+    )
+  },
+  {
+    key: 'mural',
+    label: 'Mural',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+      </svg>
+    )
+  },
+  {
+    key: 'mais',
+    label: 'Mais',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M6 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm10 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+      </svg>
+    )
+  }
 ];
 
-const MENU_LINKS = [
-  { href: '/roteiro', label: 'Roteiro' },
-  { href: '/mapa', label: 'Mapa' },
-  { href: '/cardapio', label: 'Cardapio' },
-  { href: '/mural', label: 'Mural' },
-  { href: '/etiqueta', label: 'Etiqueta' }
-];
-
-export default function TabBar() {
-  const [open, setOpen] = useState(false);
-
+export default function TabBar({ active, onChange }: TabBarProps) {
   return (
-    <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-roseDeep/20 bg-ivory/95 pb-safe backdrop-blur sm:hidden" aria-label="Navegacao mobile">
-        <div className="mx-auto grid h-16 max-w-2xl grid-cols-4">
-          {MAIN_LINKS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-col items-center justify-center gap-0.5 text-xs font-semibold text-roseDeep/80"
-              aria-label={`Abrir ${item.label}`}
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
-              {item.label}
-            </Link>
-          ))}
-          <button
-            type="button"
-            className="flex flex-col items-center justify-center gap-0.5 text-xs font-semibold text-roseDeep/80"
-            onClick={() => setOpen(true)}
-            aria-label="Abrir menu"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
-            Menu
-          </button>
-        </div>
-      </nav>
+    <nav
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-roseDeep/20 bg-ivory/95 pb-safe backdrop-blur"
+      aria-label="Navegacao principal"
+      role="tablist"
+    >
+      <div className="mx-auto grid h-16 max-w-3xl grid-cols-5">
+        {TABS.map((tab) => {
+          const isActive = active === tab.key;
+          const isFotos = tab.key === 'fotos';
 
-      {open ? (
-        <div className="fixed inset-0 z-50 bg-cocoa/35 sm:hidden" onClick={() => setOpen(false)}>
-          <div
-            className="absolute bottom-0 left-0 right-0 rounded-t-3xl border border-roseDeep/20 bg-ivory p-5"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-roseDeep/30" />
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-roseDeep/75">Mais acessos</p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {MENU_LINKS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-2xl border border-roseDeep/20 bg-white/80 px-3 py-2 text-center text-sm font-semibold text-wine"
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+          return (
             <button
+              key={tab.key}
               type="button"
-              className="mt-4 w-full rounded-full border border-roseDeep/25 px-4 py-2 text-sm font-semibold text-cocoa"
-              onClick={() => setOpen(false)}
+              role="tab"
+              aria-selected={isActive}
+              aria-label={`Abrir aba ${tab.label}`}
+              onClick={() => onChange(tab.key)}
+              className="flex flex-col items-center justify-center gap-1"
             >
-              Fechar
+              {isFotos ? (
+                <span
+                  className={`inline-flex h-12 w-12 items-center justify-center rounded-full ${
+                    isActive ? 'bg-wine text-ivory' : 'bg-gold text-cocoa'
+                  }`}
+                >
+                  {tab.icon}
+                </span>
+              ) : (
+                <span className={`${isActive ? 'text-gold' : 'text-roseDeep/75'}`}>{tab.icon}</span>
+              )}
+              <span className={`text-[10px] font-semibold uppercase tracking-[0.1em] ${isActive ? 'text-gold' : 'text-roseDeep/75'}`}>
+                {tab.label}
+              </span>
             </button>
-          </div>
-        </div>
-      ) : null}
-    </>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
