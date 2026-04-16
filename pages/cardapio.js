@@ -18,6 +18,7 @@ const CARDAPIO_FALLBACK = {
 
 export default function CardapioPage() {
   const { loading, error, data } = useConfig(['site', 'cardapio']);
+  const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
   const heroTitle = data?.cardapio?.heroTitle || CARDAPIO_FALLBACK.heroTitle;
   const heroSubtitle = data?.cardapio?.heroSubtitle || CARDAPIO_FALLBACK.heroSubtitle;
   const menuSections = Array.isArray(data?.cardapio?.secoes) && data.cardapio.secoes.length > 0
@@ -40,8 +41,8 @@ export default function CardapioPage() {
         <div className="container relative z-10">
           <section className="menu-hero page-section">
             <div className="menu-hero--wedding">
-              <div className="menu-hero__ornament" aria-hidden="true">✿</div>
-              <p className="menu-hero__date">03 de maio de 2026</p>
+              <p className="menu-hero__date">{weddingDate}</p>
+              <div className="menu-hero__ornament" aria-hidden="true">✦ ✿ ✦</div>
               <div className="section-header">
                 <span className="section-kicker">André & Nathália</span>
                 <h1>{heroTitle}</h1>
@@ -49,6 +50,7 @@ export default function CardapioPage() {
                   {heroSubtitle}
                 </p>
               </div>
+              <div className="menu-hero__divider" aria-hidden="true" />
               <p className="menu-hero__signature">Com carinho, preparado para a nossa noite</p>
             </div>
           </section>
@@ -69,8 +71,8 @@ export default function CardapioPage() {
                   <ul className="menu-list">
                     {(section.items || []).map((item) => (
                       <li key={`${section.id || section.title}-${item.name}`} className="menu-list__item">
-                        <h3>{item.name}</h3>
-                        {item.description ? <p>{item.description}</p> : null}
+                        <div className="menu-list__item-title">{item.name}</div>
+                        {item.description ? <p className="menu-list__item-description">{item.description}</p> : null}
                       </li>
                     ))}
                   </ul>

@@ -184,7 +184,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
         <div className={sub === 'mapa' ? 'flex h-full flex-col' : 'hidden'}>
           {mapaMounted ? (
             <iframe
-              src="/mapa"
+              src="/mapa?embedded=1"
               title="Mapa do Salão"
               className="w-full flex-1 border-0"
               style={{ height: 'calc(100dvh - 8rem)' }}
@@ -205,7 +205,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
         <div className={sub === 'cardapio' ? 'flex h-full flex-col' : 'hidden'}>
           {cardapioMounted ? (
             <iframe
-              src="/cardapio"
+              src="/cardapio?embedded=1"
               title="Cardápio"
               className="w-full flex-1 border-0"
               style={{ height: 'calc(100dvh - 8rem)' }}

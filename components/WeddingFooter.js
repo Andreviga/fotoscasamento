@@ -1,10 +1,26 @@
 import useConfig from '../lib/useConfig';
 import MobileTabBar from './MobileTabBar';
+import { useEffect, useState } from 'react';
 
 export default function WeddingFooter() {
   const { data } = useConfig(['site']);
   const site = data.site || {};
   const year = new Date().getFullYear();
+  const [isEmbeddedView, setIsEmbeddedView] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const embeddedByQuery = new URLSearchParams(window.location.search).get('embedded') === '1';
+    const embeddedByFrame = window.self !== window.top;
+    setIsEmbeddedView(embeddedByQuery || embeddedByFrame);
+  }, []);
+
+  if (isEmbeddedView) {
+    return null;
+  }
 
   return (
     <>
