@@ -462,6 +462,11 @@ export default function AdminPage() {
     const [item] = items.splice(itemIndex, 1);
     items.splice(target, 0, item);
     setMenu((prev) => ({
+      ...prev,
+      secoes: prev.secoes.map((sec, si) =>
+        si === sectionIndex ? { ...sec, items } : sec
+      ),
+    }));
   }
 
   const tabContent = useMemo(() => {
