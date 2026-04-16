@@ -416,6 +416,26 @@ export default function MapaPage() {
                   })}
                 </section>
 
+                <div className="lg:hidden mt-3 flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                  {elementos.map((item) => {
+                    const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
+                    const isChipSelected = item.id === selectedId;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedId(item.id)}
+                        className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                          isChipSelected ? 'border-wine bg-wine text-white' : 'border-roseDeep/25 bg-white text-wine'
+                        }`}
+                        style={isChipSelected ? undefined : { borderLeftColor: color, borderLeftWidth: 3 }}
+                      >
+                        {item.nome}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <aside className="romantic-panel p-4">
                 <h2 className="text-xl text-cocoa">Detalhes</h2>
                 {selected ? (

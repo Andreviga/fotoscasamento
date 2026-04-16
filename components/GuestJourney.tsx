@@ -68,7 +68,7 @@ export default function GuestJourney({
         <p className="max-w-2xl text-sm leading-6 text-wine/75">{subtitle}</p>
       </div>
 
-      <div className={`mt-5 grid gap-3 ${compact ? 'sm:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
+      <div className={`mt-5 grid gap-3 grid-cols-2 ${compact ? 'xl:grid-cols-3' : 'lg:grid-cols-3'}`}>
         {JOURNEY_LINKS.map((item, index) => {
           const active = item.href === currentPath;
 
@@ -76,22 +76,22 @@ export default function GuestJourney({
             <Link
               key={item.href}
               href={item.href}
-              className={`group rounded-3xl border px-4 py-4 transition ${
+              className={`group rounded-3xl border px-3 py-3 sm:px-4 sm:py-4 transition ${
                 active
                   ? 'border-wine bg-wine text-white shadow-[0_18px_34px_rgba(15,79,61,0.18)]'
                   : 'border-roseDeep/15 bg-white/80 text-cocoa hover:-translate-y-0.5 hover:border-gold/70 hover:bg-white'
               }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className={`text-[11px] font-bold uppercase tracking-[0.18em] ${active ? 'text-white/70' : 'text-wine/50'}`}>
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-[10px] font-bold uppercase tracking-[0.16em] ${active ? 'text-white/70' : 'text-wine/50'}`}>
                   Etapa {String(index + 1).padStart(2, '0')}
                 </span>
-                <span className={`text-sm font-semibold ${active ? 'text-white' : 'text-wine group-hover:text-cocoa'}`}>
+                <span className={`text-xs sm:text-sm font-semibold ${active ? 'text-white' : 'text-wine group-hover:text-cocoa'}`}>
                   {item.label}
                 </span>
               </div>
-              <h3 className={`mt-3 text-xl ${active ? 'text-white' : 'text-cocoa'}`}>{item.title}</h3>
-              <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/85' : 'text-wine/75'}`}>{item.description}</p>
+              <h3 className={`mt-2 text-base sm:text-xl ${active ? 'text-white' : 'text-cocoa'}`}>{item.title}</h3>
+              <p className={`mt-1 hidden sm:block text-sm leading-6 ${active ? 'text-white/85' : 'text-wine/75'}`}>{item.description}</p>
             </Link>
           );
         })}

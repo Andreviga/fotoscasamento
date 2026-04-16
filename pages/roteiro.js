@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useMemo } from 'react';
 
 import WeddingHeader from '../components/WeddingHeader';
@@ -43,6 +44,9 @@ export default function RoteiroPage() {
 
   return (
     <>
+      <Head>
+        <title>Roteiro do Casamento</title>
+      </Head>
       <WeddingHeader />
       <main className="main">
         <div className="hero-haze" />
