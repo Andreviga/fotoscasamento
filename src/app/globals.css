@@ -150,6 +150,26 @@ body {
     break-inside: avoid;
     margin-bottom: 1rem;
   }
+
+  .site-header {
+    @apply sticky top-0 z-40 border-b border-roseDeep/20 bg-ivory/95 backdrop-blur;
+  }
+
+  .site-header__inner {
+    @apply flex items-center justify-between gap-4 py-4;
+  }
+
+  .site-brand {
+    @apply font-serifRomance text-3xl font-semibold text-wine;
+  }
+
+  .site-nav {
+    @apply flex flex-wrap items-center justify-end gap-2;
+  }
+
+  .site-nav__link {
+    @apply rounded-full border border-roseDeep/20 bg-white/70 px-3 py-2 text-xs font-semibold text-wine transition hover:border-gold/70 hover:text-cocoa;
+  }
 }
 
 @media (min-width: 768px) {
@@ -166,6 +186,12 @@ body {
 
   .gift-hero-panel {
     border-radius: 14px;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 
