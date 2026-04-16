@@ -15,6 +15,8 @@ const DEFAULT_LAYOUT_SETTINGS = {
   opacity: 0.5
 };
 
+const DEFAULT_MAP_ASPECT_RATIO = 16 / 12;
+
 function normalizeLayoutSettings(layout) {
   return {
     ...DEFAULT_LAYOUT_SETTINGS,
@@ -127,6 +129,7 @@ export default function MapaPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [guestByMesa, setGuestByMesa] = useState({});
+  const [mapAspectRatio, setMapAspectRatio] = useState(DEFAULT_MAP_ASPECT_RATIO);
 
   const mapRef = useRef(null);
   const dragRef = useRef(null);
@@ -351,6 +354,15 @@ export default function MapaPage() {
     });
   }
 
+  function handleBackgroundLoad(event) {
+    const image = event.currentTarget;
+    if (!image?.naturalWidth || !image?.naturalHeight) {
+      return;
+    }
+
+    setMapAspectRatio(image.naturalWidth / image.naturalHeight);
+  }
+
   return (
     <>
       <Head>
@@ -381,12 +393,13 @@ export default function MapaPage() {
                 <section
                   ref={mapRef}
                   className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
-                  style={{ aspectRatio: '16 / 12', minHeight: '520px' }}
+                  style={{ aspectRatio: mapAspectRatio }}
                 >
                   {layoutSettings.showBackground ? (
                     <img
                       alt="Layout do salão"
                       src={layoutSettings.backgroundUrl || DEFAULT_LAYOUT_SETTINGS.backgroundUrl}
+                      onLoad={handleBackgroundLoad}
                       className="absolute inset-0 h-full w-full pointer-events-none object-cover"
                       style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
                     />
