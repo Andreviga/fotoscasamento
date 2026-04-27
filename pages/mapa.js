@@ -51,6 +51,29 @@ const EMPTY_ELEMENT = {
   capacidade: ''
 };
 
+const TABLE_NAMES = {
+  1: 'Amsterda',
+  2: 'Campos do Jordao',
+  3: 'Colonia',
+  4: 'Copenhague',
+  5: 'Patagonia',
+  6: 'Estocolmo',
+  7: 'Giethoorn',
+  8: 'Kefalonia',
+  9: 'Las Vegas',
+  10: 'Madrid',
+  11: 'Milao',
+  12: 'Paris',
+  13: 'Roma',
+  14: 'Salar de Uyuni',
+  15: 'Santorini',
+  16: 'Sarajevo',
+  17: 'Split',
+  18: 'Treze Tilias',
+  19: 'Zurique',
+  20: 'Sucre'
+};
+
 function makeDefaultMapElementos() {
   const items = [];
   const startXLeft = 38;
@@ -133,6 +156,7 @@ export default function MapaPage() {
 
   const mapRef = useRef(null);
   const dragRef = useRef(null);
+  const isEmbedded = String(router.query.embedded || '') === '1';
 
   const isAdminQuery = String(router.query.admin || '') === 'true';
   const [adminEnabled, setAdminEnabled] = useState(false);
@@ -368,32 +392,39 @@ export default function MapaPage() {
       <Head>
         <title>Mapa do Salão — André & Nathália</title>
       </Head>
-      <WeddingHeader />
-      <main className="main">
-        <div className="hero-haze" />
+      {!isEmbedded ? <WeddingHeader /> : null}
+      <main className={`main ${isEmbedded ? 'pt-3 pb-3' : ''}`}>
+        {!isEmbedded ? <div className="hero-haze" /> : null}
         <div className="container relative z-10">
-          <PageTitle
-            kicker="Visual"
-            title="Mapa do Salão"
-            subtitle="Use o layout real do salão para se orientar e clique nas mesas para ver detalhes."
-          />
+          {!isEmbedded ? (
+            <>
+              <PageTitle
+                kicker="Visual"
+                title="Mapa do Salão"
+                subtitle="Use o layout real do salão para se orientar e clique nas mesas para ver detalhes."
+              />
 
-          <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
-            <p>
-              Este mapa usa a imagem do layout do salão como base visual para facilitar o posicionamento das mesas e a sua orientação.
-            </p>
-            <p className="mt-2 text-xs text-wine/60">Dica: use dois dedos para dar zoom no mapa.</p>
-          </div>
+              <div className="mb-5 rounded-3xl border border-gold/35 bg-[#fff8ea] px-5 py-4 text-sm text-wine/80 shadow-sm">
+                <p>
+                  Este mapa usa a imagem do layout do salão como base visual para facilitar o posicionamento das mesas e a sua orientação.
+                </p>
+                <p className="mt-2 text-xs text-wine/60">Dica: use dois dedos para dar zoom no mapa.</p>
+              </div>
+            </>
+          ) : null}
 
           {loading ? <LoadingSpinner label="Carregando mapa" /> : null}
 
           {!loading ? (
             <div className="space-y-5">
-              <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+              <div className={isEmbedded ? 'grid gap-4' : 'grid gap-4 lg:grid-cols-[1fr_320px]'}>
                 <section
                   ref={mapRef}
                   className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
-                  style={{ aspectRatio: mapAspectRatio }}
+                  style={{
+                    aspectRatio: mapAspectRatio,
+                    minHeight: isEmbedded ? '74dvh' : undefined
+                  }}
                 >
                   {layoutSettings.showBackground ? (
                     <img
@@ -409,6 +440,11 @@ export default function MapaPage() {
                     const isSelected = item.id === selectedId;
                     const isHighlightedByQuery = item.id === highlightedFromQueryId;
                     const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
+                    const mesaNumber = getMesaNumber(item);
+                    const mesaName = mesaNumber ? TABLE_NAMES[mesaNumber] : '';
+                    const isMesa = Boolean(mesaNumber);
+                    const labelLine1 = isMesa ? `Mesa ${mesaNumber}` : item.nome;
+                    const labelLine2 = isMesa ? mesaName : '';
 
                     return (
                       <button
@@ -433,10 +469,16 @@ export default function MapaPage() {
                           background: isHighlightedByQuery ? '#0f4f3d' : color,
                           color: isHighlightedByQuery ? '#fbfaf7' : '#2c2416',
                           borderColor: isHighlightedByQuery ? 'rgba(15, 79, 61, 0.9)' : 'rgba(44, 36, 22, 0.18)',
-                          touchAction: 'none'
+                          touchAction: 'none',
+                          fontSize: isMesa ? 'clamp(10px, 0.95vw, 13px)' : 'clamp(9px, 0.85vw, 12px)'
                         }}
                       >
-                        <span className="pointer-events-none max-w-full truncate px-1">{item.nome}</span>
+                        <span className="pointer-events-none flex max-w-full flex-col items-center px-1 leading-tight">
+                          <span className="max-w-full truncate">{labelLine1}</span>
+                          {labelLine2 ? (
+                            <span className="max-w-full truncate text-[0.82em] font-medium opacity-85">{labelLine2}</span>
+                          ) : null}
+                        </span>
                       </button>
                     );
                   })}
@@ -462,6 +504,7 @@ export default function MapaPage() {
                   })}
                 </div>
 
+                {!isEmbedded ? (
                 <aside className="romantic-panel p-4">
                 <h2 className="text-xl text-cocoa">Detalhes</h2>
                 {selected ? (
@@ -587,13 +630,14 @@ export default function MapaPage() {
                   <p className="mt-2 text-sm text-wine/70">Selecione um item no mapa.</p>
                 )}
                 </aside>
+                ) : null}
               </div>
 
             </div>
           ) : null}
         </div>
       </main>
-      <WeddingFooter />
+      {!isEmbedded ? <WeddingFooter /> : null}
     </>
   );
 }
