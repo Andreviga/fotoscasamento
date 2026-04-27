@@ -5,6 +5,7 @@ import type { AppTab } from '@/components/TabBar';
 
 type TabMesaProps = {
   onNavigate: (tab: AppTab) => void;
+  onSelectTable?: (n: number) => void;
 };
 
 type GuestResult = {
@@ -71,7 +72,7 @@ function useDebouncedValue(value: string, delay = 300) {
   return debounced;
 }
 
-export default function TabMesa({ onNavigate }: TabMesaProps) {
+export default function TabMesa({ onNavigate, onSelectTable }: TabMesaProps) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<GuestResult[]>([]);
@@ -188,14 +189,13 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
               type="button"
               className="btn btn--outline mt-4"
               onClick={() => {
-                if (typeof window !== 'undefined' && typeof selected.mesa === 'number') {
-                  window.sessionStorage.setItem('tab-mais-focus', 'mapa');
-                  window.sessionStorage.setItem('tab-mais-mesa', String(selected.mesa));
+                if (typeof selected.mesa === 'number') {
+                  onSelectTable?.(selected.mesa);
                 }
-                onNavigate('mais');
+                onNavigate('mapa');
               }}
             >
-              Ver mesa no mapa
+              Ver no mapa das mesas
             </button>
           </article>
         ) : null}
