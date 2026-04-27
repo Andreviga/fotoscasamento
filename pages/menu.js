@@ -6,13 +6,66 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const MENU_FALLBACK = {
-  heroTitle: 'Menu da Celebração',
-  heroSubtitle: 'Uma seleção pensada com carinho para tornar essa noite ainda mais inesquecível.',
+  heroTitle: 'Bar Energy',
+  heroSubtitle: '6 drinks alcoólicos, 4 drinks não alcoólicos e 5 tipos de frutas para caipirinha',
   secoes: [
-    { id: 'recepcao', title: 'Recepção', subtitle: 'Boas-vindas', items: [{ name: 'Welcome drink', description: '' }, { name: 'Canapés de boas-vindas', description: '' }] },
-    { id: 'jantar', title: 'Jantar', subtitle: '', items: [{ name: 'Buffet completo com opções quentes e frias', description: '' }, { name: 'Opções vegetarianas disponíveis', description: '' }] },
-    { id: 'sobremesa', title: 'Sobremesa', subtitle: '', items: [{ name: 'Bolo dos noivos', description: '' }, { name: 'Bem-casados', description: '' }, { name: 'Mesa de doces', description: '' }] },
-    { id: 'bebidas', title: 'Bebidas', subtitle: '', items: [{ name: 'Espumante para o brinde', description: '' }, { name: 'Vinhos', description: '' }, { name: 'Sucos naturais', description: '' }, { name: 'Refrigerantes', description: '' }, { name: 'Água', description: '' }] },
+    {
+      id: 'alcoolicos',
+      title: 'Drinks alcoólicos',
+      subtitle: '',
+      items: [
+        { name: 'Gin Tônica', description: 'gin, água tônica, suco de limão e gelo' },
+        { name: 'Poker Face', description: 'vodka, suco de abacaxi, licor de pêssego fino e flocos de gelo' },
+        { name: 'Mojito', description: 'rum, limão, pétalas de hortelã e soda' },
+        { name: 'Screw Driver', description: 'vodka, limão, suco de laranja e flocos de gelo' },
+        { name: 'Piña Colada', description: 'rum, leite de coco, abacaxi e leite condensado' },
+        { name: 'Sexy on The Beach', description: 'vodka, suco de pêssego, suco de laranja e groselha' },
+      ]
+    },
+    {
+      id: 'caipirinhas',
+      title: 'Caipirinhas',
+      subtitle: 'Frutas: morango, melancia, abacaxi, limão e uva',
+      items: [
+        { name: 'Caipirinha', description: 'cachaça com frutas' },
+        { name: 'Saquerinha', description: 'saké com frutas' },
+        { name: 'Caipiroska', description: 'vodka com frutas' },
+      ]
+    },
+    {
+      id: 'caipirinhas-gourmet',
+      title: 'Caipirinhas gourmet',
+      subtitle: 'Especiarias: pimenta rosa, gengibre, hortelã e cravo-da-índia',
+      items: [
+        { name: 'Combinações especiais', description: 'Além das caipirinhas tradicionais à base de cachaça, vodka e saké, deixaremos à disposição dos convidados combinações com diversas frutas, especiarias e bebidas, criando sabores inusitados e experiências únicas.' },
+      ]
+    },
+    {
+      id: 'nao-alcoolicos',
+      title: 'Drinks não alcoólicos',
+      subtitle: '',
+      items: [
+        { name: 'Mojito Fresh', description: 'pétalas de hortelã, suco de limão, açúcar e soda' },
+        { name: 'Summer', description: 'frutas variadas, suco de laranja e groselha' },
+        { name: 'Sunset On The Beach', description: 'suco de pêssego, suco de laranja e groselha' },
+        { name: 'Smoothie', description: 'melancia, suco de pêssego e groselha' },
+      ]
+    },
+    {
+      id: 'marcas',
+      title: 'Marcas',
+      subtitle: '',
+      items: [
+        { name: 'Vodka', description: 'Smirnoff' },
+        { name: 'Sakê', description: 'Saheki / Fuji / Sakai' },
+        { name: 'Cachaça', description: 'Velho Barreiro' },
+        { name: 'Rum', description: 'Montilla' },
+        { name: 'Sucos', description: 'Sufresh / Maguary / Maratá' },
+        { name: 'Gin', description: "Seager's" },
+        { name: 'Água Tônica', description: 'Antarctica / Schweppes / Dillars Classic / Vital Gold' },
+        { name: 'Licor/Xarope', description: 'Stock / Monin / Marie Brizard / Fórmula / Parcierir / Kally' },
+      ]
+    },
   ],
 };
 
