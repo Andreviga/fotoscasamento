@@ -198,11 +198,36 @@ export default function MenuPage() {
   const menuSections = Array.isArray(data?.menu?.secoes) && data.menu.secoes.length > 0
     ? data.menu.secoes
     : MENU_FALLBACK.secoes;
-  const GROUP_LABELS = {
-    cardapio: 'Cardápio da noite',
-    'bebidas-buffet': 'Bebidas do buffet e cerimônia',
-    'bar-energy': 'Bar Energy'
+  const GROUP_META = {
+    cardapio: {
+      eyebrow: '01',
+      title: 'Cardápio',
+      subtitle: 'Menu Bellagio'
+    },
+    'bebidas-buffet': {
+      eyebrow: '02',
+      title: 'Bebidas',
+      subtitle: 'Bebidas do buffet e cerimônia'
+    },
+    'bar-energy': {
+      eyebrow: '03',
+      title: 'Bar Energy',
+      subtitle: 'Drinks e coquetelaria da noite'
+    }
   };
+  const groupedSections = menuSections.reduce((acc, section) => {
+    const key = section.group || 'outros';
+    const lastGroup = acc[acc.length - 1];
+
+    if (!lastGroup || lastGroup.key !== key) {
+      acc.push({ key, sections: [section] });
+      return acc;
+    }
+
+    lastGroup.sections.push(section);
+    return acc;
+  }, []);
+
   return (
     <>
       <Head>
@@ -221,15 +246,12 @@ export default function MenuPage() {
           <section className="menu-hero page-section">
             <div className="menu-hero--wedding">
               <p className="menu-hero__date">{weddingDate}</p>
-              <div className="menu-hero__ornament" aria-hidden="true">✦ ✿ ✦</div>
-              <div className="section-header">
-                <span className="section-kicker">André & Nathália</span>
-                <h1>{heroTitle}</h1>
-                <p className="section-subtitle">
-                  {heroSubtitle}
-                </p>
-              </div>
+              <p className="menu-hero__monogram">A <span>&amp;</span> N</p>
               <div className="menu-hero__divider" aria-hidden="true" />
+              <p className="menu-hero__names">André <span>&amp;</span> Nathália</p>
+              <div className="menu-hero__divider" aria-hidden="true" />
+              <p className="menu-hero__title">{heroTitle}</p>
+              <p className="menu-hero__subtitle">{heroSubtitle}</p>
               <p className="menu-hero__signature">Com carinho, preparado para a nossa noite</p>
             </div>
           </section>
@@ -238,39 +260,47 @@ export default function MenuPage() {
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
 
           {!loading && !error ? (
-            <section className="menu-sections page-section">
-              {menuSections.map((section, index) => {
-                const previousGroup = index > 0 ? menuSections[index - 1]?.group : null;
-                const showGroupLabel = section.group && section.group !== previousGroup;
+            <section className="menu-papers page-section">
+              {groupedSections.map((group) => {
+                const meta = GROUP_META[group.key] || {
+                  eyebrow: '00',
+                  title: group.key,
+                  subtitle: ''
+                };
 
                 return (
-                  <div key={section.id || section.title}>
-                    {showGroupLabel ? (
-                      <header className="menu-card menu-card--wedding" style={{ gridColumn: '1 / -1', marginBottom: '0.5rem' }}>
-                        <p className="menu-card__course" style={{ marginBottom: '0.4rem' }}>Bloco</p>
-                        <h2>{GROUP_LABELS[section.group] || section.group}</h2>
-                      </header>
-                    ) : null}
+                  <article key={group.key} className="menu-paper">
+                    <header className="menu-paper__header">
+                      <p className="menu-paper__eyebrow">{meta.eyebrow}</p>
+                      <div className="menu-paper__rule" aria-hidden="true" />
+                      <h2>{meta.title}</h2>
+                      {meta.subtitle ? <p className="menu-paper__subtitle">{meta.subtitle}</p> : null}
+                    </header>
 
-                    <article className="menu-card menu-card--wedding">
-                      <header className="menu-card__header">
-                        <p className="menu-card__course">Etapa {String(index + 1).padStart(2, '0')}</p>
-                        <h2>{section.title}</h2>
-                        {section.subtitle ? <p>{section.subtitle}</p> : null}
-                      </header>
+                    <div className={`menu-paper__grid ${group.key === 'bar-energy' ? 'menu-paper__grid--bar' : ''}`}>
+                      {group.sections.map((section) => (
+                        <section key={section.id || section.title} className="menu-block">
+                          <header className="menu-block__header">
+                            <h3>{section.title}</h3>
+                            {section.subtitle ? <p>{section.subtitle}</p> : null}
+                          </header>
 
-                      {(section.items || []).length > 0 ? (
-                        <ul className="menu-list">
-                          {(section.items || []).map((item) => (
-                            <li key={`${section.id || section.title}-${item.name}`} className="menu-list__item">
-                              <div className="menu-list__item-title">{item.name}</div>
-                              {item.description ? <p className="menu-list__item-description">{item.description}</p> : null}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </article>
-                  </div>
+                          {(section.items || []).length > 0 ? (
+                            <ul className="menu-block__list">
+                              {section.items.map((item) => (
+                                <li key={`${section.id || section.title}-${item.name}`} className="menu-block__item">
+                                  <div className="menu-block__item-title">{item.name}</div>
+                                  {item.description ? <p className="menu-block__item-description">{item.description}</p> : null}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                        </section>
+                      ))}
+                    </div>
+
+                    <footer className="menu-paper__footer">Com carinho, André & Nathália</footer>
+                  </article>
                 );
               })}
             </section>
