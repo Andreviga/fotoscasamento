@@ -1,6 +1,6 @@
 'use client';
 
-export type AppTab = 'info' | 'mesa' | 'mapa' | 'fotos' | 'mais' | 'mural';
+export type AppTab = 'info' | 'mesa' | 'fotos' | 'mais' | 'mural';
 
 type TabBarProps = {
   active: AppTab;
@@ -29,15 +29,6 @@ const TABS: TabItem[] = [
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-      </svg>
-    )
-  },
-  {
-    key: 'mapa',
-    label: 'Mapa',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6-10l6 3m0 10l5.447-2.724A1 1 0 0 0 21 16.382V5.618a1 1 0 0 0-1.447-.894L15 7m0 13V7" />
       </svg>
     )
   },
@@ -71,7 +62,7 @@ export default function TabBar({ active, onChange }: TabBarProps) {
       aria-label="Navegação principal"
       role="tablist"
     >
-      <div className="mx-auto grid h-16 max-w-3xl grid-cols-5">
+      <div className="mx-auto grid h-16 max-w-3xl grid-cols-4">
         {TABS.map((tab) => {
           const isActive = active === tab.key;
 

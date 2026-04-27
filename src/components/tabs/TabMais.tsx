@@ -14,7 +14,7 @@ type RoteiroItem = {
   destaque?: boolean;
 };
 
-type SubTab = 'roteiro' | 'menu' | 'extra';
+type SubTab = 'roteiro' | 'mapa' | 'menu' | 'extra';
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '17:00', titulo: 'Chegada e welcome drink',     destaque: false },
@@ -54,6 +54,7 @@ function getHorarioAtual(items: RoteiroItem[]): string | null {
 
 const SUB_TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'roteiro', label: 'Roteiro', icon: '🗓' },
+  { id: 'mapa',    label: 'Mapa',    icon: '🗺' },
   { id: 'menu',    label: 'Menu',    icon: '🍽' },
   { id: 'extra',   label: 'Mais',    icon: '✦'  },
 ];
@@ -62,6 +63,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
   const [sub, setSub] = useState<SubTab>('roteiro');
   const [loadingRoteiro, setLoadingRoteiro] = useState(true);
   const [roteiroItems, setRoteiroItems] = useState<RoteiroItem[]>([]);
+  const [mapaMounted, setMapaMounted] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
 
   useEffect(() => {
@@ -80,8 +82,18 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
   }, []);
 
   useEffect(() => {
+    if (sub === 'mapa') setMapaMounted(true);
     if (sub === 'menu') setMenuMounted(true);
   }, [sub]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const focus = window.sessionStorage.getItem('tab-mais-focus');
+    if (focus === 'mapa') {
+      setSub('mapa');
+      window.sessionStorage.removeItem('tab-mais-focus');
+    }
+  }, []);
 
   const horarioAtual = useMemo(() => getHorarioAtual(roteiroItems), [roteiroItems]);
 
@@ -174,6 +186,27 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
                 })}
               </ol>
             )}
+          </div>
+        </div>
+
+        {/* MAPA */}
+        <div className={sub === 'mapa' ? 'flex h-full flex-col' : 'hidden'}>
+          {mapaMounted ? (
+            <iframe
+              src="/mapa?embedded=1"
+              title="Mapa do Salão"
+              className="w-full flex-1 border-0"
+              style={{ height: 'calc(100dvh - 8rem)' }}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center py-16">
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gold" />
+            </div>
+          )}
+          <div className="shrink-0 border-t border-roseDeep/10 bg-ivory/90 px-4 py-2 text-center">
+            <a href="/mapa" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-wine">
+              Abrir mapa em tela cheia
+            </a>
           </div>
         </div>
 

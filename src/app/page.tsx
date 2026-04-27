@@ -4,12 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import TabBar, { type AppTab } from '@/components/TabBar';
 import TabInfo from '@/components/tabs/TabInfo';
 import TabMesa from '@/components/tabs/TabMesa';
-import TabMapa from '@/components/tabs/TabMapa';
 import TabFotos from '@/components/tabs/TabFotos';
 import TabMural from '@/components/tabs/TabMural';
 import TabMais from '@/components/tabs/TabMais';
 
-const VALID_TABS: AppTab[] = ['info', 'mesa', 'mapa', 'fotos', 'mais'];
+const VALID_TABS: AppTab[] = ['info', 'mesa', 'fotos', 'mural', 'mais'];
 
 function getInitialTab(): AppTab {
   if (typeof window === 'undefined') {
@@ -23,7 +22,6 @@ function getInitialTab(): AppTab {
 export default function AppShellPage() {
   const [activeTab, setActiveTab] = useState<AppTab>(getInitialTab);
   const [fotosMounted, setFotosMounted] = useState(() => getInitialTab() === 'fotos');
-  const [selectedTable, setSelectedTable] = useState<number | null>(null);
 
   useEffect(() => {
     function onHashChange() {
@@ -49,20 +47,12 @@ export default function AppShellPage() {
     }
   };
 
-  const handleSelectTable = (tableNum: number) => {
-    setSelectedTable(tableNum);
-    handleTabChange('mapa');
-  };
-
   const currentTabContent = useMemo(() => {
     if (activeTab === 'info') {
       return <TabInfo onNavigate={handleTabChange} />;
     }
     if (activeTab === 'mesa') {
-      return <TabMesa onNavigate={handleTabChange} onSelectTable={handleSelectTable} />;
-    }
-    if (activeTab === 'mapa') {
-      return <TabMapa onNavigate={handleTabChange} selectedTable={selectedTable} onSelectTable={setSelectedTable} />;
+      return <TabMesa onNavigate={handleTabChange} />;
     }
     if (activeTab === 'fotos') {
       return <TabFotos onNavigate={handleTabChange} mounted={fotosMounted} />;
@@ -71,7 +61,7 @@ export default function AppShellPage() {
       return <TabMural onNavigate={handleTabChange} />;
     }
     return <TabMais onNavigate={handleTabChange} />;
-  }, [activeTab, fotosMounted, selectedTable]);
+  }, [activeTab, fotosMounted]);
 
   return (
     <div className="min-h-screen pb-16 sm:pb-20">
