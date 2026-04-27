@@ -166,8 +166,8 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
     <section className="main">
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-4 py-4">
-        <header className="romantic-panel bg-ivory p-5 text-center sm:p-7">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-gold text-xl tracking-[0.12em] text-gold sm:h-20 sm:w-20 sm:text-2xl">
+        <header className="stationery-top">
+          <div className="stationery-monogram h-16 w-16 text-xl tracking-[0.12em] text-gold sm:h-20 sm:w-20 sm:text-2xl">
             A&amp;N
           </div>
           <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl">André &amp; Nathália</h1>

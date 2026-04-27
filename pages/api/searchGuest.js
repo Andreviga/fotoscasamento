@@ -1,6 +1,7 @@
 import Fuse from 'fuse.js';
 import { getAdminDb } from '../../lib/firebaseAdmin';
 import { normalizeName } from '../../lib/guestUtils';
+import { SEATING_GUESTS } from '../../lib/seatingPlan';
 
 let guestsCache = [];
 let guestsCacheAt = 0;
@@ -12,13 +13,33 @@ async function loadGuests(force = false) {
     return guestsCache;
   }
 
-  const adminDb = getAdminDb();
-  const snapshot = await adminDb.collection('convidados').get();
+  try {
+    const adminDb = getAdminDb();
+    const snapshot = await adminDb.collection('convidados').get();
 
-  guestsCache = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+    const fromFirestore = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      source: 'firestore'
+    }));
+
+    const dedupe = new Set(
+      fromFirestore
+        .map((guest) => normalizeName(guest.nomeOriginal || guest.nome || ''))
+        .filter(Boolean)
+    );
+
+    const fallbackGuests = SEATING_GUESTS.filter((guest) => {
+      const key = normalizeName(guest.nomeOriginal || guest.nome || '');
+      return key && !dedupe.has(key);
+    });
+
+    guestsCache = [...fromFirestore, ...fallbackGuests];
+  } catch (error) {
+    console.error('Falha ao carregar convidados do Firestore, usando plano local:', error);
+    guestsCache = [...SEATING_GUESTS];
+  }
+
   guestsCacheAt = now;
 
   return guestsCache;
@@ -30,6 +51,7 @@ function toResult(guest) {
     nomeOriginal: guest.nomeOriginal || guest.nome || '',
     nomeConvite: guest.nomeConvite || '',
     mesa: typeof guest.mesa === 'number' ? guest.mesa : null,
+    mesaNome: guest.mesaNome || guest.grupo || '',
     grupo: guest.grupo || '',
     confirmado: Boolean(guest.confirmado)
   };

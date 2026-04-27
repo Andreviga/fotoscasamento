@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   collection,
   limit,
@@ -215,6 +216,8 @@ function saveDeleteToken(documentId, deleteToken) {
 }
 
 export default function FotosPage() {
+  const router = useRouter();
+  const embedded = useMemo(() => router.asPath?.includes('embedded=1'), [router.asPath]);
   const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
@@ -388,16 +391,25 @@ export default function FotosPage() {
         />
       </Head>
 
-      <WeddingHeader />
+      {!embedded ? <WeddingHeader /> : null}
 
-      <main className="main" id="fotos">
+      <main className={`main ${embedded ? 'main--embedded' : ''}`} id="fotos">
         <div className="hero-haze" />
         <div className="container relative z-10">
-          <PageTitle
-            kicker="Instacasamento"
-            title="Fotos e Vídeos com Filtros"
-            subtitle="Tire foto ou grave vídeo, escolha um filtro e publique direto no feed da festa."
-          />
+          {embedded ? (
+            <header className="stationery-title">
+              <p className="stationery-title__monogram">A&amp;N</p>
+              <div className="stationery-title__rule" />
+              <h1 className="stationery-title__heading">Fotos e Vídeos com Filtros</h1>
+              <p className="stationery-title__subtitle">Instacasamento</p>
+            </header>
+          ) : (
+            <PageTitle
+              kicker="Instacasamento"
+              title="Fotos e Vídeos com Filtros"
+              subtitle="Tire foto ou grave vídeo, escolha um filtro e publique direto no feed da festa."
+            />
+          )}
 
           <div className="step-indicator">
             <div className={`step-indicator__item${step > 1 ? ' step-indicator__item--done' : ' step-indicator__item--active'}`}>
@@ -629,7 +641,7 @@ export default function FotosPage() {
         </div>
       </main>
 
-      <WeddingFooter />
+      {!embedded ? <WeddingFooter /> : null}
     </>
   );
 }

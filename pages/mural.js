@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 
 import WeddingHeader from '../components/WeddingHeader';
@@ -92,6 +93,8 @@ function formatTime(timestampMs) {
 }
 
 export default function MuralPage() {
+  const router = useRouter();
+  const embedded = router.asPath?.includes('embedded=1');
   const [photos, setPhotos] = useState([]);
   const [status, setStatus] = useState('Conectando ao mural...');
   const [deleteTokens, setDeleteTokens] = useState({});
@@ -170,17 +173,26 @@ export default function MuralPage() {
         <meta name="description" content="Mural ao vivo com as fotos dos convidados." />
       </Head>
 
-      <WeddingHeader />
+      {!embedded ? <WeddingHeader /> : null}
 
-      <main className="main" id="mural">
+      <main className={`main ${embedded ? 'main--embedded' : ''}`} id="mural">
         <div className="hero-haze" />
 
         <div className="container relative z-10">
-          <PageTitle
-            kicker="Mural"
-            title="Mural ao Vivo"
-            subtitle="Ideal para o telão: cada nova mídia publicada aparece automaticamente para todos."
-          />
+          {embedded ? (
+            <header className="stationery-title">
+              <p className="stationery-title__monogram">A&amp;N</p>
+              <div className="stationery-title__rule" />
+              <h1 className="stationery-title__heading">Mural ao Vivo</h1>
+              <p className="stationery-title__subtitle">Atualização em tempo real</p>
+            </header>
+          ) : (
+            <PageTitle
+              kicker="Mural"
+              title="Mural ao Vivo"
+              subtitle="Ideal para o telão: cada nova mídia publicada aparece automaticamente para todos."
+            />
+          )}
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="rounded-full border border-rose/20 bg-ivory/70 px-4 py-2 text-sm text-wine/75">{status}</p>
@@ -234,7 +246,7 @@ export default function MuralPage() {
         </div>
       </main>
 
-      <WeddingFooter />
+      {!embedded ? <WeddingFooter /> : null}
     </>
   );
 }

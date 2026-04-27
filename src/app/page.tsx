@@ -18,11 +18,11 @@ const VALID_TABS: AppTab[] = ['info', 'mesa', 'fotos', 'mural', 'mais'];
 
 function getInitialTab(): AppTab {
   if (typeof window === 'undefined') {
-    return 'info';
+    return 'mesa';
   }
 
   const hash = window.location.hash.replace('#', '') as AppTab;
-  return VALID_TABS.includes(hash) ? hash : 'info';
+  return VALID_TABS.includes(hash) ? hash : 'mesa';
 }
 
 export default function AppShellPage() {
@@ -32,7 +32,7 @@ export default function AppShellPage() {
   useEffect(() => {
     function onHashChange() {
       const hash = window.location.hash.replace('#', '') as AppTab;
-      const next = VALID_TABS.includes(hash) ? hash : 'info';
+      const next = VALID_TABS.includes(hash) ? hash : 'mesa';
       setActiveTab(next);
       if (next === 'fotos') {
         setFotosMounted(true);
