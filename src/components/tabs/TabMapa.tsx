@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
 import PageHeader from '@/components/PageHeader';
-import { getMapIcon, getMapType, MAP_LEGEND_ITEMS } from '../../../lib/mapIcons';
 
 type TabMapaProps = {
   onNavigate: (tab: AppTab) => void;
@@ -80,18 +79,6 @@ const TABLE_POSITIONS = [
   { n: 18, cx: 225, cy: 640 },
   { n: 19, cx: 295, cy: 640 },
   { n: 20, cx: 365, cy: 640 },
-];
-
-const MAP_POINTS = [
-  { id: 'point-bar', label: 'Bar', x: 68, y: 66, type: 'bar' },
-  { id: 'point-noivos', label: 'Cerimônia', x: 260, y: 66, type: 'cerimonia' },
-  { id: 'point-buffet', label: 'Buffet', x: 452, y: 66, type: 'buffet' },
-  { id: 'point-pista', label: 'Pista', x: 260, y: 500, type: 'pista' },
-  { id: 'point-fotos', label: 'Fotos', x: 410, y: 548, type: 'fotos' },
-  { id: 'point-banheiros-e', label: 'Banheiros', x: 62, y: 650, type: 'banheiro' },
-  { id: 'point-banheiros-d', label: 'Banheiros', x: 458, y: 650, type: 'banheiro' },
-  { id: 'point-estacionamento', label: 'Estacionamento', x: 138, y: 722, type: 'estacionamento' },
-  { id: 'point-entrada', label: 'Entrada', x: 260, y: 722, type: 'entrada' }
 ];
 
 const VENUE_ADDRESS = 'R. das Araribás, 25 - Bairro dos Casa, São Bernardo do Campo - SP, 09840-210';
@@ -216,14 +203,13 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
             className="overflow-y-auto overflow-x-hidden"
             style={{ maxHeight: 'calc(100dvh - 22rem)', WebkitOverflowScrolling: 'touch' }}
           >
-            <div className="relative">
-              <svg
-                viewBox="0 0 520 750"
-                width="100%"
-                aria-label="Mapa esquemático do salão"
-                role="img"
-                style={{ display: 'block', minWidth: 280 }}
-              >
+            <svg
+              viewBox="0 0 520 750"
+              width="100%"
+              aria-label="Mapa esquemático do salão"
+              role="img"
+              style={{ display: 'block', minWidth: 280 }}
+            >
               {/* Room outline */}
               <rect x="4" y="4" width="512" height="742" rx="14"
                 fill="#fdfbf7" stroke="rgba(196,164,100,0.45)" strokeWidth="1.5" />
@@ -238,13 +224,15 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
               <text x="68" y="38" textAnchor="middle" fontSize="9" fontWeight="600"
                 fill="rgba(196,164,100,0.85)" fontFamily="DM Sans,sans-serif" letterSpacing="1.5">BAR</text>
               <text x="68" y="53" textAnchor="middle" fontSize="7.5"
-                fill="rgba(74,74,74,0.6)" fontFamily="DM Sans,sans-serif">Drinks &amp; Caipirinhas</text>
+                fill="rgba(74,74,74,0.6)" fontFamily="DM Sans,sans-serif">🍹 Drinks &amp; Caipirinhas</text>
 
               {/* Mesa dos Noivos */}
               <rect x="178" y="8" width="164" height="82" rx="10"
                 fill="rgba(47,62,50,0.08)" stroke="rgba(47,62,50,0.25)" strokeWidth="1.2" />
               <text x="260" y="36" textAnchor="middle" fontSize="8" fontWeight="700"
                 fill="rgba(47,62,50,0.75)" fontFamily="DM Sans,sans-serif" letterSpacing="1.5">MESA DOS NOIVOS</text>
+              <text x="260" y="52" textAnchor="middle" fontSize="12"
+                fill="rgba(47,62,50,0.55)">💍</text>
               <text x="260" y="70" textAnchor="middle" fontSize="7.5"
                 fill="rgba(47,62,50,0.5)" fontFamily="DM Sans,sans-serif">André &amp; Nathália</text>
 
@@ -254,7 +242,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
               <text x="452" y="38" textAnchor="middle" fontSize="9" fontWeight="600"
                 fill="rgba(196,164,100,0.85)" fontFamily="DM Sans,sans-serif" letterSpacing="1.5">BUFFET</text>
               <text x="452" y="53" textAnchor="middle" fontSize="7.5"
-                fill="rgba(74,74,74,0.6)" fontFamily="DM Sans,sans-serif">Jantar</text>
+                fill="rgba(74,74,74,0.6)" fontFamily="DM Sans,sans-serif">🍽 Jantar</text>
 
               {/* Pista de dança */}
               <rect x="128" y="415" width="264" height="155" rx="20"
@@ -262,17 +250,20 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                 strokeDasharray="5 3" />
               <text x="260" y="480" textAnchor="middle" fontSize="9" fontWeight="600"
                 fill="rgba(196,164,100,0.80)" fontFamily="DM Sans,sans-serif" letterSpacing="2">PISTA DE DANÇA</text>
+              <text x="260" y="500" textAnchor="middle" fontSize="18">🕺</text>
 
               {/* Banheiros */}
               <rect x="8" y="598" width="108" height="88" rx="8"
                 fill="rgba(47,62,50,0.05)" stroke="rgba(47,62,50,0.18)" strokeWidth="1" />
               <text x="62" y="630" textAnchor="middle" fontSize="8" fontWeight="600"
                 fill="rgba(47,62,50,0.55)" fontFamily="DM Sans,sans-serif" letterSpacing="1">BANHEIROS</text>
+              <text x="62" y="648" textAnchor="middle" fontSize="14">🚻</text>
 
               <rect x="404" y="598" width="108" height="88" rx="8"
                 fill="rgba(47,62,50,0.05)" stroke="rgba(47,62,50,0.18)" strokeWidth="1" />
               <text x="458" y="630" textAnchor="middle" fontSize="8" fontWeight="600"
                 fill="rgba(47,62,50,0.55)" fontFamily="DM Sans,sans-serif" letterSpacing="1">BANHEIROS</text>
+              <text x="458" y="648" textAnchor="middle" fontSize="14">🚻</text>
 
               {/* Entrada */}
               <rect x="168" y="700" width="184" height="38" rx="8"
@@ -363,53 +354,23 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                   </g>
                 );
               })}
-              </svg>
-
-              <div className="pointer-events-none absolute inset-0">
-                {MAP_POINTS.map((point) => {
-                  const mapItem = { type: point.type, title: point.label, label: point.label, id: point.id };
-                  const Icon = getMapIcon(mapItem);
-                  const markerType = getMapType(mapItem);
-
-                  return (
-                    <div
-                      key={point.id}
-                      className={`map-marker map-marker--${markerType} absolute`}
-                      style={{
-                        left: `${(point.x / 520) * 100}%`,
-                        top: `${(point.y / 750) * 100}%`,
-                        transform: 'translate(-50%, -50%)'
-                      }}
-                    >
-                      <Icon className="map-marker-icon" strokeWidth={1.8} />
-                      <span>{point.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            </svg>
           </div>
 
           {/* Legenda */}
           <div className="border-t border-roseDeep/10 px-4 py-2.5">
             <p className="mb-1.5 text-[10px] uppercase tracking-[0.12em] text-roseDeep/50">Legenda</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {MAP_LEGEND_ITEMS.map((item) => {
-                const mapItem = { type: item.type, label: item.label };
-                const Icon = getMapIcon(mapItem);
-                const markerType = getMapType(mapItem);
-
-                return (
-                  <span key={item.type} className={`map-marker map-marker--${markerType} map-marker--legend`}>
-                    <Icon className="map-marker-icon" strokeWidth={1.8} />
-                    {item.label}
-                  </span>
-                );
-              })}
-              <span className="map-marker map-marker--mesa map-marker--legend border-wine/35 bg-wine/10 text-wine">
-                Sua mesa
-              </span>
-              
+              {[
+                { color: '#FDFBF7', border: 'rgba(196,164,100,0.55)', label: 'Mesa de convidados' },
+                { color: '#2F3E32', border: '#C4A464', label: 'Sua mesa' },
+              ].map((item) => (
+                <span key={item.label} className="flex items-center gap-1.5 text-[10px] text-cocoa/70">
+                  <span className="inline-block h-3 w-3 rounded-full border"
+                    style={{ background: item.color, borderColor: item.border }} />
+                  {item.label}
+                </span>
+              ))}
             </div>
           </div>
         </div>

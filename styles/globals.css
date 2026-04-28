@@ -80,48 +80,6 @@
       radial-gradient(circle at 88% 12%, rgba(15, 79, 61, 0.08), transparent 16%);
   }
 
-  .map-marker {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 9px;
-    border-radius: 999px;
-    background: rgba(253, 251, 247, 0.96);
-    border: 1px solid rgba(196, 164, 100, 0.55);
-    box-shadow: 0 8px 22px rgba(47, 62, 50, 0.14);
-    color: var(--green);
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .map-marker-icon {
-    width: 17px;
-    height: 17px;
-    color: var(--gold-dark);
-    flex-shrink: 0;
-  }
-
-  .map-marker--legend {
-    padding: 4px 8px;
-    font-size: 11px;
-    box-shadow: none;
-  }
-
-  .map-marker--mesa .map-marker-icon,
-  .map-marker--cerimonia .map-marker-icon,
-  .map-marker--entrada .map-marker-icon,
-  .map-marker--banheiro .map-marker-icon {
-    color: var(--green);
-  }
-
-  .map-marker--buffet .map-marker-icon,
-  .map-marker--bar .map-marker-icon,
-  .map-marker--doces .map-marker-icon,
-  .map-marker--bebidas .map-marker-icon {
-    color: var(--gold-dark);
-  }
-
   .section-header {
     @apply mb-8 text-center;
   }
