@@ -14,8 +14,7 @@ export default function TabMural(_: TabMuralProps) {
         <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
           <p className="stationery-monogram">A &amp; N</p>
           <div className="stationery-rule" />
-          <p className="mt-3 font-serifRomance text-4xl text-cocoa">André &amp; Nathália</p>
-          <h1 className="mt-1 text-sm uppercase tracking-[0.28em] text-roseDeep/70">Mural Ao Vivo</h1>
+          <h1 className="mt-3 font-serifRomance text-4xl text-cocoa sm:text-5xl">Mural Ao Vivo</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-roseDeep/80">As fotos aparecem em tempo real</p>
         </header>
 
