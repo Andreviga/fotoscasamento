@@ -89,9 +89,9 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             padding: '2.5rem 1.5rem',
           }}
         >
-          <p className="stationery-monogram" aria-hidden="true">A&amp;N</p>
+          <p className="stationery-monogram" aria-hidden="true">A &amp; N</p>
           <div className="stationery-rule" />
-          <h1 className="mt-3 text-5xl text-cocoa sm:text-6xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>André &amp; Nathália</h1>
+          <h1 className="mt-3 font-serifRomance text-5xl text-cocoa sm:text-6xl">André &amp; Nathália</h1>
           <p className="mt-1 text-sm uppercase tracking-[0.3em] text-roseDeep/65">03 de maio de 2026</p>
           <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
