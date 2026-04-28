@@ -398,7 +398,9 @@ export default function FotosPage() {
         <div className="container relative z-10">
           {embedded ? (
             <header className="stationery-title">
-              <p className="stationery-title__monogram">A&amp;N</p>
+              <span className="wedding-monogram" style={{ '--font-size': '20px', '--letter-spacing': '.36em' }}>
+                A <span className="wedding-amp">&amp;</span> N
+              </span>
               <div className="stationery-title__rule" />
               <h1 className="stationery-title__heading">Fotos e Vídeos com Filtros</h1>
               <p className="stationery-title__subtitle">Instacasamento</p>

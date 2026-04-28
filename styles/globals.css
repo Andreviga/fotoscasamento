@@ -5,6 +5,13 @@
 @tailwind utilities;
 
 :root {
+  --ink: #2c2c2c;
+  --ink-soft: #4a4a4a;
+  --gold: #C4A464;
+  --gold-dark: #A88A4A;
+  --green: #2F3E32;
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --color-blush: #f7f6f2;
   --color-rose: #cfdacd;
   --color-rose-deep: #6f8475;
@@ -23,7 +30,9 @@
       radial-gradient(circle at top, rgba(201, 179, 126, 0.18), transparent 28%),
       radial-gradient(circle at 14% 10%, rgba(111, 132, 117, 0.1), transparent 18%),
       linear-gradient(180deg, #fdfcf8 0%, #f7f6f2 52%, #efecdf 100%);
-    font-family: var(--font-wedding-body), 'DM Sans', sans-serif;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
     min-height: 100vh;
   }
 
@@ -129,6 +138,80 @@
     @apply mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/60 to-transparent;
   }
 
+  .wedding-monogram {
+    font-family: var(--serif);
+    font-size: var(--font-size, 22px);
+    font-weight: 300;
+    letter-spacing: var(--letter-spacing, .42em);
+    color: var(--ink);
+    text-transform: uppercase;
+    line-height: var(--line-height, 1);
+    white-space: nowrap;
+  }
+
+  .wedding-names {
+    font-family: var(--serif);
+    font-size: var(--font-size, 45px);
+    font-weight: 400;
+    line-height: var(--line-height, 1.08);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .wedding-monogram .wedding-amp,
+  .wedding-names .wedding-amp {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-dark);
+  }
+
+  .wedding-names .wedding-amp {
+    font-size: .76em;
+    vertical-align: 2px;
+  }
+
+  .wedding-signature .wedding-amp {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-dark);
+  }
+
+  .wedding-signature {
+    font-family: var(--serif);
+    font-size: var(--font-size, 21px);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-soft);
+  }
+
+  .wedding-rule {
+    height: 1px;
+    width: 160px;
+    max-width: 42vw;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border: 0;
+    margin: 14px auto;
+  }
+
+  .bottom-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bottom-monogram {
+    --font-size: 15px;
+    --letter-spacing: .32em;
+  }
+
+  .bottom-date {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: var(--ink-soft);
+  }
+
   .stationery-title {
     border: 1px solid rgba(201, 179, 126, 0.32);
     border-radius: 1.5rem;
@@ -172,6 +255,21 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: rgba(111, 132, 117, 0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .wedding-names {
+    --font-size: clamp(36px, 12vw, 45px);
+  }
+
+  .wedding-monogram {
+    --font-size: 20px;
+    --letter-spacing: .36em;
+  }
+
+  .wedding-rule {
+    width: 140px;
   }
 }
 

@@ -89,9 +89,14 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             padding: '2.5rem 1.5rem',
           }}
         >
-          <p className="stationery-monogram" aria-hidden="true">A &amp; N</p>
-          <div className="stationery-rule" />
-          <h1 className="mt-3 font-serifRomance text-5xl text-cocoa sm:text-6xl">André &amp; Nathália</h1>
+          <span className="wedding-monogram" aria-hidden="true">
+            A <span className="wedding-amp">&amp;</span> N
+          </span>
+          <div className="wedding-rule" />
+          <h1 className="wedding-names mt-2">
+            André <span className="wedding-amp">&amp;</span> Nathália
+          </h1>
+          <div className="wedding-rule" />
           <p className="mt-1 text-sm uppercase tracking-[0.3em] text-roseDeep/65">03 de maio de 2026</p>
           <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
@@ -131,8 +136,9 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             )}
           </div>
 
-          <div className="mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-          <p className="mt-3 text-xs italic text-roseDeep/55">Com carinho, André &amp; Nathália</p>
+          <p className="wedding-signature mt-3" style={{ '--font-size': '19px' } as React.CSSProperties}>
+            Com carinho, André <span className="wedding-amp">&amp;</span> Nathália
+          </p>
         </header>
 
         {/* CTA Buttons */}
@@ -212,7 +218,12 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
 
         {/* Footer stamp */}
         <div className="text-center pt-2 pb-1">
-          <p className="text-xs tracking-[0.18em] text-roseDeep/40 uppercase">A&amp;N · 03.05.2026</p>
+          <div className="bottom-brand">
+            <span className="wedding-monogram bottom-monogram">
+              A <span className="wedding-amp">&amp;</span> N
+            </span>
+            <span className="bottom-date">03.05.2026</span>
+          </div>
         </div>
       </div>
     </section>

@@ -136,8 +136,10 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
 
         {/* Header */}
         <header className="stationery-top py-4 text-center sm:py-5">
-          <p className="mx-auto grid h-12 w-12 place-items-center rounded-full border border-gold/70 font-serifRomance text-lg text-gold">A&amp;N</p>
-          <div className="mx-auto mt-2 h-px w-28 bg-gradient-to-r from-transparent via-gold/70 to-transparent" />
+          <span className="wedding-monogram" style={{ '--font-size': '20px', '--letter-spacing': '.36em' }}>
+            A <span className="wedding-amp">&amp;</span> N
+          </span>
+          <div className="wedding-rule" />
           <h1 className="mt-2 text-3xl text-cocoa sm:text-4xl">Mapa das Mesas</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.22em] text-roseDeep/75">Planta do salão · Espaço Vdara</p>
         </header>

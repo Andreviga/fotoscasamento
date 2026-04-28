@@ -17,7 +17,9 @@ export default function Header() {
     <header className="site-header">
       <div className="container site-header__inner">
         <Link href="/" className="site-brand" aria-label="Página inicial">
-          André & Nathália
+          <span className="wedding-names" style={{ '--font-size': '34px', '--line-height': '1' }}>
+            André <span className="wedding-amp">&amp;</span> Nathália
+          </span>
         </Link>
         <nav className="site-nav" aria-label="Navegação principal" style={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {links.map((item) => (

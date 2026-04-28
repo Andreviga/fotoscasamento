@@ -128,10 +128,15 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-4 py-4 sm:space-y-5">
         <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
-          <p className="stationery-monogram">A &amp; N</p>
-          <div className="stationery-rule" />
-          <p className="mt-3 font-serifRomance text-4xl text-cocoa">André &amp; Nathália</p>
-          <h1 className="mt-1 text-sm uppercase tracking-[0.28em] text-roseDeep/70">Encontre Sua Mesa</h1>
+          <span className="wedding-monogram">
+            A <span className="wedding-amp">&amp;</span> N
+          </span>
+          <div className="wedding-rule" />
+          <h1 className="wedding-names mt-2">
+            André <span className="wedding-amp">&amp;</span> Nathália
+          </h1>
+          <div className="wedding-rule" />
+          <p className="mt-1 text-sm uppercase tracking-[0.28em] text-roseDeep/70">Encontre Sua Mesa</p>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-roseDeep/80">Busca de convidados</p>
           <div className="mx-auto mt-4 max-w-xl">
             <div className="relative">

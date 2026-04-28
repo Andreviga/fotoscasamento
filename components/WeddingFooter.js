@@ -34,9 +34,12 @@ export default function WeddingFooter() {
     <>
       <footer className="mt-10 border-t border-rose/10 bg-blush/30 py-8">
         <div className="container space-y-4 text-center">
-          <p className="text-sm text-wine/80">
-            {site.nome_noivos || 'André & Nathália'} · {site.data_casamento || '03 de maio de 2026'}
-          </p>
+          <div className="bottom-brand">
+            <span className="wedding-monogram bottom-monogram">
+              A <span className="wedding-amp">&amp;</span> N
+            </span>
+            <span className="bottom-date">03.05.2026</span>
+          </div>
           {site.hashtag ? <p className="text-xs text-wine/60">{site.hashtag}</p> : null}
           <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-wine/65">
             {FOOTER_LINKS.map((item) => (
@@ -45,7 +48,10 @@ export default function WeddingFooter() {
               </a>
             ))}
           </div>
-          <p className="text-xs text-wine/50">{year} · Feito com carinho</p>
+          <p className="wedding-signature" style={{ '--font-size': '17px' }}>
+            Com carinho, André <span className="wedding-amp">&amp;</span> Nathália
+          </p>
+          <p className="text-xs text-wine/50">{year}</p>
         </div>
       </footer>
       <MobileTabBar />

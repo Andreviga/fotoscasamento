@@ -4,6 +4,13 @@
 
 :root {
   color-scheme: light;
+  --ink: #2c2c2c;
+  --ink-soft: #4a4a4a;
+  --gold: #C4A464;
+  --gold-dark: #A88A4A;
+  --green: #2F3E32;
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 html {
@@ -13,6 +20,9 @@ html {
 body {
   min-height: 100vh;
   background-color: #fbfaf7;
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 ::selection {
@@ -117,6 +127,80 @@ body {
     @apply mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/80 to-transparent;
   }
 
+  .wedding-monogram {
+    font-family: var(--serif);
+    font-size: var(--font-size, 22px);
+    font-weight: 300;
+    letter-spacing: var(--letter-spacing, .42em);
+    color: var(--ink);
+    text-transform: uppercase;
+    line-height: var(--line-height, 1);
+    white-space: nowrap;
+  }
+
+  .wedding-names {
+    font-family: var(--serif);
+    font-size: var(--font-size, 45px);
+    font-weight: 400;
+    line-height: var(--line-height, 1.08);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .wedding-monogram .wedding-amp,
+  .wedding-names .wedding-amp {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-dark);
+  }
+
+  .wedding-names .wedding-amp {
+    font-size: .76em;
+    vertical-align: 2px;
+  }
+
+  .wedding-signature .wedding-amp {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-dark);
+  }
+
+  .wedding-signature {
+    font-family: var(--serif);
+    font-size: var(--font-size, 21px);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-soft);
+  }
+
+  .wedding-rule {
+    height: 1px;
+    width: 160px;
+    max-width: 42vw;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border: 0;
+    margin: 14px auto;
+  }
+
+  .bottom-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bottom-monogram {
+    --font-size: 15px;
+    --letter-spacing: .32em;
+  }
+
+  .bottom-date {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: var(--ink-soft);
+  }
+
   .gift-inspired-wrap {
     @apply px-1 sm:px-0;
   }
@@ -198,6 +282,19 @@ body {
 
   .gift-hero-panel {
     border-radius: 14px;
+  }
+
+  .wedding-names {
+    --font-size: clamp(36px, 12vw, 45px);
+  }
+
+  .wedding-monogram {
+    --font-size: 20px;
+    --letter-spacing: .36em;
+  }
+
+  .wedding-rule {
+    width: 140px;
   }
 }
 

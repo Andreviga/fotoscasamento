@@ -1,29 +1,20 @@
 import '../styles/globals.css';
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
-
-const titleFont = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-romance'
-});
-
-const bodyFont = DM_Sans({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-clean'
-});
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
   return (
-    <div
-      className={`${titleFont.variable} ${bodyFont.variable}`}
-      style={{
-        '--font-wedding-title': 'var(--font-romance)',
-        '--font-wedding-body': 'var(--font-clean)'
-      }}
-    >
+    <>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+      <div>
       <Component {...pageProps} />
-    </div>
+      </div>
+    </>
   );
 }

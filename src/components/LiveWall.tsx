@@ -48,7 +48,9 @@ export function LiveWall() {
         <div className="flex flex-col gap-4 border-b border-rose/15 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-wine/55">Mural ao Vivo</p>
-            <h1 className="mt-2 text-4xl sm:text-6xl">✿ André & Nathália</h1>
+            <h1 className="wedding-names mt-2" style={{ '--font-size': 'clamp(2.2rem, 6vw, 4.2rem)' } as React.CSSProperties}>
+              André <span className="wedding-amp">&amp;</span> Nathália
+            </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-wine/72">
               Página pensada para telão: visual elegante, leitura limpa e atualização imediata quando um convidado publica uma nova foto.
             </p>

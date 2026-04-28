@@ -300,7 +300,11 @@ export default function MenuPage() {
                       ))}
                     </div>
 
-                    <footer className="menu-paper__footer">Com carinho, André & Nathália</footer>
+                    <footer className="menu-paper__footer">
+                      <span className="wedding-signature" style={{ '--font-size': '21px' }}>
+                        Com carinho, André <span className="wedding-amp">&amp;</span> Nathália
+                      </span>
+                    </footer>
                   </article>
                 );
               })}

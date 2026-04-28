@@ -15,7 +15,7 @@ const ROTEIRO_FALLBACK = [
   { horario: '18:30', titulo: 'Entrada da noiva',             descricao: 'O grande momento — Nathália chega ao altar',    destaque: true  },
   { horario: '18:35', titulo: 'Cerimônia',                   descricao: 'Celebração do casamento',                      destaque: true  },
   { horario: '19:00', titulo: 'Troca de alianças',           descricao: 'O momento mais aguardado',                     destaque: true  },
-  { horario: '19:10', titulo: 'Primeiro beijo',               descricao: 'André & Nathália, agora casados',              destaque: true  },
+  { horario: '19:10', titulo: 'Primeiro beijo',               descricao: 'Agora casados',                                destaque: true  },
   { horario: '19:15', titulo: 'Fotos com família',            descricao: 'Sessão de fotos com família e padrinhos',      destaque: false },
   { horario: '19:30', titulo: 'Abertura do buffet',           descricao: 'Convidados são convidados a servir-se',        destaque: false },
   { horario: '20:00', titulo: 'Brinde',                       descricao: 'Discurso dos padrinhos e espumante',           destaque: true  },

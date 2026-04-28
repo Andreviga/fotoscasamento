@@ -18,7 +18,9 @@ export default function WeddingHeader() {
       <div className="container site-header__inner">
         <div className="flex min-w-0 flex-col gap-1">
           <Link href="/" className="site-brand" aria-label="Página inicial">
-            {site.nome_noivos || 'André & Nathália'}
+            <span className="wedding-names" style={{ '--font-size': '34px', '--line-height': '1' }}>
+              André <span className="wedding-amp">&amp;</span> Nathália
+            </span>
           </Link>
           <p className="text-xs uppercase tracking-[0.22em] text-wine/55">
             {site.data_casamento || '03 de maio de 2026'}
