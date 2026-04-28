@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { href: '/#mesa', label: 'Mesa' },
   { href: '/#fotos', label: 'Fotos' },
   { href: '/#mural', label: 'Mural' },
-  { href: '/#mais', label: 'Info' }
+  { href: '/#extra', label: 'Mais' }
 ];
 
 export default function WeddingHeader() {

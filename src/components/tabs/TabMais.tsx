@@ -252,7 +252,7 @@ export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisP
         {/* EXTRA */}
         <div className={sub === 'extra' ? 'block' : 'hidden'}>
           <div className="mx-auto max-w-lg space-y-3 px-4 pb-8 pt-4">
-            <a href="/etiqueta" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
+            <a href="/etiqueta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">🎩</span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-cocoa">Etiqueta</p>
@@ -273,22 +273,30 @@ export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisP
               </div>
               <span className="text-roseDeep/40">›</span>
             </a>
-            <a href="/roteiro" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
+            <button
+              type="button"
+              onClick={() => onNavigate('roteiro')}
+              className="flex w-full items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 text-left shadow-sm active:bg-linen"
+            >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">📋</span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-cocoa">Roteiro completo</p>
-                <p className="text-xs text-wine/65">Versão detalhada em página própria</p>
+                <p className="text-xs text-wine/65">Abrir na aba de roteiro</p>
               </div>
               <span className="text-roseDeep/40">›</span>
-            </a>
-            <a href="/menu" className="flex items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 shadow-sm active:bg-linen">
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('menu')}
+              className="flex w-full items-center gap-4 rounded-2xl border border-roseDeep/20 bg-white/80 px-5 py-4 text-left shadow-sm active:bg-linen"
+            >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xl">🍽</span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-cocoa">Menu da noite</p>
-                <p className="text-xs text-wine/65">Entradas, pratos e bebidas</p>
+                <p className="text-xs text-wine/65">Abrir na aba de menu</p>
               </div>
               <span className="text-roseDeep/40">›</span>
-            </a>
+            </button>
             <div className="pt-2">
               <button
                 type="button"
