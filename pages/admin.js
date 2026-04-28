@@ -83,6 +83,7 @@ export default function AdminPage() {
 
   const [guestFilters, setGuestFilters] = useState({ grupo: '', mesa: '', confirmado: '' });
   const [guestRows, setGuestRows] = useState([]);
+  const [guestMesaSnapshot, setGuestMesaSnapshot] = useState({});
   const [loadingGuests, setLoadingGuests] = useState(false);
 
   const [muralPhotos, setMuralPhotos] = useState([]);
@@ -324,10 +325,13 @@ export default function AdminPage() {
         throw new Error(payload.error || 'Falha ao carregar convidados');
       }
 
-      setGuestRows(payload.guests || []);
+      const rows = payload.guests || [];
+      setGuestRows(rows);
+      setGuestMesaSnapshot(Object.fromEntries(rows.map((guest) => [guest.id, guest.mesa ?? null])));
     } catch (requestError) {
       setStatusMessage(requestError.message);
       setGuestRows([]);
+      setGuestMesaSnapshot({});
     } finally {
       setLoadingGuests(false);
     }
@@ -397,6 +401,7 @@ export default function AdminPage() {
   }, [activeTab, token]);
 
   async function saveGuest(guest) {
+    const parsedMesa = guest.mesa === '' || guest.mesa == null ? null : Number(guest.mesa);
     try {
       const response = await fetch('/api/adminGuests', {
         method: 'PATCH',
@@ -407,7 +412,7 @@ export default function AdminPage() {
         body: JSON.stringify({
           id: guest.id,
           updates: {
-            mesa: guest.mesa === '' ? null : Number(guest.mesa),
+            mesa: Number.isFinite(parsedMesa) ? parsedMesa : null,
             confirmado: Boolean(guest.confirmado)
           }
         })
@@ -418,10 +423,66 @@ export default function AdminPage() {
         throw new Error(payload.error || 'Falha ao atualizar convidado');
       }
 
+      setGuestMesaSnapshot((prev) => ({ ...prev, [guest.id]: Number.isFinite(parsedMesa) ? parsedMesa : null }));
       setStatusMessage(`Convidado ${guest.nomeOriginal} atualizado.`);
     } catch (requestError) {
       setStatusMessage(requestError.message);
     }
+  }
+
+  async function saveGuestsBatch() {
+    if (!token) return;
+
+    const changedGuests = guestRows.filter((guest) => {
+      const currentMesa = guest.mesa === '' || guest.mesa == null ? null : Number(guest.mesa);
+      const normalizedMesa = Number.isFinite(currentMesa) ? currentMesa : null;
+      const originalMesa = guestMesaSnapshot[guest.id] ?? null;
+      return normalizedMesa !== originalMesa;
+    });
+
+    if (changedGuests.length === 0) {
+      setStatusMessage('Nenhuma alteração de mesa para salvar.');
+      return;
+    }
+
+    setLoadingGuests(true);
+    setStatusMessage(`Salvando ${changedGuests.length} alteração(ões) de mesa...`);
+
+    let updated = 0;
+    let failed = 0;
+
+    for (const guest of changedGuests) {
+      const mesaValue = guest.mesa === '' || guest.mesa == null ? null : Number(guest.mesa);
+      const normalizedMesa = Number.isFinite(mesaValue) ? mesaValue : null;
+
+      try {
+        const response = await fetch('/api/adminGuests', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': token
+          },
+          body: JSON.stringify({
+            id: guest.id,
+            updates: {
+              mesa: normalizedMesa
+            }
+          })
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'Falha ao atualizar convidado');
+        }
+
+        updated += 1;
+      } catch {
+        failed += 1;
+      }
+    }
+
+    await fetchGuests();
+    setStatusMessage(`Salvamento em lote concluído. Atualizados: ${updated}. Falhas: ${failed}.`);
   }
 
   function updateGuestRow(id, patch) {
@@ -706,6 +767,12 @@ export default function AdminPage() {
               <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
             </div>
 
+            <div className="flex flex-wrap gap-2">
+              <button className="btn btn--primary" onClick={saveGuestsBatch} disabled={loadingGuests || guestRows.length === 0}>
+                Salvar mesas em lote
+              </button>
+            </div>
+
             {loadingGuests ? <LoadingSpinner label="Carregando convidados" /> : null}
 
             {!loadingGuests ? (
@@ -784,6 +851,12 @@ export default function AdminPage() {
                 <option value="false">Nao confirmado</option>
               </select>
               <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button className="btn btn--primary" onClick={saveGuestsBatch} disabled={loadingGuests || guestRows.length === 0}>
+                Salvar mesas em lote
+              </button>
             </div>
 
             {loadingGuests ? <LoadingSpinner label="Carregando convidados" /> : null}
