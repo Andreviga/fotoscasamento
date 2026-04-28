@@ -136,7 +136,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
 
         {/* Header */}
         <header className="stationery-top py-4 text-center sm:py-5">
-          <span className="wedding-monogram" style={{ '--font-size': '20px', '--letter-spacing': '.36em' }}>
+          <span className="wedding-monogram" style={{ '--font-size': '20px', '--letter-spacing': '.36em' } as React.CSSProperties}>
             A <span className="wedding-amp">&amp;</span> N
           </span>
           <div className="wedding-rule" />
