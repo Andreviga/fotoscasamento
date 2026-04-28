@@ -559,8 +559,6 @@ export default function MapaPage() {
         body: JSON.stringify({
           guest: {
             nomeOriginal: trimmedName,
-            nomeConvite: getMesaName(selectedMesaNumber),
-            grupo: getMesaName(selectedMesaNumber),
             mesa: selectedMesaNumber,
             confirmado: Boolean(newGuestConfirmed)
           }
@@ -582,7 +580,7 @@ export default function MapaPage() {
     }
   }
 
-  async function deleteGuest(guestId, guestName) {
+  async function excludeGuestFromSearch(guest, guestName) {
     const token = localStorage.getItem('adminToken');
     if (!token) {
       setMessage('Token admin ausente');
@@ -593,22 +591,33 @@ export default function MapaPage() {
     setMessage('');
 
     try {
-      const response = await fetch(`/api/adminGuests?id=${encodeURIComponent(guestId)}`, {
-        method: 'DELETE',
+      const response = await fetch('/api/adminGuests', {
+        method: 'PATCH',
         headers: {
+          'Content-Type': 'application/json',
           'x-admin-token': token
-        }
+        },
+        body: JSON.stringify({
+          id: guest.id,
+          updates: {
+            nomeOriginal: guest.nomeOriginal,
+            nomeConvite: guest.nomeConvite || '',
+            mesa: guest.mesa ?? null,
+            confirmado: Boolean(guest.confirmado),
+            excludedFromSearch: true
+          }
+        })
       });
 
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || 'Falha ao excluir convidado');
+        throw new Error(payload.error || 'Falha ao excluir convidado da busca');
       }
 
-      setMessage(`Convidado ${guestName} excluido.`);
+      setMessage(`Convidado ${guestName} removido da pesquisa.`);
       await loadGuests(true);
     } catch (error) {
-      setMessage(error.message || 'Falha ao excluir convidado');
+      setMessage(error.message || 'Falha ao excluir convidado da pesquisa');
     } finally {
       setGuestActionLoading(false);
     }
@@ -831,10 +840,10 @@ export default function MapaPage() {
                                     <button
                                       type="button"
                                       className="rounded-md border border-red-300 px-2 py-0.5 text-[11px] font-semibold text-red-700"
-                                      onClick={() => deleteGuest(guest.id, guest.nomeOriginal)}
+                                      onClick={() => excludeGuestFromSearch(guest, guest.nomeOriginal)}
                                       disabled={guestActionLoading}
                                     >
-                                      Excluir
+                                      Excluir da busca
                                     </button>
                                   </span>
                                 ) : null}
@@ -960,7 +969,7 @@ export default function MapaPage() {
                                         key={guest.id}
                                         type="button"
                                         className="flex w-full items-center justify-between rounded-lg border border-roseDeep/10 px-2 py-1 text-left text-xs text-wine hover:bg-[#fff7ec]"
-                                        onClick={() => patchGuest(guest.id, { mesa: selectedMesaNumber, grupo: getMesaName(selectedMesaNumber), nomeConvite: getMesaName(selectedMesaNumber) }, `Convidado ${guest.nomeOriginal} adicionado na mesa ${selectedMesaNumber}.`)}
+                                        onClick={() => patchGuest(guest.id, { mesa: selectedMesaNumber }, `Convidado ${guest.nomeOriginal} adicionado na mesa ${selectedMesaNumber}.`)}
                                         disabled={guestActionLoading}
                                       >
                                         <span className="truncate">{guest.nomeOriginal}</span>

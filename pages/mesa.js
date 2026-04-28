@@ -150,9 +150,6 @@ export default function MesaPage() {
                 ) : (
                   <p className="mt-3 text-sm text-wine/80">Sua mesa ainda não foi definida. Procure a recepção ao chegar.</p>
                 )}
-
-                <p className="mt-3 text-sm text-wine/80">Grupo: {selected.grupo || selected.nomeConvite || '-'}</p>
-
                 {mostrarOutros && others.length > 0 ? (
                   <div className="mt-4">
                     <p className="text-sm font-semibold text-cocoa">Outros convidados da mesma mesa:</p>

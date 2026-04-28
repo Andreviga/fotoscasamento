@@ -5,18 +5,34 @@ import { SEATING_GUESTS } from '../../lib/seatingPlan';
 
 function normalizeFilters(query) {
   return {
-    grupo: String(query.grupo || '').trim().toLowerCase(),
     mesa: String(query.mesa || '').trim(),
-    confirmado: String(query.confirmado || '').trim().toLowerCase()
+    confirmado: String(query.confirmado || '').trim().toLowerCase(),
+    excluded: String(query.excluded || '').trim().toLowerCase()
   };
+}
+
+function mergeGuests(firestoreGuests) {
+  const firestoreById = new Map(firestoreGuests.map((guest) => [guest.id, guest]));
+  const firestoreByName = new Map(
+    firestoreGuests
+      .map((guest) => [normalizeName(guest.nomeOriginal || guest.nome || ''), guest])
+      .filter(([key]) => Boolean(key))
+  );
+
+  const mergedFallbackGuests = SEATING_GUESTS.map((guest) => {
+    const key = normalizeName(guest.nomeOriginal || guest.nome || '');
+    const firestoreMatch = firestoreById.get(guest.id) || firestoreByName.get(key);
+    return firestoreMatch ? { ...guest, ...firestoreMatch } : guest;
+  });
+
+  const usedIds = new Set(mergedFallbackGuests.map((guest) => guest.id));
+  const extraFirestoreGuests = firestoreGuests.filter((guest) => !usedIds.has(guest.id));
+
+  return [...mergedFallbackGuests, ...extraFirestoreGuests];
 }
 
 function applyFilters(items, filters) {
   return items.filter((item) => {
-    if (filters.grupo && !String(item.grupo || '').toLowerCase().includes(filters.grupo)) {
-      return false;
-    }
-
     if (filters.mesa) {
       const mesaValue = item.mesa == null ? '' : String(item.mesa);
       if (mesaValue !== filters.mesa) {
@@ -27,6 +43,13 @@ function applyFilters(items, filters) {
     if (filters.confirmado) {
       const boolValue = filters.confirmado === 'true' || filters.confirmado === 'sim' || filters.confirmado === '1';
       if (Boolean(item.confirmado) !== boolValue) {
+        return false;
+      }
+    }
+
+    if (filters.excluded) {
+      const boolValue = filters.excluded === 'true' || filters.excluded === 'sim' || filters.excluded === '1';
+      if (Boolean(item.excludedFromSearch) !== boolValue) {
         return false;
       }
     }
@@ -62,23 +85,12 @@ export default async function handler(req, res) {
       const snapshot = await adminDb.collection('convidados').orderBy('nomeOriginal', 'asc').get();
       const firestoreGuests = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data(), source: 'firestore' }));
 
-      const dedupe = new Set(
-        firestoreGuests
-          .map((guest) => normalizeName(guest.nomeOriginal || guest.nome || ''))
-          .filter(Boolean)
-      );
-
-      const fallbackGuests = SEATING_GUESTS.filter((guest) => {
-        const key = normalizeName(guest.nomeOriginal || guest.nome || '');
-        return key && !dedupe.has(key);
-      });
-
-      const guests = [...firestoreGuests, ...fallbackGuests];
+      const guests = mergeGuests(firestoreGuests);
       const filtered = applyFilters(guests, normalizeFilters(req.query || {}));
 
       if (String(req.query.export || '') === 'csv') {
         const lines = [
-          toCsvRow(['nomeOriginal', 'nomeConvite', 'mesa', 'grupo', 'confirmado', 'telefone', 'observacao'])
+          toCsvRow(['nomeOriginal', 'nomeConvite', 'mesa', 'confirmado', 'ocultoBusca', 'telefone', 'observacao'])
         ];
 
         filtered.forEach((guest) => {
@@ -86,8 +98,8 @@ export default async function handler(req, res) {
             guest.nomeOriginal,
             guest.nomeConvite,
             guest.mesa ?? '',
-            guest.grupo,
             guest.confirmado ? 'sim' : 'nao',
+            guest.excludedFromSearch ? 'sim' : 'nao',
             guest.telefone || '',
             guest.observacao || ''
           ]));
@@ -138,9 +150,9 @@ export default async function handler(req, res) {
         nomeOriginal,
         nomeConvite: String(guest.nomeConvite || nomeOriginal).trim(),
         mesa,
-        mesaNome: String(guest.mesaNome || guest.grupo || '').trim(),
-        grupo: String(guest.grupo || guest.mesaNome || '').trim(),
+        mesaNome: String(guest.mesaNome || '').trim(),
         confirmado: Boolean(guest.confirmado),
+        excludedFromSearch: Boolean(guest.excludedFromSearch),
         telefone: String(guest.telefone || '').trim(),
         observacao: String(guest.observacao || '').trim(),
         createdAt: Date.now(),

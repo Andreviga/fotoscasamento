@@ -7,6 +7,26 @@ let guestsCache = [];
 let guestsCacheAt = 0;
 const CACHE_TTL_MS = 45 * 1000;
 
+function mergeGuests(firestoreGuests) {
+  const firestoreById = new Map(firestoreGuests.map((guest) => [guest.id, guest]));
+  const firestoreByName = new Map(
+    firestoreGuests
+      .map((guest) => [normalizeName(guest.nomeOriginal || guest.nome || ''), guest])
+      .filter(([key]) => Boolean(key))
+  );
+
+  const mergedFallbackGuests = SEATING_GUESTS.map((guest) => {
+    const key = normalizeName(guest.nomeOriginal || guest.nome || '');
+    const firestoreMatch = firestoreById.get(guest.id) || firestoreByName.get(key);
+    return firestoreMatch ? { ...guest, ...firestoreMatch } : guest;
+  });
+
+  const usedIds = new Set(mergedFallbackGuests.map((guest) => guest.id));
+  const extraFirestoreGuests = firestoreGuests.filter((guest) => !usedIds.has(guest.id));
+
+  return [...mergedFallbackGuests, ...extraFirestoreGuests];
+}
+
 async function loadGuests(force = false) {
   const now = Date.now();
   if (!force && now - guestsCacheAt < CACHE_TTL_MS && guestsCache.length > 0) {
@@ -23,18 +43,7 @@ async function loadGuests(force = false) {
       source: 'firestore'
     }));
 
-    const dedupe = new Set(
-      fromFirestore
-        .map((guest) => normalizeName(guest.nomeOriginal || guest.nome || ''))
-        .filter(Boolean)
-    );
-
-    const fallbackGuests = SEATING_GUESTS.filter((guest) => {
-      const key = normalizeName(guest.nomeOriginal || guest.nome || '');
-      return key && !dedupe.has(key);
-    });
-
-    guestsCache = [...fromFirestore, ...fallbackGuests];
+    guestsCache = mergeGuests(fromFirestore).filter((guest) => !guest.excludedFromSearch);
   } catch (error) {
     console.error('Falha ao carregar convidados do Firestore, usando plano local:', error);
     guestsCache = [...SEATING_GUESTS];
@@ -51,9 +60,9 @@ function toResult(guest) {
     nomeOriginal: guest.nomeOriginal || guest.nome || '',
     nomeConvite: guest.nomeConvite || '',
     mesa: typeof guest.mesa === 'number' ? guest.mesa : null,
-    mesaNome: guest.mesaNome || guest.grupo || '',
-    grupo: guest.grupo || '',
-    confirmado: Boolean(guest.confirmado)
+    mesaNome: guest.mesaNome || '',
+    confirmado: Boolean(guest.confirmado),
+    excludedFromSearch: Boolean(guest.excludedFromSearch)
   };
 }
 
@@ -84,7 +93,7 @@ export default async function handler(req, res) {
       threshold: 0.4,
       includeScore: true,
       ignoreLocation: true,
-      keys: ['nome', 'nomeOriginal', 'nomeConvite', 'grupo']
+      keys: ['nome', 'nomeOriginal', 'nomeConvite']
     });
 
     const fused = fuse.search(query).slice(0, 5).map((item) => toResult(item.item));

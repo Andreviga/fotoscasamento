@@ -83,7 +83,7 @@ export default function AdminPage() {
   const [preview, setPreview] = useState(null);
   const [importing, setImporting] = useState(false);
 
-  const [guestFilters, setGuestFilters] = useState({ grupo: '', mesa: '', confirmado: '' });
+  const [guestFilters, setGuestFilters] = useState({ mesa: '', confirmado: '', excluded: '' });
   const [guestRows, setGuestRows] = useState([]);
   const [guestMesaSnapshot, setGuestMesaSnapshot] = useState({});
   const [loadingGuests, setLoadingGuests] = useState(false);
@@ -318,9 +318,9 @@ export default function AdminPage() {
     setStatusMessage('');
 
     const params = new URLSearchParams();
-    if (guestFilters.grupo) params.set('grupo', guestFilters.grupo);
     if (guestFilters.mesa) params.set('mesa', guestFilters.mesa);
     if (guestFilters.confirmado) params.set('confirmado', guestFilters.confirmado);
+    if (guestFilters.excluded) params.set('excluded', guestFilters.excluded);
 
     try {
       const response = await fetch(`/api/adminGuests?${params.toString()}`, {
@@ -420,7 +420,8 @@ export default function AdminPage() {
           id: guest.id,
           updates: {
             mesa: Number.isFinite(parsedMesa) ? parsedMesa : null,
-            confirmado: Boolean(guest.confirmado)
+            confirmado: Boolean(guest.confirmado),
+            excludedFromSearch: Boolean(guest.excludedFromSearch)
           }
         })
       });
@@ -490,6 +491,44 @@ export default function AdminPage() {
 
     await fetchGuests();
     setStatusMessage(`Salvamento em lote concluído. Atualizados: ${updated}. Falhas: ${failed}.`);
+  }
+
+  async function toggleGuestSearchVisibility(guest, excludedFromSearch) {
+    try {
+      const response = await fetch('/api/adminGuests', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token
+        },
+        body: JSON.stringify({
+          id: guest.id,
+          updates: {
+            nomeOriginal: guest.nomeOriginal,
+            nomeConvite: guest.nomeConvite || '',
+            mesa: guest.mesa ?? null,
+            confirmado: Boolean(guest.confirmado),
+            excludedFromSearch
+          }
+        })
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao atualizar visibilidade do convidado');
+      }
+
+      setGuestRows((prev) => prev.map((row) => (
+        row.id === guest.id ? { ...row, excludedFromSearch } : row
+      )));
+      setStatusMessage(
+        excludedFromSearch
+          ? `Convidado ${guest.nomeOriginal} removido da pesquisa.`
+          : `Convidado ${guest.nomeOriginal} voltou a aparecer na pesquisa.`
+      );
+    } catch (requestError) {
+      setStatusMessage(requestError.message);
+    }
   }
 
   function updateGuestRow(id, patch) {
@@ -898,12 +937,16 @@ export default function AdminPage() {
             </div>
 
             <div className="grid gap-2 sm:grid-cols-4">
-              <input className="input-elegant" placeholder="Filtro grupo" value={guestFilters.grupo} onChange={(e) => setGuestFilters((prev) => ({ ...prev, grupo: e.target.value }))} />
               <input className="input-elegant" placeholder="Mesa" value={guestFilters.mesa} onChange={(e) => setGuestFilters((prev) => ({ ...prev, mesa: e.target.value }))} />
               <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
                 <option value="">Confirmacao (todos)</option>
                 <option value="true">Confirmado</option>
                 <option value="false">Nao confirmado</option>
+              </select>
+              <select className="input-elegant" value={guestFilters.excluded} onChange={(e) => setGuestFilters((prev) => ({ ...prev, excluded: e.target.value }))}>
+                <option value="">Pesquisa (todos)</option>
+                <option value="false">Aparecendo na busca</option>
+                <option value="true">Excluidos da busca</option>
               </select>
               <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
             </div>
@@ -923,18 +966,17 @@ export default function AdminPage() {
                     <tr>
                       <th className="px-3 py-2">Nome</th>
                       <th className="px-3 py-2">Convite</th>
-                      <th className="px-3 py-2">Grupo</th>
                       <th className="px-3 py-2">Mesa</th>
                       <th className="px-3 py-2">Confirmado</th>
+                      <th className="px-3 py-2">Busca</th>
                       <th className="px-3 py-2">Acoes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {guestRows.map((guest) => (
-                      <tr key={guest.id} className="border-t border-roseDeep/10">
+                      <tr key={guest.id} className={`border-t border-roseDeep/10 ${guest.excludedFromSearch ? 'bg-rose-50/50 text-wine/60' : ''}`}>
                         <td className="px-3 py-2">{guest.nomeOriginal}</td>
                         <td className="px-3 py-2">{guest.nomeConvite}</td>
-                        <td className="px-3 py-2">{guest.grupo}</td>
                         <td className="px-3 py-2">
                           <input
                             className="w-20 rounded-md border border-roseDeep/25 bg-white px-2 py-1"
@@ -951,7 +993,18 @@ export default function AdminPage() {
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
+                          {guest.excludedFromSearch ? 'Oculto' : 'Ativo'}
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex flex-wrap gap-2">
+                            <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
+                            <button
+                              className="btn btn--outline"
+                              onClick={() => toggleGuestSearchVisibility(guest, !guest.excludedFromSearch)}
+                            >
+                              {guest.excludedFromSearch ? 'Reativar busca' : 'Excluir da busca'}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -984,12 +1037,16 @@ export default function AdminPage() {
             </p>
 
             <div className="grid gap-2 sm:grid-cols-4">
-              <input className="input-elegant" placeholder="Filtro grupo" value={guestFilters.grupo} onChange={(e) => setGuestFilters((prev) => ({ ...prev, grupo: e.target.value }))} />
               <input className="input-elegant" placeholder="Mesa" value={guestFilters.mesa} onChange={(e) => setGuestFilters((prev) => ({ ...prev, mesa: e.target.value }))} />
               <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
                 <option value="">Confirmacao (todos)</option>
                 <option value="true">Confirmado</option>
                 <option value="false">Nao confirmado</option>
+              </select>
+              <select className="input-elegant" value={guestFilters.excluded} onChange={(e) => setGuestFilters((prev) => ({ ...prev, excluded: e.target.value }))}>
+                <option value="">Pesquisa (todos)</option>
+                <option value="false">Aparecendo na busca</option>
+                <option value="true">Excluidos da busca</option>
               </select>
               <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
             </div>
@@ -1008,16 +1065,15 @@ export default function AdminPage() {
                   <thead className="bg-white/70 text-left text-wine/80">
                     <tr>
                       <th className="px-3 py-2">Nome</th>
-                      <th className="px-3 py-2">Grupo</th>
                       <th className="px-3 py-2">Mesa</th>
+                      <th className="px-3 py-2">Busca</th>
                       <th className="px-3 py-2">Acoes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {guestRows.map((guest) => (
-                      <tr key={guest.id} className="border-t border-roseDeep/10">
+                      <tr key={guest.id} className={`border-t border-roseDeep/10 ${guest.excludedFromSearch ? 'bg-rose-50/50 text-wine/60' : ''}`}>
                         <td className="px-3 py-2">{guest.nomeOriginal}</td>
-                        <td className="px-3 py-2">{guest.grupo || '-'}</td>
                         <td className="px-3 py-2">
                           <input
                             className="w-24 rounded-md border border-roseDeep/25 bg-white px-2 py-1"
@@ -1026,8 +1082,14 @@ export default function AdminPage() {
                             onChange={(e) => updateGuestRow(guest.id, { mesa: e.target.value })}
                           />
                         </td>
+                        <td className="px-3 py-2">{guest.excludedFromSearch ? 'Oculto' : 'Ativo'}</td>
                         <td className="px-3 py-2">
-                          <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
+                          <div className="flex flex-wrap gap-2">
+                            <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
+                            <button className="btn btn--outline" onClick={() => toggleGuestSearchVisibility(guest, !guest.excludedFromSearch)}>
+                              {guest.excludedFromSearch ? 'Reativar busca' : 'Excluir da busca'}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
