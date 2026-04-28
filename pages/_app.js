@@ -3,13 +3,14 @@ import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 
 const titleFont = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
   variable: '--font-romance'
 });
 
 const bodyFont = DM_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600'],
   variable: '--font-clean'
 });
 

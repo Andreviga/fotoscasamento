@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,11 +8,11 @@
   --color-blush: #f7f6f2;
   --color-rose: #cfdacd;
   --color-rose-deep: #6f8475;
-  --color-wine: #0f4f3d;
+  --color-wine: #2F3E32;
   --color-ivory: #fbfaf7;
   --color-cocoa: #22352c;
   --color-linen: #ebe7dc;
-  --color-gold: #c9b37e;
+  --color-gold: #C4A464;
 }
 
 @layer base {

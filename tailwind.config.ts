@@ -13,11 +13,11 @@ const config: Config = {
         blush: '#f7f6f2',
         rose: '#cfdacd',
         roseDeep: '#6f8475',
-        wine: '#0f4f3d',
+        wine: '#2F3E32',
         cocoa: '#22352c',
         ivory: '#fbfaf7',
         linen: '#ebe7dc',
-        gold: '#c9b37e'
+        gold: '#C4A464'
       },
       fontFamily: {
         serifRomance: ['var(--font-romance)', 'Georgia', 'serif'],
