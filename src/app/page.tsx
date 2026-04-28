@@ -8,7 +8,9 @@ import TabFotos from '@/components/tabs/TabFotos';
 import TabMural from '@/components/tabs/TabMural';
 import TabMais from '@/components/tabs/TabMais';
 
-const VALID_TABS: AppTab[] = ['info', 'mesa', 'fotos', 'mural', 'mais'];
+const VALID_TABS: AppTab[] = ['info', 'mesa', 'fotos', 'mural', 'roteiro', 'mapa', 'menu', 'extra'];
+
+const MAIS_SUBS = new Set<AppTab>(['roteiro', 'mapa', 'menu', 'extra']);
 
 function getInitialTab(): AppTab {
   if (typeof window === 'undefined') {
@@ -60,7 +62,17 @@ export default function AppShellPage() {
     if (activeTab === 'mural') {
       return <TabMural onNavigate={handleTabChange} />;
     }
-    return <TabMais onNavigate={handleTabChange} />;
+    if (MAIS_SUBS.has(activeTab)) {
+      return (
+        <TabMais
+          key={activeTab}
+          initialSub={activeTab as 'roteiro' | 'mapa' | 'menu' | 'extra'}
+          hideChrome
+          onNavigate={handleTabChange}
+        />
+      );
+    }
+    return null;
   }, [activeTab, fotosMounted]);
 
   return (

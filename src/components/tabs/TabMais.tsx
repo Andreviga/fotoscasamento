@@ -5,6 +5,8 @@ import type { AppTab } from '@/components/TabBar';
 
 type TabMaisProps = {
   onNavigate: (tab: AppTab) => void;
+  initialSub?: SubTab;
+  hideChrome?: boolean;
 };
 
 type RoteiroItem = {
@@ -59,8 +61,8 @@ const SUB_TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'extra',   label: 'Mais',    icon: '✦'  },
 ];
 
-export default function TabMais({ onNavigate }: TabMaisProps) {
-  const [sub, setSub] = useState<SubTab>('roteiro');
+export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisProps) {
+  const [sub, setSub] = useState<SubTab>(initialSub ?? 'roteiro');
   const [loadingRoteiro, setLoadingRoteiro] = useState(true);
   const [roteiroItems, setRoteiroItems] = useState<RoteiroItem[]>([]);
   const [mapaMounted, setMapaMounted] = useState(false);
@@ -99,38 +101,42 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100dvh - 4rem)' }}>
-      <div className="px-4 pb-3 pt-4 sm:px-6">
-        <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
-          <p className="stationery-monogram">A&amp;N</p>
-          <div className="stationery-rule" />
-          <h1 className="mt-3 text-3xl text-cocoa sm:text-4xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Informações da Festa</h1>
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-roseDeep/80">Roteiro, mapa, menu e mais</p>
-        </header>
-      </div>
+      {!hideChrome && (
+        <div className="px-4 pb-3 pt-4 sm:px-6">
+          <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
+            <p className="stationery-monogram">A&amp;N</p>
+            <div className="stationery-rule" />
+            <h1 className="mt-3 text-3xl text-cocoa sm:text-4xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Informações da Festa</h1>
+            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-roseDeep/80">Roteiro, mapa, menu e mais</p>
+          </header>
+        </div>
+      )}
 
       {/* Sub-tab bar */}
-      <div className="shrink-0 border-b border-roseDeep/15 bg-ivory/95 backdrop-blur">
-        <div className="mx-auto flex max-w-lg">
-          {SUB_TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={sub === t.id}
-              onClick={() => setSub(t.id)}
-              className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                sub === t.id ? 'text-wine' : 'text-roseDeep/60'
-              }`}
-            >
-              <span className="text-base leading-none">{t.icon}</span>
-              {t.label}
-              {sub === t.id && (
-                <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-wine" />
-              )}
-            </button>
-          ))}
+      {!hideChrome && (
+        <div className="shrink-0 border-b border-roseDeep/15 bg-ivory/95 backdrop-blur">
+          <div className="mx-auto flex max-w-lg">
+            {SUB_TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={sub === t.id}
+                onClick={() => setSub(t.id)}
+                className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
+                  sub === t.id ? 'text-wine' : 'text-roseDeep/60'
+                }`}
+              >
+                <span className="text-base leading-none">{t.icon}</span>
+                {t.label}
+                {sub === t.id && (
+                  <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-wine" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <div className="min-h-0 flex-1 overflow-y-auto">

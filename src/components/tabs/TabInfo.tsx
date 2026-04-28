@@ -111,12 +111,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <button
             type="button"
             aria-label="Como chegar"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.sessionStorage.setItem('tab-mais-focus', 'mapa');
-              }
-              onNavigate('mais');
-            }}
+            onClick={() => onNavigate('mapa')}
             className="flex flex-col items-center gap-2 rounded-[24px] border border-gold/40 bg-white/70 py-5 text-sm font-semibold text-cocoa shadow-soft transition hover:bg-white active:scale-95"
           >
             <span className="text-2xl">🗺</span>
@@ -156,7 +151,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() => onNavigate('mais')}
+            onClick={() => onNavigate('roteiro')}
             className="btn btn--outline py-3.5 text-sm"
           >
             📋 Roteiro &amp; Menu
