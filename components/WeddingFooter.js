@@ -2,6 +2,14 @@ import useConfig from '../lib/useConfig';
 import MobileTabBar from './MobileTabBar';
 import { useEffect, useState } from 'react';
 
+const FOOTER_LINKS = [
+  { href: '/#info', label: 'Início' },
+  { href: '/#mesa', label: 'Mesa' },
+  { href: '/#fotos', label: 'Fotos' },
+  { href: '/#mural', label: 'Mural' },
+  { href: '/#mais', label: 'Info' }
+];
+
 export default function WeddingFooter() {
   const { data } = useConfig(['site']);
   const site = data.site || {};
@@ -31,15 +39,11 @@ export default function WeddingFooter() {
           </p>
           {site.hashtag ? <p className="text-xs text-wine/60">{site.hashtag}</p> : null}
           <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-wine/65">
-            <a href="/roteiro" className="hover:text-cocoa">Roteiro</a>
-            <span>•</span>
-            <a href="/mesa" className="hover:text-cocoa">Mesa</a>
-            <span>•</span>
-            <a href="/mapa" className="hover:text-cocoa">Mapa</a>
-            <span>•</span>
-            <a href="/menu" className="hover:text-cocoa">Menu</a>
-            <span>•</span>
-            <a href="/fotos" className="hover:text-cocoa">Instacasamento</a>
+            {FOOTER_LINKS.map((item) => (
+              <a key={item.href} href={item.href} className="site-nav__link !px-3 !py-1.5 !text-xs">
+                {item.label}
+              </a>
+            ))}
           </div>
           <p className="text-xs text-wine/50">{year} · Feito com carinho</p>
         </div>

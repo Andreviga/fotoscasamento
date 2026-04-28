@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import useConfig from '../lib/useConfig';
 
+const NAV_ITEMS = [
+  { href: '/#info', label: 'Início' },
+  { href: '/#mesa', label: 'Mesa' },
+  { href: '/#fotos', label: 'Fotos' },
+  { href: '/#mural', label: 'Mural' },
+  { href: '/#mais', label: 'Info' }
+];
+
 export default function WeddingHeader() {
   const { data } = useConfig(['site']);
   const site = data.site || {};
@@ -16,6 +24,13 @@ export default function WeddingHeader() {
             {site.data_casamento || '03 de maio de 2026'}
           </p>
         </div>
+        <nav className="site-nav" aria-label="Atalhos principais">
+          {NAV_ITEMS.map((item) => (
+            <Link key={item.href} href={item.href} className="site-nav__link">
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </header>
   );

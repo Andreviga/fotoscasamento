@@ -193,11 +193,9 @@ const MENU_FALLBACK = {
 export default function MenuPage() {
   const { loading, error, data } = useConfig(['site', 'menu']);
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
-  const heroTitle = data?.menu?.heroTitle || MENU_FALLBACK.heroTitle;
-  const heroSubtitle = data?.menu?.heroSubtitle || MENU_FALLBACK.heroSubtitle;
-  const menuSections = Array.isArray(data?.menu?.secoes) && data.menu.secoes.length > 0
-    ? data.menu.secoes
-    : MENU_FALLBACK.secoes;
+  const heroTitle = MENU_FALLBACK.heroTitle;
+  const heroSubtitle = MENU_FALLBACK.heroSubtitle;
+  const menuSections = MENU_FALLBACK.secoes;
   const GROUP_META = {
     cardapio: {
       eyebrow: '01',
