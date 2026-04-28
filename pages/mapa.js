@@ -142,6 +142,29 @@ function clamp(value, min = 0, max = 100) {
   return Math.min(max, Math.max(min, value));
 }
 
+function getMesaName(mesaNumber) {
+  return TABLE_NAMES[mesaNumber] || `Mesa ${mesaNumber}`;
+}
+
+function createMesaLayoutElement(mesaNumber, existingCount) {
+  const cols = 5;
+  const row = Math.floor(existingCount / cols);
+  const col = existingCount % cols;
+
+  return {
+    id: `mesa-admin-${mesaNumber}`,
+    tipo: 'mesa_grande',
+    nome: `Mesa ${mesaNumber}`,
+    mesaNumero: mesaNumber,
+    x: 18 + col * 16,
+    y: 20 + row * 16,
+    largura: 9,
+    altura: 7,
+    rotacao: 0,
+    capacidade: 10
+  };
+}
+
 export default function MapaPage() {
   const router = useRouter();
   const { loading, data } = useConfig(['mapa', 'site']);
@@ -152,6 +175,11 @@ export default function MapaPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [guestByMesa, setGuestByMesa] = useState({});
+  const [allGuests, setAllGuests] = useState([]);
+  const [guestSearch, setGuestSearch] = useState('');
+  const [newGuestName, setNewGuestName] = useState('');
+  const [newGuestConfirmed, setNewGuestConfirmed] = useState(true);
+  const [guestActionLoading, setGuestActionLoading] = useState(false);
   const [mapAspectRatio, setMapAspectRatio] = useState(DEFAULT_MAP_ASPECT_RATIO);
 
   const mapRef = useRef(null);
@@ -189,31 +217,33 @@ export default function MapaPage() {
     }
   }, [data, loading]);
 
-  useEffect(() => {
-    async function loadGuests() {
-      try {
-        const response = await fetch('/api/searchGuest?all=1');
-        const payload = await response.json();
-        const grouped = {};
+  async function loadGuests(forceRefresh = false) {
+    try {
+      const response = await fetch(`/api/searchGuest?all=1${forceRefresh ? '&refresh=1' : ''}`);
+      const payload = await response.json();
+      const grouped = {};
+      const guests = payload.results || [];
 
-        (payload.results || []).forEach((guest) => {
-          if (typeof guest.mesa !== 'number') {
-            return;
-          }
+      guests.forEach((guest) => {
+        if (typeof guest.mesa !== 'number') {
+          return;
+        }
 
-          if (!grouped[guest.mesa]) {
-            grouped[guest.mesa] = [];
-          }
+        if (!grouped[guest.mesa]) {
+          grouped[guest.mesa] = [];
+        }
 
-          grouped[guest.mesa].push(guest.nomeOriginal);
-        });
+        grouped[guest.mesa].push(guest);
+      });
 
-        setGuestByMesa(grouped);
-      } catch (error) {
-        console.error(error);
-      }
+      setAllGuests(guests);
+      setGuestByMesa(grouped);
+    } catch (error) {
+      console.error(error);
     }
+  }
 
+  useEffect(() => {
     loadGuests();
   }, []);
 
@@ -289,6 +319,37 @@ export default function MapaPage() {
     return guestByMesa[mesaNumber] || [];
   }, [selected, guestByMesa]);
 
+  const selectedMesaNumber = useMemo(() => {
+    if (!selected) return null;
+    const mesaNumber = getMesaNumber(selected);
+    return typeof mesaNumber === 'number' ? mesaNumber : null;
+  }, [selected]);
+
+  const missingMesaNumbers = useMemo(() => {
+    const targetMesas = Object.keys(TABLE_NAMES).map(Number).filter(Boolean);
+    const mapMesas = new Set(
+      elementos
+        .map((item) => getMesaNumber(item))
+        .filter((mesaNumber) => typeof mesaNumber === 'number')
+    );
+
+    return targetMesas.filter((mesaNumber) => !mapMesas.has(mesaNumber));
+  }, [elementos]);
+
+  const assignableGuests = useMemo(() => {
+    const query = String(guestSearch || '').trim().toLowerCase();
+    const idsInMesa = new Set(selectedMesaGuests.map((guest) => guest.id));
+    const base = allGuests.filter((guest) => !idsInMesa.has(guest.id));
+
+    if (!query) {
+      return base.slice(0, 20);
+    }
+
+    return base
+      .filter((guest) => String(guest.nomeOriginal || '').toLowerCase().includes(query))
+      .slice(0, 20);
+  }, [allGuests, guestSearch, selectedMesaGuests]);
+
   function updateSelected(patch) {
     if (!selectedId) return;
 
@@ -326,6 +387,231 @@ export default function MapaPage() {
     const filtered = elementos.filter((item) => item.id !== selectedId);
     setElementos(filtered);
     setSelectedId(filtered[0]?.id || '');
+  }
+
+  async function removeSelectedMesa() {
+    if (!selectedMesaNumber) {
+      return;
+    }
+
+    if (typeof window !== 'undefined' && selectedMesaGuests.length > 0) {
+      const confirmed = window.confirm(
+        `A mesa ${selectedMesaNumber} possui ${selectedMesaGuests.length} convidado(s). Excluir a mesa e remover os convidados dela?`
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        setGuestActionLoading(true);
+        const updates = selectedMesaGuests.map((guest) =>
+          fetch('/api/adminGuests', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-token': token
+            },
+            body: JSON.stringify({ id: guest.id, updates: { mesa: null } })
+          })
+        );
+
+        await Promise.allSettled(updates);
+        await loadGuests(true);
+        setGuestActionLoading(false);
+      }
+    }
+
+    removeElemento();
+    setMessage(`Mesa ${selectedMesaNumber} removida do mapa. Lembre-se de salvar o layout.`);
+  }
+
+  function ensureUniqueElementId(baseId) {
+    const existing = new Set(elementos.map((item) => item.id));
+    if (!existing.has(baseId)) {
+      return baseId;
+    }
+
+    let next = 2;
+    while (existing.has(`${baseId}-${next}`)) {
+      next += 1;
+    }
+
+    return `${baseId}-${next}`;
+  }
+
+  function createMesa(mesaNumber) {
+    const existingMesas = elementos
+      .map((item) => getMesaNumber(item))
+      .filter((item) => typeof item === 'number');
+
+    const nextMesa = typeof mesaNumber === 'number'
+      ? mesaNumber
+      : Math.max(0, ...existingMesas) + 1;
+
+    const mesaElementCount = elementos.filter((item) => typeof getMesaNumber(item) === 'number').length;
+    const next = createMesaLayoutElement(nextMesa, mesaElementCount);
+    next.id = ensureUniqueElementId(next.id);
+
+    setElementos((prev) => [...prev, next]);
+    setSelectedId(next.id);
+    setMessage(`Mesa ${nextMesa} criada no mapa.`);
+  }
+
+  function createMissingMesas() {
+    if (missingMesaNumbers.length === 0) {
+      setMessage('Nenhuma mesa pendente para criar.');
+      return;
+    }
+
+    const existingMesasCount = elementos.filter((item) => typeof getMesaNumber(item) === 'number').length;
+    const created = [];
+    let createdCount = 0;
+
+    const nextElements = [...elementos];
+
+    missingMesaNumbers.forEach((mesaNumber) => {
+      const next = createMesaLayoutElement(mesaNumber, existingMesasCount + createdCount);
+      const usedIds = new Set(nextElements.map((item) => item.id));
+      if (usedIds.has(next.id)) {
+        let suffix = 2;
+        while (usedIds.has(`${next.id}-${suffix}`)) {
+          suffix += 1;
+        }
+        next.id = `${next.id}-${suffix}`;
+      }
+
+      nextElements.push(next);
+      created.push(mesaNumber);
+      createdCount += 1;
+    });
+
+    setElementos(nextElements);
+    setSelectedId(nextElements[nextElements.length - 1]?.id || '');
+    setMessage(`Mesas criadas no mapa: ${created.join(', ')}.`);
+  }
+
+  async function patchGuest(guestId, updates, successMessage) {
+    if (!adminEnabled || !selectedMesaNumber) {
+      return;
+    }
+
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      setMessage('Token admin ausente');
+      return;
+    }
+
+    setGuestActionLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/adminGuests', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token
+        },
+        body: JSON.stringify({ id: guestId, updates })
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao atualizar convidado');
+      }
+
+      setMessage(successMessage);
+      await loadGuests(true);
+    } catch (error) {
+      setMessage(error.message || 'Falha ao atualizar convidado');
+    } finally {
+      setGuestActionLoading(false);
+    }
+  }
+
+  async function createGuestOnMesa() {
+    if (!adminEnabled || !selectedMesaNumber) {
+      return;
+    }
+
+    const trimmedName = String(newGuestName || '').trim();
+    if (!trimmedName) {
+      setMessage('Informe o nome do convidado.');
+      return;
+    }
+
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      setMessage('Token admin ausente');
+      return;
+    }
+
+    setGuestActionLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/adminGuests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token
+        },
+        body: JSON.stringify({
+          guest: {
+            nomeOriginal: trimmedName,
+            nomeConvite: getMesaName(selectedMesaNumber),
+            grupo: getMesaName(selectedMesaNumber),
+            mesa: selectedMesaNumber,
+            confirmado: Boolean(newGuestConfirmed)
+          }
+        })
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao criar convidado');
+      }
+
+      setNewGuestName('');
+      setMessage(`Convidado ${trimmedName} criado e alocado na mesa ${selectedMesaNumber}.`);
+      await loadGuests(true);
+    } catch (error) {
+      setMessage(error.message || 'Falha ao criar convidado');
+    } finally {
+      setGuestActionLoading(false);
+    }
+  }
+
+  async function deleteGuest(guestId, guestName) {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      setMessage('Token admin ausente');
+      return;
+    }
+
+    setGuestActionLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch(`/api/adminGuests?id=${encodeURIComponent(guestId)}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-token': token
+        }
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao excluir convidado');
+      }
+
+      setMessage(`Convidado ${guestName} excluido.`);
+      await loadGuests(true);
+    } catch (error) {
+      setMessage(error.message || 'Falha ao excluir convidado');
+    } finally {
+      setGuestActionLoading(false);
+    }
   }
 
   async function saveLayout() {
@@ -516,6 +802,7 @@ export default function MapaPage() {
                     <div>
                       <p className="font-semibold text-wine">{selected.nome}</p>
                       <p className="text-wine/70">Tipo: {selected.tipo}</p>
+                      {selectedMesaNumber ? <p className="text-wine/70">Mesa: {selectedMesaNumber} ({getMesaName(selectedMesaNumber)})</p> : null}
                       {selected.id === highlightedFromQueryId ? (
                         <p className="mt-1 inline-flex rounded-full border border-wine/25 bg-wine/10 px-2 py-0.5 text-xs font-semibold text-wine">
                           Mesa encontrada na busca
@@ -527,8 +814,32 @@ export default function MapaPage() {
                       <div>
                         <p className="font-semibold text-cocoa">Convidados nesta mesa:</p>
                         <ul className="mt-1 space-y-1 text-wine/80">
-                          {selectedMesaGuests.slice(0, 8).map((guest) => (
-                            <li key={guest}>• {guest}</li>
+                          {selectedMesaGuests.slice(0, 10).map((guest) => (
+                            <li key={guest.id || guest.nomeOriginal} className="rounded-xl border border-roseDeep/10 bg-white/70 px-2 py-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="truncate">• {guest.nomeOriginal}</span>
+                                {adminEnabled ? (
+                                  <span className="flex shrink-0 items-center gap-1">
+                                    <button
+                                      type="button"
+                                      className="rounded-md border border-roseDeep/20 px-2 py-0.5 text-[11px] font-semibold text-wine"
+                                      onClick={() => patchGuest(guest.id, { mesa: null }, `Convidado ${guest.nomeOriginal} removido da mesa.`)}
+                                      disabled={guestActionLoading}
+                                    >
+                                      Remover mesa
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="rounded-md border border-red-300 px-2 py-0.5 text-[11px] font-semibold text-red-700"
+                                      onClick={() => deleteGuest(guest.id, guest.nomeOriginal)}
+                                      disabled={guestActionLoading}
+                                    >
+                                      Excluir
+                                    </button>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </li>
                           ))}
                         </ul>
                       </div>
@@ -615,9 +926,102 @@ export default function MapaPage() {
                           />
                         </label>
 
+                        <div className="space-y-3 rounded-2xl border border-roseDeep/15 bg-white/80 p-3">
+                          <div>
+                            <p className="font-semibold text-cocoa">Conferência de mesas no mapa</p>
+                            {missingMesaNumbers.length === 0 ? (
+                              <p className="mt-1 text-xs text-emerald-700">Todas as mesas de referência já existem no mapa.</p>
+                            ) : (
+                              <>
+                                <p className="mt-1 text-xs text-amber-800">Mesas faltando no mapa: {missingMesaNumbers.join(', ')}.</p>
+                                <button type="button" className="btn btn--outline mt-2" onClick={createMissingMesas}>Criar mesas faltantes</button>
+                              </>
+                            )}
+                          </div>
+
+                          {selectedMesaNumber ? (
+                            <>
+                              <div>
+                                <p className="font-semibold text-cocoa">Adicionar convidado na mesa {selectedMesaNumber}</p>
+                                <div className="mt-2 flex gap-2">
+                                  <input
+                                    className="input-elegant"
+                                    placeholder="Buscar convidado existente"
+                                    value={guestSearch}
+                                    onChange={(e) => setGuestSearch(e.target.value)}
+                                  />
+                                </div>
+                                <div className="mt-2 max-h-36 space-y-1 overflow-y-auto rounded-xl border border-roseDeep/10 bg-white/70 p-2">
+                                  {assignableGuests.length === 0 ? (
+                                    <p className="text-xs text-wine/70">Nenhum convidado encontrado para alocar.</p>
+                                  ) : (
+                                    assignableGuests.map((guest) => (
+                                      <button
+                                        key={guest.id}
+                                        type="button"
+                                        className="flex w-full items-center justify-between rounded-lg border border-roseDeep/10 px-2 py-1 text-left text-xs text-wine hover:bg-[#fff7ec]"
+                                        onClick={() => patchGuest(guest.id, { mesa: selectedMesaNumber, grupo: getMesaName(selectedMesaNumber), nomeConvite: getMesaName(selectedMesaNumber) }, `Convidado ${guest.nomeOriginal} adicionado na mesa ${selectedMesaNumber}.`)}
+                                        disabled={guestActionLoading}
+                                      >
+                                        <span className="truncate">{guest.nomeOriginal}</span>
+                                        <span className="ml-2 shrink-0 rounded-full bg-wine/10 px-2 py-0.5 text-[10px] font-semibold text-wine">Adicionar</span>
+                                      </button>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+
+                              <div>
+                                <p className="font-semibold text-cocoa">Criar novo convidado nesta mesa</p>
+                                <div className="mt-2 grid grid-cols-1 gap-2">
+                                  <input
+                                    className="input-elegant"
+                                    placeholder="Nome completo"
+                                    value={newGuestName}
+                                    onChange={(e) => setNewGuestName(e.target.value)}
+                                  />
+                                  <label className="flex items-center gap-2 text-xs text-wine/80">
+                                    <input
+                                      type="checkbox"
+                                      checked={newGuestConfirmed}
+                                      onChange={(e) => setNewGuestConfirmed(e.target.checked)}
+                                    />
+                                    Marcar como confirmado
+                                  </label>
+                                  <button
+                                    type="button"
+                                    className="btn btn--outline"
+                                    onClick={createGuestOnMesa}
+                                    disabled={guestActionLoading}
+                                  >
+                                    Criar e adicionar
+                                  </button>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <p className="text-xs text-wine/70">Selecione uma mesa para gerenciar convidados.</p>
+                          )}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-2">
                           <button type="button" className="btn btn--outline" onClick={addElemento}>Adicionar</button>
+                          <button
+                            type="button"
+                            className="btn btn--outline"
+                            onClick={() => createMesa()}
+                          >
+                            Criar mesa
+                          </button>
                           <button type="button" className="btn btn--outline" onClick={removeElemento}>Remover</button>
+                          <button
+                            type="button"
+                            className="btn btn--outline"
+                            onClick={removeSelectedMesa}
+                            disabled={!selectedMesaNumber}
+                          >
+                            Excluir mesa
+                          </button>
                           <button type="button" className="btn btn--outline" onClick={resetDefaults}>Resetar</button>
                           <button type="button" className="btn btn--primary" onClick={saveLayout} disabled={saving}>
                             {saving ? 'Salvando...' : 'Salvar'}

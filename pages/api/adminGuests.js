@@ -41,6 +41,15 @@ function toCsvRow(values) {
     .join(',');
 }
 
+function normalizeMesa(value) {
+  if (value === '' || value == null) {
+    return null;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export default async function handler(req, res) {
   if (!assertAdmin(req, res)) {
     return;
@@ -109,6 +118,63 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Erro em adminGuests PATCH:', error);
       return res.status(500).json({ error: 'Falha ao atualizar convidado' });
+    }
+  }
+
+  if (req.method === 'POST') {
+    try {
+      const { guest } = req.body || {};
+      if (!guest || typeof guest !== 'object') {
+        return res.status(400).json({ error: 'Payload invalido' });
+      }
+
+      const nomeOriginal = String(guest.nomeOriginal || guest.nome || '').trim();
+      if (!nomeOriginal) {
+        return res.status(400).json({ error: 'nomeOriginal obrigatorio' });
+      }
+
+      const mesa = normalizeMesa(guest.mesa);
+      const docData = {
+        nomeOriginal,
+        nomeConvite: String(guest.nomeConvite || nomeOriginal).trim(),
+        mesa,
+        mesaNome: String(guest.mesaNome || guest.grupo || '').trim(),
+        grupo: String(guest.grupo || guest.mesaNome || '').trim(),
+        confirmado: Boolean(guest.confirmado),
+        telefone: String(guest.telefone || '').trim(),
+        observacao: String(guest.observacao || '').trim(),
+        createdAt: Date.now(),
+        source: 'admin'
+      };
+
+      const createdRef = await adminDb.collection('convidados').add(docData);
+      const createdSnapshot = await createdRef.get();
+
+      return res.status(201).json({
+        success: true,
+        guest: {
+          id: createdSnapshot.id,
+          ...createdSnapshot.data()
+        }
+      });
+    } catch (error) {
+      console.error('Erro em adminGuests POST:', error);
+      return res.status(500).json({ error: 'Falha ao criar convidado' });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const id = String(req.query.id || req.body?.id || '').trim();
+      if (!id) {
+        return res.status(400).json({ error: 'id obrigatorio' });
+      }
+
+      await adminDb.collection('convidados').doc(id).delete();
+      return res.status(200).json({ success: true, id });
+    } catch (error) {
+      console.error('Erro em adminGuests DELETE:', error);
+      return res.status(500).json({ error: 'Falha ao excluir convidado' });
     }
   }
 
