@@ -197,18 +197,80 @@
   .bottom-brand {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
   }
 
   .bottom-monogram {
-    --font-size: 15px;
-    --letter-spacing: .32em;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: .32em;
+    color: var(--ink);
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .bottom-date {
     font-family: var(--sans);
     font-size: 11px;
     letter-spacing: .12em;
+    color: var(--ink-soft);
+  }
+
+  .page-header {
+    padding: 18px 18px 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(196, 164, 100, .22);
+    margin-bottom: 14px;
+  }
+
+  .page-header-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .page-monogram {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: .30em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .page-header-divider {
+    width: 24px;
+    height: 1px;
+    background: rgba(196, 164, 100, .75);
+  }
+
+  .page-header-date {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .page-header h2 {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(28px, 7vw, 38px);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--ink);
+  }
+
+  .page-header p {
+    max-width: 620px;
+    margin: 8px auto 0;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.45;
     color: var(--ink-soft);
   }
 

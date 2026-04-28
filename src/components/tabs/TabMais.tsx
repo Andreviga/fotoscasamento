@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
+import PageHeader from '@/components/PageHeader';
 
 type TabMaisProps = {
   onNavigate: (tab: AppTab) => void;
@@ -61,6 +62,21 @@ const SUB_TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'extra',   label: 'Mais',    icon: '✦'  },
 ];
 
+function getSubHeader(sub: SubTab): { title: string; subtitle: string } {
+  switch (sub) {
+    case 'roteiro':
+      return { title: 'Roteiro do casamento', subtitle: 'Momentos e horários da celebração' };
+    case 'mapa':
+      return { title: 'Mapa do espaço', subtitle: 'Veja a localização da sua mesa' };
+    case 'menu':
+      return { title: 'Menu & Bebidas', subtitle: 'Entradas, pratos e bebidas da festa' };
+    case 'extra':
+      return { title: 'Mais informações', subtitle: 'Etiqueta, presentes e atalhos úteis' };
+    default:
+      return { title: 'Mais informações', subtitle: '' };
+  }
+}
+
 export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisProps) {
   const [sub, setSub] = useState<SubTab>(initialSub ?? 'roteiro');
   const [loadingRoteiro, setLoadingRoteiro] = useState(true);
@@ -98,32 +114,18 @@ export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisP
   }, []);
 
   const horarioAtual = useMemo(() => getHorarioAtual(roteiroItems), [roteiroItems]);
+  const headerMeta = getSubHeader(sub);
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100dvh - 4rem)' }}>
       {hideChrome ? (
-        <div className="shrink-0 border-b border-roseDeep/15 bg-ivory/98 px-4 py-3 text-center backdrop-blur">
-          <span className="wedding-monogram bottom-monogram">
-            A <span className="wedding-amp">&amp;</span> N
-          </span>
-          <h1 className="wedding-names" style={{ '--font-size': '36px' } as React.CSSProperties}>
-            André <span className="wedding-amp">&amp;</span> Nathália
-          </h1>
+        <div className="shrink-0 bg-ivory/98 px-4 pb-2 pt-3 backdrop-blur">
+          <PageHeader title={headerMeta.title} subtitle={headerMeta.subtitle} />
         </div>
       ) : null}
       {!hideChrome && (
         <div className="px-4 pb-3 pt-4 sm:px-6">
-          <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
-            <span className="wedding-monogram">
-              A <span className="wedding-amp">&amp;</span> N
-            </span>
-            <div className="wedding-rule" />
-            <h1 className="wedding-names mt-2">
-              André <span className="wedding-amp">&amp;</span> Nathália
-            </h1>
-            <div className="wedding-rule" />
-            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-roseDeep/80">Roteiro, mapa, menu e mais</p>
-          </header>
+          <PageHeader title={headerMeta.title} subtitle={headerMeta.subtitle} />
         </div>
       )}
 

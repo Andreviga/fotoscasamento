@@ -1,6 +1,7 @@
 'use client';
 
 import type { AppTab } from '@/components/TabBar';
+import PageHeader from '@/components/PageHeader';
 
 type TabFotosProps = {
   onNavigate: (tab: AppTab) => void;
@@ -28,18 +29,7 @@ export default function TabFotos({ mounted }: TabFotosProps) {
     <section className="main">
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-4 py-4 sm:space-y-5">
-        <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
-          <span className="wedding-monogram">
-            A <span className="wedding-amp">&amp;</span> N
-          </span>
-          <div className="wedding-rule" />
-          <h1 className="wedding-names mt-2">
-            André <span className="wedding-amp">&amp;</span> Nathália
-          </h1>
-          <div className="wedding-rule" />
-          <p className="mt-1 text-sm uppercase tracking-[0.28em] text-roseDeep/70">Cabine de Fotos</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.24em] text-roseDeep/80">Registre memórias da festa</p>
-        </header>
+        <PageHeader title="Compartilhe suas fotos" subtitle="Registre memórias da festa" />
 
         <div className="romantic-panel overflow-hidden border border-gold/30 bg-white/80 p-2 sm:p-3">
           <iframe

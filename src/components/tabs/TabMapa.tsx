@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
+import PageHeader from '@/components/PageHeader';
 
 type TabMapaProps = {
   onNavigate: (tab: AppTab) => void;
@@ -135,14 +136,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
       <div className="container relative z-10 space-y-5">
 
         {/* Header */}
-        <header className="stationery-top py-4 text-center sm:py-5">
-          <span className="wedding-monogram" style={{ '--font-size': '20px', '--letter-spacing': '.36em' } as React.CSSProperties}>
-            A <span className="wedding-amp">&amp;</span> N
-          </span>
-          <div className="wedding-rule" />
-          <h1 className="mt-2 text-3xl text-cocoa sm:text-4xl">Mapa das Mesas</h1>
-          <p className="mt-1 text-xs uppercase tracking-[0.22em] text-roseDeep/75">Planta do salão · Espaço Vdara</p>
-        </header>
+        <PageHeader title="Mapa do espaço" subtitle="Planta do salão · Espaço Vdara" />
 
         {/* Table selector */}
         <div className="romantic-panel p-4">

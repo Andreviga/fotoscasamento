@@ -34,7 +34,7 @@ export default function EtiquetaPage() {
   return (
     <>
       <Head>
-        <title>Etiqueta — André & Nathália</title>
+        <title>Etiqueta — André e Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">

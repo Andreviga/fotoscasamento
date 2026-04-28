@@ -82,14 +82,8 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-5">
         {/* Hero Header */}
-        <header
-          className="romantic-panel text-center"
-          style={{
-            background: 'linear-gradient(160deg,rgba(253,251,247,0.98) 0%,rgba(250,246,240,0.95) 100%)',
-            padding: '2.5rem 1.5rem',
-          }}
-        >
-          <span className="wedding-monogram" aria-hidden="true">
+        <header className="home-hero">
+          <span className="wedding-monogram hero-monogram" aria-hidden="true">
             A <span className="wedding-amp">&amp;</span> N
           </span>
           <div className="wedding-rule" />
@@ -97,8 +91,8 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             André <span className="wedding-amp">&amp;</span> Nathália
           </h1>
           <div className="wedding-rule" />
-          <p className="mt-1 text-sm uppercase tracking-[0.3em] text-roseDeep/65">03 de maio de 2026</p>
-          <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
+          <p className="hero-date">03 de maio de 2026</p>
+          <p className="hero-intro">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
           </p>
           {/* Próxima Atração */}

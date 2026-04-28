@@ -390,7 +390,7 @@ export default function MapaPage() {
   return (
     <>
       <Head>
-        <title>Mapa do Salão — André & Nathália</title>
+        <title>Mapa do Salão — André e Nathália</title>
       </Head>
       {!isEmbedded ? <WeddingHeader /> : null}
       <main className={`main ${isEmbedded ? 'pt-3 pb-3' : ''}`}>

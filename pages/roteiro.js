@@ -82,7 +82,7 @@ export default function RoteiroPage() {
   return (
     <>
       <Head>
-        <title>Roteiro — André & Nathália</title>
+        <title>Roteiro — André e Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">

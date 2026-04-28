@@ -384,7 +384,7 @@ export default function FotosPage() {
   return (
     <>
       <Head>
-        <title>Instacasamento ✿ — André & Nathália</title>
+        <title>Instacasamento ✿ — André e Nathália</title>
         <meta
           name="description"
           content="Instacasamento com foto e vídeo, filtros divertidos e mural em tempo real para o casamento."

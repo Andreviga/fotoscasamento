@@ -108,7 +108,7 @@ app.post("/api/create-pix", async (req, res) => {
     }
 
     total = Number(total.toFixed(2));
-    const description = `Presentes André & Nathália: ${descriptionParts.join(", ").slice(0, 180)}`;
+    const description = `Presentes André e Nathália: ${descriptionParts.join(", ").slice(0, 180)}`;
 
     const emv = await createBtgPix(total, description);
     res.json({ emv });
@@ -136,7 +136,7 @@ app.post("/api/create-checkout", async (req, res) => {
     }
 
     total = Number(total.toFixed(2));
-    const description = `Presentes André & Nathália: ${descriptionParts.join(", ").slice(0, 180)}`;
+    const description = `Presentes André e Nathália: ${descriptionParts.join(", ").slice(0, 180)}`;
 
     const asaasKey = process.env.ASAAS_API_KEY;
     if (!asaasKey) return res.status(500).json({ error: "ASAAS_API_KEY não configurada" });

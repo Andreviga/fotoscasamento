@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'André & Nathália',
-  description: 'Instacasamento, mural ao vivo e menu digital do casamento de André & Nathália.'
+  title: 'André e Nathália',
+  description: 'Instacasamento, mural ao vivo e menu digital do casamento de André e Nathália.'
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

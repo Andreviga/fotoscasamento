@@ -190,7 +190,7 @@ export default function MuralPage() {
   return (
     <>
       <Head>
-        <title>Mural ao Vivo ✿ — André & Nathália</title>
+        <title>Mural ao Vivo ✿ — André e Nathália</title>
         <meta name="description" content="Mural ao vivo com as fotos dos convidados." />
       </Head>
 

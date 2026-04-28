@@ -92,7 +92,7 @@ export default function MesaPage() {
   return (
     <>
       <Head>
-        <title>Minha Mesa — André & Nathália</title>
+        <title>Minha Mesa — André e Nathália</title>
       </Head>
       <WeddingHeader />
       <main className="main">

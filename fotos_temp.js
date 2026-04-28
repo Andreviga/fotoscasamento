@@ -166,15 +166,15 @@ export default function FotosPage() {
   return (
     <>
       <Head>
-        <title>Cabine de Fotos ✿ André & Nathália</title>
-        <meta name="description" content="Cabine de fotos digital do casamento de André & Nathália." />
+        <title>Cabine de Fotos ✿ André e Nathália</title>
+        <meta name="description" content="Cabine de fotos digital do casamento de André e Nathália." />
       </Head>
 
       <main className="main" id="fotos">
         <div className="hero-haze" />
         <div className="container">
           <div className="section-header">
-            <span className="section-kicker">André & Nathália</span>
+            <span className="section-kicker">André e Nathália</span>
             <h1 className="mt-3 text-4xl sm:text-5xl">✿ Cabine de Fotos Digital</h1>
             <p className="section-subtitle">A mesma identidade visual do site, com captura instantânea e publicação no mural em tempo real.</p>
           </div>

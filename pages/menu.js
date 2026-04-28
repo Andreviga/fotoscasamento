@@ -232,7 +232,7 @@ export default function MenuPage() {
   return (
     <>
       <Head>
-        <title>Menu — André & Nathália</title>
+        <title>Menu — André e Nathália</title>
         <meta
           name="description"
           content="Menu digital da noite com entradas, pratos principais, sobremesas e bebidas."
