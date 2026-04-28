@@ -771,8 +771,6 @@ export default function MapaPage() {
                         const isSelected = item.id === selectedId;
                         const isHighlightedByQuery = item.id === highlightedFromQueryId;
                         const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
-                        const markerType = getMapType({ type: item.tipo, title: item.nome, label: item.nome, id: item.id });
-                        const MarkerIcon = getMapIcon({ type: item.tipo, title: item.nome, label: item.nome, id: item.id });
                         const mesaNumber = getMesaNumber(item);
                         const mesaName = mesaNumber ? TABLE_NAMES[mesaNumber] : '';
                         const isMesa = Boolean(mesaNumber);
@@ -796,7 +794,7 @@ export default function MapaPage() {
                                 : isSelected
                                 ? 'ring-2 ring-wine/70'
                                 : ''
-                            } map-marker map-marker--${markerType}`}
+                            }`}
                             style={{
                               left: `${item.x}%`,
                               top: `${item.y}%`,
@@ -816,10 +814,7 @@ export default function MapaPage() {
                                 textShadow: isHighlightedByQuery ? '0 1px 1px rgba(0,0,0,0.18)' : '0 1px 1px rgba(255,255,255,0.45)'
                               }}
                             >
-                              <span className="inline-flex max-w-full items-center gap-1 text-center font-extrabold">
-                                <MarkerIcon className="map-marker-icon" strokeWidth={1.8} style={{ width: `${Math.max(13, dynamicFontSize + 1)}px`, height: `${Math.max(13, dynamicFontSize + 1)}px` }} />
-                                <span>{labelLine1}</span>
-                              </span>
+                              <span className="max-w-full text-center font-extrabold">{labelLine1}</span>
                               {labelLine2 ? (
                                 <span className="max-w-full text-center text-[0.8em] font-semibold opacity-90">{labelLine2}</span>
                               ) : null}
