@@ -15,6 +15,7 @@ const TABS = [
   { id: 'aparencia', label: 'Aparência' },
   { id: 'notificacoes', label: 'Notificações' },
   { id: 'convidados', label: 'Convidados' },
+  { id: 'whatsapp', label: 'WhatsApp' },
   { id: 'mapa', label: 'Mapa' },
   { id: 'mural', label: 'Mural' }
 ];
@@ -1097,6 +1098,30 @@ export default function AdminPage() {
                 </table>
               </div>
             ) : null}
+          </article>
+        </section>
+      );
+    }
+
+    if (activeTab === 'whatsapp') {
+      return (
+        <section className="space-y-4">
+          <article className="romantic-panel p-5 space-y-3">
+            <h2 className="text-2xl text-cocoa">Envio WhatsApp</h2>
+            <p className="text-sm text-wine/80">
+              Abra a área administrativa de WhatsApp para gerar mensagens personalizadas, copiar texto, abrir link oficial wa.me e marcar envio.
+            </p>
+            <a href="/admin-whatsapp" className="btn btn--primary">Abrir Envio WhatsApp</a>
+          </article>
+
+          <article className="romantic-panel p-5 space-y-2 text-sm text-wine/80">
+            <p>Funcionalidades disponíveis na área de WhatsApp:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Filtros por pendentes, enviados, sem telefone e sem mesa.</li>
+              <li>Mensagem personalizada por convidado com mesa e link do site.</li>
+              <li>Ações manuais seguras: copiar mensagem e abrir wa.me.</li>
+              <li>Status de envio salvo no navegador e no Firestore.</li>
+            </ul>
           </article>
         </section>
       );
