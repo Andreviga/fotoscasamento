@@ -34,6 +34,11 @@ type NextAtracao = {
   minutesUntil?: number;
 };
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+};
+
 function computeNextAtracao(): NextAtracao {
   const now = new Date();
   const evDay = new Date(EVENT_DAY_STR);
@@ -71,11 +76,59 @@ function computeNextAtracao(): NextAtracao {
 
 export default function TabInfo({ onNavigate }: TabInfoProps) {
   const [atracao, setAtracao] = useState<NextAtracao>(computeNextAtracao);
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installStatus, setInstallStatus] = useState('');
+  const [notifStatus, setNotifStatus] = useState('');
 
   useEffect(() => {
     const id = window.setInterval(() => setAtracao(computeNextAtracao()), 30000);
     return () => window.clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    function onBeforeInstallPrompt(event: Event) {
+      event.preventDefault();
+      setDeferredInstallPrompt(event as BeforeInstallPromptEvent);
+    }
+
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+  }, []);
+
+  async function installApp() {
+    if (!deferredInstallPrompt) {
+      setInstallStatus('No iPhone (Safari), use Compartilhar > Adicionar à Tela de Início.');
+      return;
+    }
+
+    await deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    setDeferredInstallPrompt(null);
+    setInstallStatus(choice.outcome === 'accepted' ? 'App instalado com sucesso.' : 'Instalação cancelada.');
+  }
+
+  async function enableNotifications() {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      setNotifStatus('Este navegador não suporta notificações.');
+      return;
+    }
+
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/sw.js');
+      } catch {
+        // Continue and still request permission.
+      }
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      setNotifStatus('Notificações ativadas.');
+      return;
+    }
+
+    setNotifStatus('Permissão de notificações negada.');
+  }
 
   return (
     <section className="main" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
@@ -209,6 +262,26 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             🖼 Mural
           </button>
         </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => void installApp()}
+            className="btn btn--primary py-3.5 text-sm"
+          >
+            📲 Instalar aplicativo
+          </button>
+          <button
+            type="button"
+            onClick={() => void enableNotifications()}
+            className="btn btn--outline py-3.5 text-sm"
+          >
+            🔔 Ativar notificações
+          </button>
+        </div>
+
+        {installStatus ? <p className="text-center text-xs text-wine/65">{installStatus}</p> : null}
+        {notifStatus ? <p className="text-center text-xs text-wine/65">{notifStatus}</p> : null}
 
         {/* Footer stamp */}
         <div className="text-center pt-2 pb-1">

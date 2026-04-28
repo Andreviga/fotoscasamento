@@ -231,6 +231,7 @@ export default function FotosPage() {
   const [filtroSelecionadoId, setFiltroSelecionadoId] = useState(FILTERS[0].id);
   const [feed, setFeed] = useState([]);
   const [feedStatus, setFeedStatus] = useState('Conectando ao mural de fotos...');
+  const [cameraHint, setCameraHint] = useState('');
 
   const filtroSelecionado = useMemo(
     () => FILTERS.find((item) => item.id === filtroSelecionadoId) || FILTERS[0],
@@ -271,6 +272,16 @@ export default function FotosPage() {
     );
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.isSecureContext) {
+      setCameraHint('');
+      return;
+    }
+
+    setCameraHint('Para usar a câmera no celular, abra o site em HTTPS.');
   }, []);
 
   async function prepararFoto(fileOrBlob) {
@@ -492,6 +503,11 @@ export default function FotosPage() {
                   />
                 </label>
               </div>
+
+              <p className="text-xs text-wine/65">
+                Dica mobile: se o navegador bloquear a câmera, permita o acesso nas configurações do site e tente novamente.
+              </p>
+              {cameraHint ? <p className="text-xs text-red-700">{cameraHint}</p> : null}
             </div>
 
             <div className="photo-booth__right" ref={filtersRef}>

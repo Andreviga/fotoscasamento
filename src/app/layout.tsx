@@ -3,13 +3,15 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'André e Nathália',
-  description: 'Instacasamento, mural ao vivo e menu digital do casamento de André e Nathália.'
+  description: 'Instacasamento, mural ao vivo e menu digital do casamento de André e Nathália.',
+  manifest: '/manifest.webmanifest'
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
       <head>
+        <meta name="theme-color" content="#2c2416" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link

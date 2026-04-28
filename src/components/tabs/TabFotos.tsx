@@ -40,6 +40,20 @@ export default function TabFotos({ mounted }: TabFotosProps) {
             title="Instacasamento"
           />
         </div>
+
+        <div className="romantic-panel border border-roseDeep/15 bg-white/75 p-3 text-center">
+          <p className="text-xs text-wine/70">
+            Se a câmera não abrir dentro da aba, use o modo em tela cheia.
+          </p>
+          <a
+            href="/fotos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center justify-center rounded-full border border-gold/40 bg-white px-4 py-2 text-xs font-semibold text-cocoa"
+          >
+            Abrir câmera em tela cheia
+          </a>
+        </div>
       </div>
     </section>
   );

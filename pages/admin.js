@@ -13,6 +13,7 @@ const TABS = [
   { id: 'roteiro', label: 'Roteiro' },
   { id: 'etiqueta', label: 'Etiqueta' },
   { id: 'aparencia', label: 'Aparência' },
+  { id: 'notificacoes', label: 'Notificações' },
   { id: 'convidados', label: 'Convidados' },
   { id: 'mapa', label: 'Mapa' },
   { id: 'mural', label: 'Mural' }
@@ -63,7 +64,7 @@ function TabButton({ active, label, onClick }) {
 }
 
 export default function AdminPage() {
-  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'menu', 'mapa']);
+  const { loading, error, data } = useConfig(['site', 'aparencia', 'roteiro', 'etiqueta', 'menu', 'mapa', 'notificacoes']);
   const [token, setToken] = useState('');
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState('site');
@@ -73,6 +74,7 @@ export default function AdminPage() {
   const [roteiro, setRoteiro] = useState([]);
   const [etiqueta, setEtiqueta] = useState([]);
   const [menu, setMenu] = useState({ heroTitle: '', heroSubtitle: '', secoes: [] });
+  const [notificacoes, setNotificacoes] = useState({ enabled: false, onlyEventDay: true, schedules: [] });
 
   const [statusMessage, setStatusMessage] = useState('');
   const [savingDoc, setSavingDoc] = useState('');
@@ -105,6 +107,11 @@ export default function AdminPage() {
         heroTitle: data?.menu?.heroTitle || '',
         heroSubtitle: data?.menu?.heroSubtitle || '',
         secoes: Array.isArray(data?.menu?.secoes) ? data.menu.secoes : []
+      });
+      setNotificacoes({
+        enabled: Boolean(data?.notificacoes?.enabled),
+        onlyEventDay: data?.notificacoes?.onlyEventDay !== false,
+        schedules: Array.isArray(data?.notificacoes?.schedules) ? data.notificacoes.schedules : []
       });
     }
   }, [loading, data]);
@@ -530,6 +537,37 @@ export default function AdminPage() {
     }));
   }
 
+  function addNotificacao() {
+    setNotificacoes((prev) => ({
+      ...prev,
+      schedules: [
+        ...(prev.schedules || []),
+        {
+          id: `notif-${Date.now()}`,
+          active: true,
+          time: '12:00',
+          title: 'Lembrete do Casamento',
+          message: 'Confira as informações do evento no app.',
+          targetTab: 'info'
+        }
+      ]
+    }));
+  }
+
+  function updateNotificacao(index, patch) {
+    setNotificacoes((prev) => ({
+      ...prev,
+      schedules: (prev.schedules || []).map((item, idx) => (idx === index ? { ...item, ...patch } : item))
+    }));
+  }
+
+  function removeNotificacao(index) {
+    setNotificacoes((prev) => ({
+      ...prev,
+      schedules: (prev.schedules || []).filter((_, idx) => idx !== index)
+    }));
+  }
+
   const tabContent = useMemo(() => {
     if (activeTab === 'site') {
       return (
@@ -710,6 +748,109 @@ export default function AdminPage() {
 
           <button className="btn btn--primary" onClick={() => saveConfig('aparencia', aparencia)} disabled={savingDoc === 'aparencia'}>
             {savingDoc === 'aparencia' ? 'Salvando...' : 'Salvar Aparencia'}
+          </button>
+        </section>
+      );
+    }
+
+    if (activeTab === 'notificacoes') {
+      return (
+        <section className="space-y-3">
+          <div className="romantic-panel p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-2xl text-cocoa">Notificações programadas</h2>
+              <button className="btn btn--outline" onClick={addNotificacao}>Adicionar notificação</button>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm text-wine">
+              <input
+                type="checkbox"
+                checked={Boolean(notificacoes.enabled)}
+                onChange={(e) => setNotificacoes((prev) => ({ ...prev, enabled: e.target.checked }))}
+              />
+              Ativar notificações no app
+            </label>
+
+            <label className="flex items-center gap-2 text-sm text-wine">
+              <input
+                type="checkbox"
+                checked={Boolean(notificacoes.onlyEventDay)}
+                onChange={(e) => setNotificacoes((prev) => ({ ...prev, onlyEventDay: e.target.checked }))}
+              />
+              Disparar somente no dia do evento (03/05/2026)
+            </label>
+
+            <p className="text-xs text-wine/65">
+              As notificações aparecem para convidados que instalaram/abriram o app e autorizaram notificações.
+            </p>
+          </div>
+
+          {(notificacoes.schedules || []).map((item, index) => (
+            <article key={item.id || index} className="romantic-panel p-4 space-y-2">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <label className="block">
+                  <span className="form-label">Horário (HH:mm)</span>
+                  <input
+                    type="time"
+                    className="input-elegant"
+                    value={item.time || '12:00'}
+                    onChange={(e) => updateNotificacao(index, { time: e.target.value })}
+                  />
+                </label>
+                <label className="block">
+                  <span className="form-label">Abrir aba ao clicar</span>
+                  <select
+                    className="input-elegant"
+                    value={item.targetTab || 'info'}
+                    onChange={(e) => updateNotificacao(index, { targetTab: e.target.value })}
+                  >
+                    <option value="info">Início</option>
+                    <option value="mesa">Mesa</option>
+                    <option value="roteiro">Roteiro</option>
+                    <option value="menu">Menu</option>
+                    <option value="mapa">Mapa</option>
+                    <option value="fotos">Fotos</option>
+                    <option value="mural">Mural</option>
+                    <option value="extra">Mais</option>
+                  </select>
+                </label>
+              </div>
+
+              <label className="block">
+                <span className="form-label">Título</span>
+                <input
+                  className="input-elegant"
+                  value={item.title || ''}
+                  onChange={(e) => updateNotificacao(index, { title: e.target.value })}
+                />
+              </label>
+
+              <label className="block">
+                <span className="form-label">Mensagem</span>
+                <textarea
+                  className="input-elegant"
+                  rows={2}
+                  value={item.message || ''}
+                  onChange={(e) => updateNotificacao(index, { message: e.target.value })}
+                />
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                <label className="flex items-center gap-2 text-sm text-wine">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(item.active)}
+                    onChange={(e) => updateNotificacao(index, { active: e.target.checked })}
+                  />
+                  Ativa
+                </label>
+                <button className="btn btn--outline" onClick={() => removeNotificacao(index)}>Remover</button>
+              </div>
+            </article>
+          ))}
+
+          <button className="btn btn--primary" onClick={() => saveConfig('notificacoes', notificacoes)} disabled={savingDoc === 'notificacoes'}>
+            {savingDoc === 'notificacoes' ? 'Salvando...' : 'Salvar Notificações'}
           </button>
         </section>
       );
@@ -950,7 +1091,7 @@ export default function AdminPage() {
   }
 
   return null;
-  }, [activeTab, aparencia, menu, etiqueta, guestFilters, guestRows, importing, loadingGuests, loadingMural, muralPhotos, preview, roteiro, savingDoc, site, token]);
+  }, [activeTab, aparencia, menu, etiqueta, guestFilters, guestRows, importing, loadingGuests, loadingMural, muralPhotos, notificacoes, preview, roteiro, savingDoc, site, token]);
 
   return (
     <>

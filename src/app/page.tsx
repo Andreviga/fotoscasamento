@@ -26,6 +26,91 @@ export default function AppShellPage() {
   const [fotosMounted, setFotosMounted] = useState(() => getInitialTab() === 'fotos');
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Ignore SW registration failure and keep app functional.
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let active = true;
+    let timer: number | undefined;
+
+    function sameMinute(a: Date, hhmm: string) {
+      const [h, m] = String(hhmm || '').split(':').map(Number);
+      if (!Number.isFinite(h) || !Number.isFinite(m)) return false;
+      return a.getHours() === h && a.getMinutes() === m;
+    }
+
+    async function maybeDispatchNotifications() {
+      if (!active || Notification.permission !== 'granted') return;
+
+      try {
+        const response = await fetch('/api/getConfig?docs=notificacoes', { cache: 'no-store' });
+        const payload = await response.json();
+        if (!response.ok) return;
+
+        const cfg = payload?.config?.notificacoes || {};
+        if (!cfg?.enabled) return;
+
+        const schedules = Array.isArray(cfg?.schedules) ? cfg.schedules : [];
+        const now = new Date();
+
+        if (cfg?.onlyEventDay) {
+          const eventDate = '2026-05-03';
+          const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          if (today !== eventDate) return;
+        }
+
+        for (const item of schedules) {
+          if (!item?.active || !sameMinute(now, item?.time)) continue;
+
+          const key = `notif-fired:${item.id || item.time}:${now.toDateString()}`;
+          if (window.localStorage.getItem(key)) continue;
+
+          const title = String(item?.title || 'Casamento André & Nathália');
+          const body = String(item?.message || 'Confira as novidades do evento.');
+          const targetTab = String(item?.targetTab || 'info');
+          const targetUrl = `/#${targetTab}`;
+
+          try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration?.showNotification) {
+              await registration.showNotification(title, {
+                body,
+                icon: '/icons/icon-192.svg',
+                badge: '/icons/icon-192.svg',
+                data: { url: targetUrl }
+              });
+            } else {
+              // Fallback for browsers without SW notifications.
+              // eslint-disable-next-line no-new
+              new Notification(title, { body });
+            }
+            window.localStorage.setItem(key, '1');
+          } catch {
+            // Keep silent if browser blocks notification display.
+          }
+        }
+      } catch {
+        // Ignore fetch failures; will retry on next interval.
+      }
+    }
+
+    void maybeDispatchNotifications();
+    timer = window.setInterval(() => {
+      void maybeDispatchNotifications();
+    }, 30000);
+
+    return () => {
+      active = false;
+      if (timer) window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
     function onHashChange() {
       const hash = window.location.hash.replace('#', '') as AppTab;
       const next = VALID_TABS.includes(hash) ? hash : 'info';

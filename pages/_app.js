@@ -1,10 +1,22 @@
 import '../styles/globals.css';
 import Head from 'next/head';
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }) {
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Keep app working even if SW registration fails.
+    });
+  }, []);
+
   return (
     <>
       <Head>
+        <meta name="theme-color" content="#2c2416" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
