@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
@@ -194,7 +195,15 @@ const MENU_FALLBACK = {
 export default function MenuPage() {
   const { loading, error, data } = useConfig(['site', 'menu']);
   const router = useRouter();
-  const embedded = router.asPath?.includes('embedded=1');
+  const [embedded, setEmbedded] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const embeddedByQuery = params.get('embedded') === '1';
+    const embeddedByFrame = window.self !== window.top;
+    setEmbedded(embeddedByQuery || embeddedByFrame);
+  }, [router.asPath]);
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
   const heroTitle = MENU_FALLBACK.heroTitle;
   const heroSubtitle = MENU_FALLBACK.heroSubtitle;
@@ -241,21 +250,23 @@ export default function MenuPage() {
 
       {!embedded ? <WeddingHeader /> : null}
 
-      <main className="main" id="menu">
+      <main className={`main ${embedded ? 'main--embedded' : ''}`} id="menu">
         <div className="hero-haze" />
         <div className="container relative z-10">
-          <section className="menu-hero page-section">
-            <div className="menu-hero--wedding">
-              <p className="menu-hero__date">{weddingDate}</p>
-              <p className="menu-hero__monogram">A <span>&amp;</span> N</p>
-              <div className="menu-hero__divider" aria-hidden="true" />
-              <p className="menu-hero__names">André <span>&amp;</span> Nathália</p>
-              <div className="menu-hero__divider" aria-hidden="true" />
-              <p className="menu-hero__title">{heroTitle}</p>
-              <p className="menu-hero__subtitle">{heroSubtitle}</p>
-              <p className="menu-hero__signature">Com carinho, preparado para a nossa noite</p>
-            </div>
-          </section>
+          {!embedded ? (
+            <section className="menu-hero page-section">
+              <div className="menu-hero--wedding">
+                <p className="menu-hero__date">{weddingDate}</p>
+                <p className="menu-hero__monogram">A <span>&amp;</span> N</p>
+                <div className="menu-hero__divider" aria-hidden="true" />
+                <p className="menu-hero__names">André <span>&amp;</span> Nathália</p>
+                <div className="menu-hero__divider" aria-hidden="true" />
+                <p className="menu-hero__title">{heroTitle}</p>
+                <p className="menu-hero__subtitle">{heroSubtitle}</p>
+                <p className="menu-hero__signature">Com carinho, preparado para a nossa noite</p>
+              </div>
+            </section>
+          ) : null}
 
           {loading ? <LoadingSpinner label="Carregando menu" /> : null}
           {!loading && error ? <div className="romantic-panel p-5 text-sm text-red-700">{error}</div> : null}
