@@ -445,6 +445,10 @@ export default function MapaPage() {
                     const isMesa = Boolean(mesaNumber);
                     const labelLine1 = isMesa ? `Mesa ${mesaNumber}` : item.nome;
                     const labelLine2 = isMesa ? mesaName : '';
+                    const baseSize = Math.min(Number(item.largura || 0), Number(item.altura || 0));
+                    const dynamicFontSize = isMesa
+                      ? Math.max(9, Math.min(16, baseSize * 1.25))
+                      : Math.max(8, Math.min(14, baseSize * 1.05));
 
                     return (
                       <button
@@ -470,7 +474,7 @@ export default function MapaPage() {
                           color: isHighlightedByQuery ? '#fbfaf7' : '#2c2416',
                           borderColor: isHighlightedByQuery ? 'rgba(15, 79, 61, 0.9)' : 'rgba(44, 36, 22, 0.18)',
                           touchAction: 'none',
-                          fontSize: isMesa ? 'clamp(10px, 0.95vw, 13px)' : 'clamp(9px, 0.85vw, 12px)'
+                          fontSize: `${dynamicFontSize}px`
                         }}
                       >
                         <span className="pointer-events-none flex max-w-full flex-col items-center px-1 leading-tight">

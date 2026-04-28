@@ -334,7 +334,7 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (activeTab === 'convidados' && token) {
+    if ((activeTab === 'convidados' || activeTab === 'mapa') && token) {
       fetchGuests();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -758,10 +758,70 @@ export default function AdminPage() {
 
     if (activeTab === 'mapa') {
       return (
-        <section className="romantic-panel p-5 space-y-3">
-          <h2 className="text-2xl text-cocoa">Editor do mapa</h2>
-          <p className="text-sm text-wine/80">Acesse o modo admin do mapa para arrastar, editar e salvar elementos do layout.</p>
-          <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
+        <section className="space-y-4">
+          <article className="romantic-panel p-5 space-y-3">
+            <h2 className="text-2xl text-cocoa">Editor do mapa</h2>
+            <p className="text-sm text-wine/80">Acesse o modo admin do mapa para arrastar, editar e salvar elementos do layout.</p>
+            <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
+          </article>
+
+          <article className="romantic-panel p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-2xl text-cocoa">Alocar convidados nas mesas</h2>
+              <button className="btn btn--outline" onClick={fetchGuests}>Atualizar lista</button>
+            </div>
+
+            <p className="text-sm text-wine/75">
+              As alterações aqui refletem na busca pública da aba Mesa.
+            </p>
+
+            <div className="grid gap-2 sm:grid-cols-4">
+              <input className="input-elegant" placeholder="Filtro grupo" value={guestFilters.grupo} onChange={(e) => setGuestFilters((prev) => ({ ...prev, grupo: e.target.value }))} />
+              <input className="input-elegant" placeholder="Mesa" value={guestFilters.mesa} onChange={(e) => setGuestFilters((prev) => ({ ...prev, mesa: e.target.value }))} />
+              <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
+                <option value="">Confirmacao (todos)</option>
+                <option value="true">Confirmado</option>
+                <option value="false">Nao confirmado</option>
+              </select>
+              <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
+            </div>
+
+            {loadingGuests ? <LoadingSpinner label="Carregando convidados" /> : null}
+
+            {!loadingGuests ? (
+              <div className="overflow-auto rounded-xl border border-roseDeep/20">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-white/70 text-left text-wine/80">
+                    <tr>
+                      <th className="px-3 py-2">Nome</th>
+                      <th className="px-3 py-2">Grupo</th>
+                      <th className="px-3 py-2">Mesa</th>
+                      <th className="px-3 py-2">Acoes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {guestRows.map((guest) => (
+                      <tr key={guest.id} className="border-t border-roseDeep/10">
+                        <td className="px-3 py-2">{guest.nomeOriginal}</td>
+                        <td className="px-3 py-2">{guest.grupo || '-'}</td>
+                        <td className="px-3 py-2">
+                          <input
+                            className="w-24 rounded-md border border-roseDeep/25 bg-white px-2 py-1"
+                            type="number"
+                            value={guest.mesa ?? ''}
+                            onChange={(e) => updateGuestRow(guest.id, { mesa: e.target.value })}
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+          </article>
         </section>
       );
     }

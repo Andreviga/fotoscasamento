@@ -76,12 +76,43 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<GuestResult[]>([]);
+  const [dynamicGuestsByMesa, setDynamicGuestsByMesa] = useState<Record<number, string[]>>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const debounced = useDebouncedValue(query, 300);
 
   useEffect(() => {
     inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAllGuestsByMesa() {
+      try {
+        const response = await fetch('/api/searchGuest?all=1');
+        const payload = await response.json();
+        if (!active || !response.ok || !Array.isArray(payload?.results)) return;
+
+        const grouped: Record<number, string[]> = {};
+        payload.results.forEach((guest: GuestResult) => {
+          if (typeof guest.mesa !== 'number') return;
+          if (!grouped[guest.mesa]) grouped[guest.mesa] = [];
+          if (guest.nomeOriginal) grouped[guest.mesa].push(guest.nomeOriginal);
+        });
+
+        Object.keys(grouped).forEach((key) => {
+          grouped[Number(key)] = Array.from(new Set(grouped[Number(key)])).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        });
+
+        setDynamicGuestsByMesa(grouped);
+      } catch {
+        // Keep static fallback if API fails.
+      }
+    }
+
+    void loadAllGuestsByMesa();
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -120,9 +151,13 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
 
   const selectedMesaGuests = useMemo(() => {
     if (!selected || typeof selected.mesa !== 'number') return [];
+    const dynamicGuests = dynamicGuestsByMesa[selected.mesa];
+    if (Array.isArray(dynamicGuests) && dynamicGuests.length > 0) {
+      return dynamicGuests;
+    }
     const table = STATIC_TABLES.find((t) => t.mesa === selected.mesa);
     return table ? [...table.convidados].sort((a, b) => a.localeCompare(b, 'pt-BR')) : [];
-  }, [selected]);
+  }, [selected, dynamicGuestsByMesa]);
 
   return (
     <section className="main">
