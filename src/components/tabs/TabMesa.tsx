@@ -128,9 +128,9 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-4 py-4 sm:space-y-5">
         <header className="romantic-panel bg-[linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))] p-5 text-center sm:p-7">
-          <p className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-gold/70 text-xl text-wine sm:h-16 sm:w-16">A&amp;N</p>
-          <div className="mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/80 to-transparent" />
-          <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl">Encontre Sua Mesa</h1>
+          <p className="stationery-monogram">A&amp;N</p>
+          <div className="stationery-rule" />
+          <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Encontre Sua Mesa</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-roseDeep/80">Busca de convidados</p>
           <div className="mx-auto mt-4 max-w-xl">
             <div className="relative">

@@ -115,6 +115,20 @@
     @apply mb-4 break-inside-avoid transition-shadow duration-200 hover:shadow-frame;
   }
 
+  /* Stationery header patterns - used across all major pages */
+  .stationery-top {
+    @apply mb-6 text-center;
+  }
+
+  .stationery-monogram {
+    @apply mx-auto grid h-14 w-14 place-items-center rounded-full border border-gold/60 font-serifRomance text-lg text-gold sm:h-16 sm:w-16 sm:text-xl;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .stationery-rule {
+    @apply mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/60 to-transparent;
+  }
+
   .stationery-title {
     border: 1px solid rgba(201, 179, 126, 0.32);
     border-radius: 1.5rem;

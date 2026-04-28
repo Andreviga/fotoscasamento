@@ -60,17 +60,14 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             padding: '2.5rem 1.5rem',
           }}
         >
-          {/* Monogram */}
-          <div
-            className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-gold/60 font-serifRomance text-xl text-gold sm:h-20 sm:w-20 sm:text-2xl"
-            aria-hidden="true"
-          >
+          {/* Monogram - using stationery pattern */}
+          <div className="stationery-monogram" aria-hidden="true">
             A&amp;N
           </div>
 
-          <div className="mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+          <div className="stationery-rule" />
 
-          <h1 className="mt-3 text-5xl text-cocoa sm:text-6xl">André &amp; Nathália</h1>
+          <h1 className="mt-3 text-5xl text-cocoa sm:text-6xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>André &amp; Nathália</h1>
           <p className="mt-1 text-sm uppercase tracking-[0.3em] text-roseDeep/65">03 de maio de 2026</p>
 
           <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
