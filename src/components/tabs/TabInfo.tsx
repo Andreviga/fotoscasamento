@@ -51,29 +51,21 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
     <section className="main" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-5">
-
-        {/* Hero */}
-        <div
+        {/* Hero Header */}
+        <header
           className="romantic-panel text-center"
           style={{
             background: 'linear-gradient(160deg,rgba(253,251,247,0.98) 0%,rgba(250,246,240,0.95) 100%)',
             padding: '2.5rem 1.5rem',
           }}
         >
-          {/* Monogram - using stationery pattern */}
-          <div className="stationery-monogram" aria-hidden="true">
-            A&amp;N
-          </div>
-
+          <p className="stationery-monogram" aria-hidden="true">A&amp;N</p>
           <div className="stationery-rule" />
-
           <h1 className="mt-3 text-5xl text-cocoa sm:text-6xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>André &amp; Nathália</h1>
           <p className="mt-1 text-sm uppercase tracking-[0.3em] text-roseDeep/65">03 de maio de 2026</p>
-
           <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
           </p>
-
           {/* Countdown */}
           <div
             aria-live="polite"
@@ -103,7 +95,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
 
           <div className="mx-auto mt-3 h-px w-32 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
           <p className="mt-3 text-xs italic text-roseDeep/55">Com carinho, André &amp; Nathália</p>
-        </div>
+        </header>
 
         {/* CTA Buttons */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

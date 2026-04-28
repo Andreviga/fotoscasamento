@@ -11,7 +11,7 @@ export default function TabMural(_: TabMuralProps) {
     <section className="main">
       <div className="hero-haze" />
       <div className="container relative z-10 space-y-4 py-4 sm:space-y-5">
-        <header className="stationery-top">
+        <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
           <p className="stationery-monogram">A&amp;N</p>
           <div className="stationery-rule" />
           <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Mural Ao Vivo</h1>

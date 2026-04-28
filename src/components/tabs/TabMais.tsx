@@ -100,7 +100,7 @@ export default function TabMais({ onNavigate }: TabMaisProps) {
   return (
     <div className="flex flex-col" style={{ height: 'calc(100dvh - 4rem)' }}>
       <div className="px-4 pb-3 pt-4 sm:px-6">
-        <header className="stationery-top py-4 sm:py-5">
+        <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
           <p className="stationery-monogram">A&amp;N</p>
           <div className="stationery-rule" />
           <h1 className="mt-3 text-3xl text-cocoa sm:text-4xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Informações da Festa</h1>

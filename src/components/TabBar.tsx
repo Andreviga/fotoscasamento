@@ -43,6 +43,18 @@ const TABS: TabItem[] = [
     )
   },
   {
+    key: 'mural',
+    label: 'Mural',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+      </svg>
+    )
+  },
+  {
     key: 'mais',
     label: 'Info',
     icon: (
@@ -62,7 +74,7 @@ export default function TabBar({ active, onChange }: TabBarProps) {
       aria-label="Navegação principal"
       role="tablist"
     >
-      <div className="mx-auto grid h-16 max-w-3xl grid-cols-4">
+      <div className="mx-auto grid h-16 max-w-4xl grid-cols-5">
         {TABS.map((tab) => {
           const isActive = active === tab.key;
 
