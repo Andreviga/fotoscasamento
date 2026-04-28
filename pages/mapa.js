@@ -181,8 +181,10 @@ export default function MapaPage() {
   const [newGuestConfirmed, setNewGuestConfirmed] = useState(true);
   const [guestActionLoading, setGuestActionLoading] = useState(false);
   const [mapAspectRatio, setMapAspectRatio] = useState(DEFAULT_MAP_ASPECT_RATIO);
+  const [mapZoom, setMapZoom] = useState(1.15);
 
   const mapRef = useRef(null);
+  const mapViewportRef = useRef(null);
   const dragRef = useRef(null);
   const isEmbedded = String(router.query.embedded || '') === '1';
 
@@ -682,6 +684,17 @@ export default function MapaPage() {
     setMapAspectRatio(image.naturalWidth / image.naturalHeight);
   }
 
+  function adjustZoom(nextZoom) {
+    setMapZoom(clamp(nextZoom, 1, 2.4));
+  }
+
+  function resetZoom() {
+    setMapZoom(1.15);
+    if (mapViewportRef.current) {
+      mapViewportRef.current.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+    }
+  }
+
   return (
     <>
       <Head>
@@ -713,75 +726,104 @@ export default function MapaPage() {
           {!loading ? (
             <div className="space-y-5">
               <div className={isEmbedded ? 'grid gap-4' : 'grid gap-4 lg:grid-cols-[1fr_320px]'}>
-                <section
-                  ref={mapRef}
-                  className="relative overflow-hidden rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
-                  style={{
-                    aspectRatio: mapAspectRatio,
-                    minHeight: isEmbedded ? '74dvh' : undefined
-                  }}
-                >
-                  {layoutSettings.showBackground ? (
-                    <img
-                      alt="Layout do salão"
-                      src={layoutSettings.backgroundUrl || DEFAULT_LAYOUT_SETTINGS.backgroundUrl}
-                      onLoad={handleBackgroundLoad}
-                      className="absolute inset-0 h-full w-full pointer-events-none object-cover"
-                      style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
-                    />
-                  ) : null}
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,239,0.2),rgba(255,250,239,0.48))]" />
-                  {elementos.map((item) => {
-                    const isSelected = item.id === selectedId;
-                    const isHighlightedByQuery = item.id === highlightedFromQueryId;
-                    const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
-                    const mesaNumber = getMesaNumber(item);
-                    const mesaName = mesaNumber ? TABLE_NAMES[mesaNumber] : '';
-                    const isMesa = Boolean(mesaNumber);
-                    const labelLine1 = isMesa ? `Mesa ${mesaNumber}` : item.nome;
-                    const labelLine2 = isMesa ? mesaName : '';
-                    const baseSize = Math.min(Number(item.largura || 0), Number(item.altura || 0));
-                    const dynamicFontSize = isMesa
-                      ? Math.max(9, Math.min(16, baseSize * 1.25))
-                      : Math.max(8, Math.min(14, baseSize * 1.05));
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-roseDeep/15 bg-white/80 px-3 py-2 text-xs text-wine/80">
+                    <p>
+                      Use os controles para ampliar e arraste o mapa quando estiver com zoom.
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button type="button" className="btn btn--outline px-3 py-1" onClick={() => adjustZoom(mapZoom - 0.2)}>−</button>
+                      <span className="min-w-14 text-center font-semibold text-cocoa">{Math.round(mapZoom * 100)}%</span>
+                      <button type="button" className="btn btn--outline px-3 py-1" onClick={() => adjustZoom(mapZoom + 0.2)}>+</button>
+                      <button type="button" className="btn btn--outline px-3 py-1" onClick={resetZoom}>Resetar</button>
+                    </div>
+                  </div>
 
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        title={item.nome}
-                        onClick={() => setSelectedId(item.id)}
-                        onPointerDown={(event) => startDrag(event, item)}
-                        className={`absolute flex items-center justify-center rounded-md border text-[10px] sm:text-xs font-semibold shadow-sm ${
-                          isHighlightedByQuery
-                            ? 'ring-2 ring-wine'
-                            : isSelected
-                            ? 'ring-2 ring-wine/70'
-                            : ''
-                        }`}
-                        style={{
-                          left: `${item.x}%`,
-                          top: `${item.y}%`,
-                          width: `${item.largura}%`,
-                          height: `${item.altura}%`,
-                          transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
-                          background: isHighlightedByQuery ? '#0f4f3d' : color,
-                          color: isHighlightedByQuery ? '#fbfaf7' : '#2c2416',
-                          borderColor: isHighlightedByQuery ? 'rgba(15, 79, 61, 0.9)' : 'rgba(44, 36, 22, 0.18)',
-                          touchAction: 'none',
-                          fontSize: `${dynamicFontSize}px`
-                        }}
-                      >
-                        <span className="pointer-events-none flex max-w-full flex-col items-center px-1 leading-tight">
-                          <span className="max-w-full truncate">{labelLine1}</span>
-                          {labelLine2 ? (
-                            <span className="max-w-full truncate text-[0.82em] font-medium opacity-85">{labelLine2}</span>
-                          ) : null}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </section>
+                  <section
+                    ref={mapViewportRef}
+                    className="overflow-auto rounded-3xl border border-roseDeep/20 bg-[#fdf9ef] shadow-[0_20px_50px_rgba(34,53,44,0.08)]"
+                    style={{
+                      minHeight: isEmbedded ? '74dvh' : 'min(78vh, 920px)',
+                      touchAction: adminEnabled ? 'pan-x pan-y' : 'pan-x pan-y pinch-zoom'
+                    }}
+                  >
+                    <div
+                      ref={mapRef}
+                      className="relative"
+                      style={{
+                        width: `${mapZoom * 100}%`,
+                        minWidth: '100%',
+                        aspectRatio: mapAspectRatio
+                      }}
+                    >
+                      {layoutSettings.showBackground ? (
+                        <img
+                          alt="Layout do salão"
+                          src={layoutSettings.backgroundUrl || DEFAULT_LAYOUT_SETTINGS.backgroundUrl}
+                          onLoad={handleBackgroundLoad}
+                          className="absolute inset-0 h-full w-full pointer-events-none object-cover"
+                          style={{ opacity: Number(layoutSettings.opacity ?? DEFAULT_LAYOUT_SETTINGS.opacity) }}
+                        />
+                      ) : null}
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,239,0.14),rgba(255,250,239,0.38))]" />
+                      {elementos.map((item) => {
+                        const isSelected = item.id === selectedId;
+                        const isHighlightedByQuery = item.id === highlightedFromQueryId;
+                        const color = item.cor || TYPE_COLORS[item.tipo] || TYPE_COLORS.outro;
+                        const mesaNumber = getMesaNumber(item);
+                        const mesaName = mesaNumber ? TABLE_NAMES[mesaNumber] : '';
+                        const isMesa = Boolean(mesaNumber);
+                        const labelLine1 = isMesa ? mesaName : item.nome;
+                        const labelLine2 = isMesa ? `Mesa ${mesaNumber}` : '';
+                        const baseSize = Math.min(Number(item.largura || 0), Number(item.altura || 0));
+                        const dynamicFontSize = isMesa
+                          ? Math.max(10, Math.min(18, baseSize * 1.4))
+                          : Math.max(9, Math.min(14, baseSize * 1.08));
+
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            title={item.nome}
+                            onClick={() => setSelectedId(item.id)}
+                            onPointerDown={(event) => startDrag(event, item)}
+                            className={`absolute flex items-center justify-center overflow-hidden rounded-xl border font-semibold shadow-[0_8px_18px_rgba(44,36,22,0.12)] ${
+                              isHighlightedByQuery
+                                ? 'ring-2 ring-wine'
+                                : isSelected
+                                ? 'ring-2 ring-wine/70'
+                                : ''
+                            }`}
+                            style={{
+                              left: `${item.x}%`,
+                              top: `${item.y}%`,
+                              width: `${item.largura}%`,
+                              height: `${item.altura}%`,
+                              transform: `translate(-50%, -50%) rotate(${item.rotacao || 0}deg)`,
+                              background: isHighlightedByQuery ? '#0f4f3d' : color,
+                              color: isHighlightedByQuery ? '#fbfaf7' : '#231b10',
+                              borderColor: isHighlightedByQuery ? 'rgba(15, 79, 61, 0.9)' : 'rgba(44, 36, 22, 0.2)',
+                              touchAction: 'none',
+                              fontSize: `${dynamicFontSize}px`
+                            }}
+                          >
+                            <span
+                              className="pointer-events-none flex max-w-full flex-col items-center px-1.5 py-1 leading-[1.05]"
+                              style={{
+                                textShadow: isHighlightedByQuery ? '0 1px 1px rgba(0,0,0,0.18)' : '0 1px 1px rgba(255,255,255,0.45)'
+                              }}
+                            >
+                              <span className="max-w-full text-center font-extrabold">{labelLine1}</span>
+                              {labelLine2 ? (
+                                <span className="max-w-full text-center text-[0.8em] font-semibold opacity-90">{labelLine2}</span>
+                              ) : null}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                </div>
 
                 <div className="lg:hidden mt-3 flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
                   {elementos.map((item) => {
@@ -797,7 +839,7 @@ export default function MapaPage() {
                         }`}
                         style={isChipSelected ? undefined : { borderLeftColor: color, borderLeftWidth: 3 }}
                       >
-                        {item.nome}
+                        {getMesaNumber(item) ? `${getMesaName(getMesaNumber(item))} • Mesa ${getMesaNumber(item)}` : item.nome}
                       </button>
                     );
                   })}
@@ -809,9 +851,8 @@ export default function MapaPage() {
                 {selected ? (
                   <div className="mt-3 space-y-3 text-sm">
                     <div>
-                      <p className="font-semibold text-wine">{selected.nome}</p>
-                      <p className="text-wine/70">Tipo: {selected.tipo}</p>
-                      {selectedMesaNumber ? <p className="text-wine/70">Mesa: {selectedMesaNumber} ({getMesaName(selectedMesaNumber)})</p> : null}
+                      <p className="font-semibold text-wine">{selectedMesaNumber ? getMesaName(selectedMesaNumber) : selected.nome}</p>
+                      {selectedMesaNumber ? <p className="text-wine/70">Mesa {selectedMesaNumber}</p> : null}
                       {selected.id === highlightedFromQueryId ? (
                         <p className="mt-1 inline-flex rounded-full border border-wine/25 bg-wine/10 px-2 py-0.5 text-xs font-semibold text-wine">
                           Mesa encontrada na busca
@@ -1037,9 +1078,7 @@ export default function MapaPage() {
                           </button>
                         </div>
                       </div>
-                    ) : (
-                      <p className="text-xs text-wine/60">Modo público. Para editar, acesse /mapa?admin=true com sessão admin ativa.</p>
-                    )}
+                    ) : null}
 
                     {message ? <p className="text-xs text-wine/80">{message}</p> : null}
                   </div>

@@ -17,6 +17,12 @@ type RoteiroItem = {
   destaque?: boolean;
 };
 
+type EtiquetaItem = {
+  icone?: string;
+  titulo?: string;
+  conteudo?: string;
+};
+
 type SubTab = 'roteiro' | 'mapa' | 'menu' | 'extra';
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
@@ -35,6 +41,13 @@ const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '21:00', titulo: 'Corte do bolo',               destaque: true  },
   { horario: '21:15', titulo: 'Bouquet da noiva',            destaque: true  },
   { horario: '23:00', titulo: 'Encerramento',                destaque: false },
+];
+
+const ETIQUETA_FALLBACK: EtiquetaItem[] = [
+  { icone: '👔', titulo: 'Traje', conteudo: 'Esporte fino. Pedimos gentilmente que as convidadas evitem vestidos brancos, creme ou na cor da noiva.' },
+  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 17h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com antecedência.' },
+  { icone: '🔕', titulo: 'Durante a cerimônia', conteudo: 'Deixe o celular no silencioso e aguarde a entrada da noiva antes de se sentar.' },
+  { icone: '📷', titulo: 'Fotos e redes sociais', conteudo: 'Publique suas fotos no mural ao vivo pelo app para compartilhar esse dia com todo mundo.' },
 ];
 
 const DIA_FESTA = new Date('2026-05-03');
@@ -71,7 +84,7 @@ function getSubHeader(sub: SubTab): { title: string; subtitle: string } {
     case 'menu':
       return { title: 'Menu & Bebidas', subtitle: 'Entradas, pratos e bebidas da festa' };
     case 'extra':
-      return { title: 'Mais informações', subtitle: 'Lista de presentes' };
+      return { title: 'Etiqueta e presentes', subtitle: 'Orientações do evento e lista de presentes' };
     default:
       return { title: 'Mais informações', subtitle: '' };
   }
@@ -81,6 +94,8 @@ export default function TabMais({ onNavigate: _onNavigate, initialSub, hideChrom
   const [sub, setSub] = useState<SubTab>(initialSub ?? 'roteiro');
   const [loadingRoteiro, setLoadingRoteiro] = useState(true);
   const [roteiroItems, setRoteiroItems] = useState<RoteiroItem[]>([]);
+  const [loadingEtiqueta, setLoadingEtiqueta] = useState(true);
+  const [etiquetaItems, setEtiquetaItems] = useState<EtiquetaItem[]>([]);
   const [mapaMounted, setMapaMounted] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
 
@@ -96,6 +111,25 @@ export default function TabMais({ onNavigate: _onNavigate, initialSub, hideChrom
       })
       .catch(() => { if (active) setRoteiroItems(ROTEIRO_FALLBACK); })
       .finally(() => { if (active) setLoadingRoteiro(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/getConfig?docs=etiqueta', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((payload: any) => {
+        if (!active) return;
+        const raw = payload?.config?.etiqueta?.secoes;
+        const items = Array.isArray(raw) && raw.length > 0 ? raw : ETIQUETA_FALLBACK;
+        setEtiquetaItems(items);
+      })
+      .catch(() => {
+        if (active) setEtiquetaItems(ETIQUETA_FALLBACK);
+      })
+      .finally(() => {
+        if (active) setLoadingEtiqueta(false);
+      });
     return () => { active = false; };
   }, []);
 
@@ -252,6 +286,28 @@ export default function TabMais({ onNavigate: _onNavigate, initialSub, hideChrom
         {/* EXTRA */}
         <div className={sub === 'extra' ? 'block' : 'hidden'}>
           <div className="mx-auto max-w-lg space-y-3 px-4 pb-8 pt-4">
+            {loadingEtiqueta ? (
+              <div className="flex justify-center py-10">
+                <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gold" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {etiquetaItems.map((item, index) => (
+                  <article key={`${item.titulo}-${index}`} className="rounded-2xl border border-roseDeep/15 bg-white/80 px-4 py-4 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold/15 text-lg">
+                        {item.icone || '✨'}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-base font-semibold text-cocoa">{item.titulo || 'Informação importante'}</p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-wine/75">{item.conteudo || ''}</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
             <a
               href="https://andrenathalia03052026.site/"
               target="_blank"

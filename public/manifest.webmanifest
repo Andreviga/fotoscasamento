@@ -3,7 +3,7 @@
   "short_name": "A&N",
   "description": "App do casamento com mesa, mapa, menu, fotos e mural ao vivo.",
   "start_url": "/#info",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#fdf8ef",
   "theme_color": "#2c2416",
   "orientation": "portrait",

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import TabBar, { type AppTab } from '@/components/TabBar';
+import InstallPromptBanner from '@/components/InstallPromptBanner';
 import TabInfo from '@/components/tabs/TabInfo';
 import TabMesa from '@/components/tabs/TabMesa';
 import TabFotos from '@/components/tabs/TabFotos';
@@ -162,6 +163,7 @@ export default function AppShellPage() {
 
   return (
     <div className="min-h-screen pb-16 sm:pb-20">
+      <InstallPromptBanner />
       <main>{currentTabContent}</main>
       <TabBar active={activeTab} onChange={handleTabChange} />
     </div>
