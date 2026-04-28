@@ -1,5 +1,7 @@
 import { assertAdmin } from '../../lib/adminAuth';
 import { getAdminDb } from '../../lib/firebaseAdmin';
+import { normalizeName } from '../../lib/guestUtils';
+import { SEATING_GUESTS } from '../../lib/seatingPlan';
 
 function normalizeFilters(query) {
   return {
@@ -49,7 +51,20 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const snapshot = await adminDb.collection('convidados').orderBy('nomeOriginal', 'asc').get();
-      const guests = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const firestoreGuests = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data(), source: 'firestore' }));
+
+      const dedupe = new Set(
+        firestoreGuests
+          .map((guest) => normalizeName(guest.nomeOriginal || guest.nome || ''))
+          .filter(Boolean)
+      );
+
+      const fallbackGuests = SEATING_GUESTS.filter((guest) => {
+        const key = normalizeName(guest.nomeOriginal || guest.nome || '');
+        return key && !dedupe.has(key);
+      });
+
+      const guests = [...firestoreGuests, ...fallbackGuests];
       const filtered = applyFilters(guests, normalizeFilters(req.query || {}));
 
       if (String(req.query.export || '') === 'csv') {
