@@ -8,6 +8,7 @@ import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
+import { getMapIcon, getMapType, MAP_LEGEND_ITEMS } from '../lib/mapIcons';
 
 const DEFAULT_LAYOUT_SETTINGS = {
   backgroundUrl: '/layout-salao.png',
@@ -823,6 +824,23 @@ export default function MapaPage() {
                       })}
                     </div>
                   </section>
+
+                  <div className="romantic-panel px-3 py-2">
+                    <p className="mb-2 text-[10px] uppercase tracking-[0.12em] text-roseDeep/55">Legenda rápida</p>
+                    <div className="flex flex-wrap gap-2">
+                      {MAP_LEGEND_ITEMS.map((item) => {
+                        const markerType = getMapType({ type: item.type, label: item.label });
+                        const MarkerIcon = getMapIcon({ type: item.type, label: item.label });
+
+                        return (
+                          <span key={item.type} className={`map-marker map-marker--${markerType} map-marker--legend`}>
+                            <MarkerIcon className="map-marker-icon" strokeWidth={1.8} />
+                            {item.label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="lg:hidden mt-3 flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
