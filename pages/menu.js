@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
@@ -192,6 +193,8 @@ const MENU_FALLBACK = {
 
 export default function MenuPage() {
   const { loading, error, data } = useConfig(['site', 'menu']);
+  const router = useRouter();
+  const embedded = router.asPath?.includes('embedded=1');
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
   const heroTitle = MENU_FALLBACK.heroTitle;
   const heroSubtitle = MENU_FALLBACK.heroSubtitle;
@@ -236,7 +239,7 @@ export default function MenuPage() {
         />
       </Head>
 
-      <WeddingHeader />
+      {!embedded ? <WeddingHeader /> : null}
 
       <main className="main" id="menu">
         <div className="hero-haze" />
@@ -314,7 +317,7 @@ export default function MenuPage() {
         </div>
       </main>
 
-      <WeddingFooter />
+      {!embedded ? <WeddingFooter /> : null}
     </>
   );
 }

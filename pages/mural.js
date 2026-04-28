@@ -99,6 +99,27 @@ export default function MuralPage() {
   const [status, setStatus] = useState('Conectando ao mural...');
   const [deleteTokens, setDeleteTokens] = useState({});
   const [deletingId, setDeletingId] = useState('');
+  const [downloadingId, setDownloadingId] = useState('');
+
+  async function downloadMedia(url, name, id) {
+    setDownloadingId(id);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${name || 'foto-casamento'}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, '_blank');
+    } finally {
+      setDownloadingId('');
+    }
+  }
 
   useEffect(() => {
     const wallQuery = query(collection(firebaseDb, 'mural'), limit(120));
@@ -227,16 +248,28 @@ export default function MuralPage() {
                     <p className="text-[11px] uppercase tracking-[0.28em] text-wine/50">{formatTime(photo.createdAtMs)}</p>
                     <h2 className="mt-1 text-2xl">{photo.guestName || 'Convidado'}</h2>
                     {photo.messageText ? <p className="mt-2 text-sm text-wine/75">{photo.messageText}</p> : null}
-                    {deleteTokens?.[photo.id] ? (
-                      <button
-                        type="button"
-                        className="btn btn--outline mt-3"
-                        onClick={() => void excluirMidia(photo.id)}
-                        disabled={deletingId === photo.id}
-                      >
-                        {deletingId === photo.id ? 'Excluindo...' : 'Excluir minha mídia'}
-                      </button>
-                    ) : null}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {photo.mediaType !== 'video' ? (
+                        <button
+                          type="button"
+                          className="btn btn--outline text-xs py-1.5 px-3"
+                          onClick={() => void downloadMedia(photo.mediaUrl || photo.imageUrl, photo.guestName, photo.id)}
+                          disabled={downloadingId === photo.id}
+                        >
+                          {downloadingId === photo.id ? 'Baixando...' : '⬇ Baixar foto'}
+                        </button>
+                      ) : null}
+                      {deleteTokens?.[photo.id] ? (
+                        <button
+                          type="button"
+                          className="btn btn--outline text-xs py-1.5 px-3"
+                          onClick={() => void excluirMidia(photo.id)}
+                          disabled={deletingId === photo.id}
+                        >
+                          {deletingId === photo.id ? 'Excluindo...' : 'Excluir minha mídia'}
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               ))}

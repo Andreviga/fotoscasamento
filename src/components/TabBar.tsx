@@ -43,6 +43,15 @@ const TABS: TabItem[] = [
     )
   },
   {
+    key: 'menu',
+    label: 'Menu',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c-1.5 0-3 1.5-3 3v3h6V6c0-1.5-1.5-3-3-3zM9 9v12M15 9v12M6 12h12" />
+      </svg>
+    )
+  },
+  {
     key: 'mural',
     label: 'Mural',
     icon: (
@@ -70,15 +79,6 @@ const TABS: TabItem[] = [
     icon: (
       <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
-    )
-  },
-  {
-    key: 'menu',
-    label: 'Menu',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c-1.5 0-3 1.5-3 3v3h6V6c0-1.5-1.5-3-3-3zM9 9v12M15 9v12M6 12h12" />
       </svg>
     )
   },

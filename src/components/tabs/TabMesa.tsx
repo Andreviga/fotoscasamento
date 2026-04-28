@@ -130,7 +130,8 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
         <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
           <p className="stationery-monogram">A&amp;N</p>
           <div className="stationery-rule" />
-          <h1 className="mt-3 text-4xl text-cocoa sm:text-5xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Encontre Sua Mesa</h1>
+          <p className="mt-3 text-2xl text-cocoa" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>André &amp; Nathália</p>
+          <h1 className="mt-1 text-4xl text-cocoa sm:text-5xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Encontre Sua Mesa</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-roseDeep/80">Busca de convidados</p>
           <div className="mx-auto mt-4 max-w-xl">
             <div className="relative">

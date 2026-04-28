@@ -7,43 +7,73 @@ type TabInfoProps = {
   onNavigate: (tab: AppTab) => void;
 };
 
-type TimeLeft = {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  started: boolean;
+const EVENT_DAY_STR = '2026-05-03';
+
+const ROTEIRO_ITEMS = [
+  { horario: '17:00', titulo: 'Chegada e welcome drink' },
+  { horario: '17:30', titulo: 'Abertura do salão' },
+  { horario: '18:00', titulo: 'Entrada dos padrinhos' },
+  { horario: '18:15', titulo: 'Entrada dos pais dos noivos' },
+  { horario: '18:30', titulo: 'Entrada da noiva' },
+  { horario: '18:35', titulo: 'Cerimônia' },
+  { horario: '19:00', titulo: 'Troca de alianças' },
+  { horario: '19:10', titulo: 'Primeiro beijo' },
+  { horario: '19:15', titulo: 'Fotos com família' },
+  { horario: '19:30', titulo: 'Abertura do buffet' },
+  { horario: '20:00', titulo: 'Brinde' },
+  { horario: '20:30', titulo: 'Pista de dança' },
+  { horario: '21:00', titulo: 'Corte do bolo' },
+  { horario: '21:15', titulo: 'Bouquet da noiva' },
+  { horario: '23:00', titulo: 'Encerramento' },
+];
+
+type NextAtracao = {
+  status: 'before' | 'next' | 'now' | 'ended';
+  titulo: string;
+  horario: string;
+  minutesUntil?: number;
 };
 
-const TARGET_DATE = '2026-05-03T17:00:00-03:00';
+function computeNextAtracao(): NextAtracao {
+  const now = new Date();
+  const evDay = new Date(EVENT_DAY_STR);
+  const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const evMidnight = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate());
 
-function computeTimeLeft(): TimeLeft {
-  const target = new Date(TARGET_DATE).getTime();
-  const now = Date.now();
-  const diff = target - now;
-
-  if (diff <= 0) {
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, started: true };
+  if (nowMidnight < evMidnight) {
+    const daysUntil = Math.ceil((evMidnight.getTime() - nowMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    return { status: 'before', titulo: 'A Festa', horario: '17:00', minutesUntil: daysUntil * 1440 };
   }
 
-  return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / (1000 * 60)) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-    started: false
-  };
-}
+  if (nowMidnight > evMidnight) {
+    return { status: 'ended', titulo: 'Encerramento', horario: '23:00' };
+  }
 
-function fmt(v: number) {
-  return String(v).padStart(2, '0');
+  // Event day — find next item
+  let lastItem = ROTEIRO_ITEMS[ROTEIRO_ITEMS.length - 1];
+  for (const item of ROTEIRO_ITEMS) {
+    const [h, m] = item.horario.split(':').map(Number);
+    const itemTime = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate(), h, m, 0);
+    if (itemTime > now) {
+      const minutesUntil = Math.floor((itemTime.getTime() - now.getTime()) / 60000);
+      return { status: 'next', titulo: item.titulo, horario: item.horario, minutesUntil };
+    }
+    // within 25 min window: mark as "now"
+    const windowEnd = new Date(itemTime.getTime() + 25 * 60000);
+    if (itemTime <= now && now < windowEnd) {
+      return { status: 'now', titulo: item.titulo, horario: item.horario };
+    }
+    lastItem = item;
+  }
+
+  return { status: 'ended', titulo: lastItem.titulo, horario: lastItem.horario };
 }
 
 export default function TabInfo({ onNavigate }: TabInfoProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(computeTimeLeft);
+  const [atracao, setAtracao] = useState<NextAtracao>(computeNextAtracao);
 
   useEffect(() => {
-    const id = window.setInterval(() => setTimeLeft(computeTimeLeft()), 1000);
+    const id = window.setInterval(() => setAtracao(computeNextAtracao()), 30000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -66,30 +96,38 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cocoa/70">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
           </p>
-          {/* Countdown */}
+          {/* Próxima Atração */}
           <div
             aria-live="polite"
-            className="mx-auto mt-5 inline-block rounded-2xl border border-roseDeep/15 bg-white/60 px-5 py-3"
+            className="mx-auto mt-5 inline-block rounded-2xl border border-roseDeep/15 bg-white/60 px-5 py-3 text-center"
           >
-            {timeLeft.started ? (
-              <p className="font-serifRomance text-2xl text-wine">A festa começou! 🎉</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-roseDeep/55">Próxima Atração</p>
+            {atracao.status === 'ended' ? (
+              <p className="font-serifRomance text-2xl text-wine mt-1">Que noite incrível! ✿</p>
+            ) : atracao.status === 'now' ? (
+              <>
+                <p className="font-serifRomance text-xl text-wine mt-1">{atracao.titulo}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">⏱ Acontecendo agora · {atracao.horario}</p>
+              </>
+            ) : atracao.status === 'before' ? (
+              <>
+                <p className="font-serifRomance text-xl text-cocoa mt-1">A Festa · 03 de maio</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+                  em {Math.floor((atracao.minutesUntil ?? 0) / 1440)} {Math.floor((atracao.minutesUntil ?? 0) / 1440) === 1 ? 'dia' : 'dias'}
+                </p>
+              </>
             ) : (
-              <div className="flex items-center justify-center gap-2 sm:gap-4">
-                {[
-                  { label: 'dias', value: timeLeft.days },
-                  { label: 'horas', value: timeLeft.hours },
-                  { label: 'min', value: timeLeft.minutes },
-                  { label: 'seg', value: timeLeft.seconds },
-                ].map((unit, i) => (
-                  <div key={unit.label} className="flex items-center gap-2 sm:gap-4">
-                    <div className="text-center">
-                      <p className="font-serifRomance text-3xl text-gold sm:text-4xl">{fmt(unit.value)}</p>
-                      <p className="text-[9px] uppercase tracking-[0.2em] text-roseDeep/60">{unit.label}</p>
-                    </div>
-                    {i < 3 ? <span className="text-gold/50 text-lg">·</span> : null}
-                  </div>
-                ))}
-              </div>
+              <>
+                <p className="font-serifRomance text-xl text-cocoa mt-1">{atracao.titulo}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+                  {atracao.horario}
+                  {atracao.minutesUntil !== undefined && atracao.minutesUntil < 60
+                    ? ` · em ${atracao.minutesUntil} min`
+                    : atracao.minutesUntil !== undefined
+                    ? ` · em ${Math.floor(atracao.minutesUntil / 60)}h${atracao.minutesUntil % 60 > 0 ? String(atracao.minutesUntil % 60).padStart(2,'0') : ''}`
+                    : ''}
+                </p>
+              </>
             )}
           </div>
 
@@ -148,20 +186,27 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
         </div>
 
         {/* Secondary navigation */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => onNavigate('roteiro')}
             className="btn btn--outline py-3.5 text-sm"
           >
-            📋 Roteiro &amp; Menu
+            📋 Roteiro
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate('menu')}
+            className="btn btn--outline py-3.5 text-sm"
+          >
+            🍽 Menu
           </button>
           <button
             type="button"
             onClick={() => onNavigate('mural')}
             className="btn btn--outline py-3.5 text-sm"
           >
-            🖼 Mural de fotos
+            🖼 Mural
           </button>
         </div>
 

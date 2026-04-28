@@ -101,6 +101,12 @@ export default function TabMais({ onNavigate, initialSub, hideChrome }: TabMaisP
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100dvh - 4rem)' }}>
+      {hideChrome ? (
+        <div className="shrink-0 border-b border-roseDeep/15 bg-ivory/98 px-4 py-3 text-center backdrop-blur">
+          <p className="stationery-monogram" style={{ fontSize: '1.1rem' }}>A&amp;N</p>
+          <p className="text-base text-cocoa" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>André &amp; Nathália</p>
+        </div>
+      ) : null}
       {!hideChrome && (
         <div className="px-4 pb-3 pt-4 sm:px-6">
           <header className="romantic-panel text-center" style={{ background: 'linear-gradient(180deg,rgba(253,251,247,0.98),rgba(250,246,240,0.92))', padding: '2rem 1.5rem' }}>
