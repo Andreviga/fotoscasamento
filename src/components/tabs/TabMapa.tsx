@@ -20,24 +20,24 @@ type MesaPosition = {
 };
 
 const TABLE_NAMES: Record<number, string> = {
-  1: 'Amsterda',
-  2: 'Campos do Jordao',
-  3: 'Colonia',
+  1: 'Amsterdã',
+  2: 'Campos do Jordão',
+  3: 'Colônia',
   4: 'Copenhague',
-  5: 'Patagonia',
+  5: 'Patagônia',
   6: 'Estocolmo',
   7: 'Giethoorn',
   8: 'Kefalonia',
   9: 'Las Vegas',
   10: 'Madrid',
-  11: 'Milao',
+  11: 'Milão',
   12: 'Paris',
   13: 'Roma',
   14: 'Salar de Uyuni',
   15: 'Santorini',
   16: 'Sarajevo',
   17: 'Split',
-  18: 'Treze Tilias',
+  18: 'Treze Tílias',
   19: 'Zurique',
   20: 'Sucre'
 };
@@ -47,11 +47,11 @@ const DEFAULT_POSITIONS: MesaPosition[] = [
   { n: 17, nome: 'Split', cx: 24.0, cy: 33.0, r: 5.2 },
   { n: 10, nome: 'Madrid', cx: 34.5, cy: 29.5, r: 4.2 },
   { n: 9, nome: 'Las Vegas', cx: 45.0, cy: 29.5, r: 4.2 },
-  { n: 11, nome: 'Milao', cx: 68.0, cy: 30.5, r: 5.2 },
+  { n: 11, nome: 'Milão', cx: 68.0, cy: 30.5, r: 5.2 },
   { n: 12, nome: 'Paris', cx: 79.5, cy: 30.5, r: 4.2 },
-  { n: 3, nome: 'Colonia', cx: 19.0, cy: 44.0, r: 4.2 },
-  { n: 2, nome: 'Campos do Jordao', cx: 30.5, cy: 44.5, r: 4.8 },
-  { n: 18, nome: 'Treze Tilias', cx: 39.5, cy: 44.5, r: 4.8 },
+  { n: 3, nome: 'Colônia', cx: 19.0, cy: 44.0, r: 4.2 },
+  { n: 2, nome: 'Campos do Jordão', cx: 30.5, cy: 44.5, r: 4.8 },
+  { n: 18, nome: 'Treze Tílias', cx: 39.5, cy: 44.5, r: 4.8 },
   { n: 4, nome: 'Copenhague', cx: 57.0, cy: 41.5, r: 4.2 },
   { n: 7, nome: 'Giethoorn', cx: 69.5, cy: 41.5, r: 4.2 },
   { n: 15, nome: 'Santorini', cx: 20.5, cy: 57.5, r: 5.5 },
@@ -61,9 +61,9 @@ const DEFAULT_POSITIONS: MesaPosition[] = [
   { n: 19, nome: 'Zurique', cx: 75.0, cy: 56.5, r: 4.2 },
   { n: 16, nome: 'Sarajevo', cx: 20.5, cy: 70.5, r: 5.5 },
   { n: 14, nome: 'Salar de Uyuni', cx: 55.0, cy: 67.5, r: 4.8 },
-  { n: 5, nome: 'Patagonia', cx: 64.5, cy: 67.5, r: 4.2 },
+  { n: 5, nome: 'Patagônia', cx: 64.5, cy: 67.5, r: 4.2 },
   { n: 13, nome: 'Roma', cx: 75.5, cy: 70.5, r: 4.2 },
-  { n: 1, nome: 'Amsterda', cx: 20.5, cy: 83.0, r: 4.2 }
+  { n: 1, nome: 'Amsterdã', cx: 20.5, cy: 83.0, r: 4.2 }
 ];
 
 export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: TabMapaProps) {

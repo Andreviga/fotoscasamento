@@ -10,24 +10,24 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { MESA_POSITIONS_DEFAULT, MAPA_ASPECT_RATIO } from '../lib/mapaConfig';
 
 const TABLE_NAMES = {
-  1: 'Amsterda',
-  2: 'Campos do Jordao',
-  3: 'Colonia',
+  1: 'Amsterdã',
+  2: 'Campos do Jordão',
+  3: 'Colônia',
   4: 'Copenhague',
-  5: 'Patagonia',
+  5: 'Patagônia',
   6: 'Estocolmo',
   7: 'Giethoorn',
   8: 'Kefalonia',
   9: 'Las Vegas',
   10: 'Madrid',
-  11: 'Milao',
+  11: 'Milão',
   12: 'Paris',
   13: 'Roma',
   14: 'Salar de Uyuni',
   15: 'Santorini',
   16: 'Sarajevo',
   17: 'Split',
-  18: 'Treze Tilias',
+  18: 'Treze Tílias',
   19: 'Zurique',
   20: 'Sucre'
 };
