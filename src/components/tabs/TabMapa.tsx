@@ -72,12 +72,28 @@ const DEFAULT_POSITIONS: MesaPosition[] = [
   { n: 1, nome: 'Amsterdã', cx: 20.5, cy: 83.0, r: 4.2 }
 ];
 
+function useDebouncedValue<T>(value: T, delay = 300) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debounced;
+}
+
 export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: TabMapaProps) {
   const [positions, setPositions] = useState<MesaPosition[]>(DEFAULT_POSITIONS);
   const [crop, setCrop] = useState(MAPA_CROP_DEFAULT);
   const [localSelected, setLocalSelected] = useState<number | null>(selectedTable ?? null);
   const [loadingPositions, setLoadingPositions] = useState(true);
+  const [search, setSearch] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<Array<{ id: string; nomeOriginal: string; mesa: number | null }>>([]);
+  const [searchError, setSearchError] = useState('');
   const svgRef = useRef<SVGSVGElement>(null);
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   useEffect(() => {
     let active = true;
@@ -133,13 +149,64 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
     container.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
   }, [localSelected, positions]);
 
+  useEffect(() => {
+    let active = true;
+
+    async function runSearch() {
+      if (!debouncedSearch.trim()) {
+        setSearchResults([]);
+        setSearchError('');
+        return;
+      }
+
+      setSearchLoading(true);
+      setSearchError('');
+      try {
+        const response = await fetch(`/api/searchGuest?q=${encodeURIComponent(debouncedSearch)}`);
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'Falha na busca');
+        }
+        if (active) {
+          setSearchResults(payload.results || []);
+        }
+      } catch (requestError) {
+        if (active) {
+          setSearchResults([]);
+          setSearchError(requestError instanceof Error ? requestError.message : 'Falha na busca');
+        }
+      } finally {
+        if (active) {
+          setSearchLoading(false);
+        }
+      }
+    }
+
+    runSearch();
+    return () => {
+      active = false;
+    };
+  }, [debouncedSearch]);
+
   function handleSelect(n: number) {
     const next = localSelected === n ? null : n;
     setLocalSelected(next);
     onSelectTable?.(next);
   }
 
+  function highlightGuestTable(mesa: number) {
+    setLocalSelected(mesa);
+    onSelectTable?.(mesa);
+    svgRef.current?.parentElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   const mediaFrameStyle = useMemo(() => getMapaMediaFrameStyle(crop), [crop]);
+  const selectedGuest = searchResults[0] || null;
+  const emptySearchMessage = useMemo(() => {
+    if (!debouncedSearch.trim() || searchLoading) return '';
+    if (searchResults.length > 0) return '';
+    return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
+  }, [debouncedSearch, searchLoading, searchResults.length]);
 
   return (
     <section className="main" style={{ paddingTop: '1.5rem', paddingBottom: '1.5rem' }}>
@@ -328,6 +395,65 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
             </button>
           </div>
         )}
+
+        <section className="romantic-panel p-4 space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.16em] text-roseDeep/60">Encontrar minha mesa</p>
+            <h3 className="mt-1 text-xl text-cocoa">Busque seu nome sem sair do mapa</h3>
+            <p className="mt-1 text-sm text-wine/75">Digite seu nome para localizar sua mesa e destacar no mapa acima.</p>
+          </div>
+
+          <div>
+            <label className="form-label text-sm" htmlFor="tab-mapa-mesa-search">Nome do convidado</label>
+            <input
+              id="tab-mapa-mesa-search"
+              className="input-elegant mt-2 text-base"
+              placeholder="Ex: Maria Silva"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              autoComplete="off"
+              inputMode="search"
+            />
+            <p className="mt-2 text-xs text-wine/65">Busca inteligente por nome do convidado ou nome do convite.</p>
+          </div>
+
+          <div className="space-y-3">
+            {searchLoading ? (
+              <div className="flex items-center gap-2 text-sm text-wine/70">
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gold" />
+                Buscando convidado...
+              </div>
+            ) : null}
+
+            {searchError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{searchError}</div>
+            ) : null}
+
+            {selectedGuest ? (
+              <article className="rounded-2xl border border-gold/35 bg-[#fffaf1] p-4">
+                <p className="text-lg text-cocoa">Ola, {selectedGuest.nomeOriginal}!</p>
+                {typeof selectedGuest.mesa === 'number' ? (
+                  <div className="mt-2 space-y-2">
+                    <p className="text-sm text-wine/75">Voce esta na <strong>Mesa {selectedGuest.mesa}</strong>.</p>
+                    <button
+                      type="button"
+                      className="btn btn--primary text-sm"
+                      onClick={() => highlightGuestTable(selectedGuest.mesa as number)}
+                    >
+                      Destacar essa mesa no mapa
+                    </button>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
+                )}
+              </article>
+            ) : null}
+
+            {emptySearchMessage ? (
+              <div className="rounded-2xl border border-roseDeep/15 bg-white/80 p-3 text-sm text-wine/80">{emptySearchMessage}</div>
+            ) : null}
+          </div>
+        </section>
       </div>
     </section>
   );

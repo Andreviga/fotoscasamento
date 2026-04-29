@@ -489,7 +489,7 @@ export default function MapaPage() {
                             <input
                               type="range"
                               min="0"
-                              max="30"
+                              max="45"
                               step="1"
                               value={crop[side]}
                               onChange={(e) => updateCrop(side, Number(e.target.value))}
@@ -498,7 +498,7 @@ export default function MapaPage() {
                             <input
                               type="number"
                               min="0"
-                              max="30"
+                              max="45"
                               step="1"
                               className="input-elegant w-20 text-sm py-1"
                               value={crop[side]}
