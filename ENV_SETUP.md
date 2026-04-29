@@ -48,8 +48,8 @@ GOOGLE_SERVICE_ACCOUNT_JSON=...
 GOOGLE_DRIVE_FOLDER_ID=... (deixe em branco se não usar)
 ```
 
-Observacoes:
-- Nao salve arquivo `.json` de service account dentro do repositório.
+Observações:
+- Não salve arquivo `.json` de service account dentro do repositório.
 - Rotacione a chave no Google Cloud se uma credencial foi exposta anteriormente.
 
 ---

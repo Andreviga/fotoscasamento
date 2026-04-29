@@ -119,7 +119,7 @@ export function getAdminDb() {
 
 ## Testando Localmente
 
-### 1. Certesque o `.env.local` está preenchido:
+### 1. Certifique-se de que o `.env.local` está preenchido:
 ```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
@@ -153,9 +153,9 @@ Ver foto em tempo real! ✿
 - Verificar `tsconfig.json` tem `"@/*": ["./*"]`
 - Restart dev server: `npm run dev`
 
-### Erro: "FIREBASE_SERVICE_ACCOUNT_JSON nao configurado"
-- O projeto nao usa arquivo de chave local.
-- Defina `FIREBASE_SERVICE_ACCOUNT_JSON` no `.env.local` com o JSON completo da conta de servico em uma unica linha.
+### Erro: "FIREBASE_SERVICE_ACCOUNT_JSON não configurado"
+- O projeto não usa arquivo de chave local.
+- Defina `FIREBASE_SERVICE_ACCOUNT_JSON` no `.env.local` com o JSON completo da conta de serviço em uma única linha.
 
 ### API retorna erro 500
 - Verificar logs do servidor: `npm run dev` console
