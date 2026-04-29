@@ -1025,7 +1025,7 @@ export default function AdminPage() {
             <h2 className="text-2xl text-cocoa">Calibracao do Mapa do Salao</h2>
             <p className="text-sm text-wine/80">
               Abra o mapa em modo admin para <strong>arrastar os circulos</strong> sobre a foto real do salao,
-              usar as setas de ajuste fino e salvar as posicoes no Firestore.
+              usar as setas de ajuste fino, aplicar um recorte visual e salvar as configuracoes no Firestore.
               As posicoes salvas aparecem automaticamente para todos os convidados.
             </p>
             <a href="/mapa?admin=true" target="_blank" rel="noopener noreferrer" className="btn btn--primary inline-flex">
@@ -1037,15 +1037,16 @@ export default function AdminPage() {
             <p className="font-semibold text-cocoa">Como usar a calibracao:</p>
             <ol className="list-decimal pl-5 space-y-1.5">
               <li>Clique em "Abrir calibracao do mapa" acima.</li>
+              <li>Se precisar esconder bordas da imagem, ajuste primeiro o <strong>recorte visual</strong>.</li>
               <li>Selecione uma mesa no dropdown ou clique diretamente no circulo.</li>
               <li><strong>Arraste</strong> o circulo ate ele ficar sobre a mesa correta na foto.</li>
               <li>Use as <strong>setas ^ v &lt; &gt;</strong> para ajuste fino (0.5% por clique).</li>
               <li>Ajuste o <strong>raio</strong> para cobrir o tamanho visual correto de cada mesa.</li>
               <li>Repita para todas as 21 posicoes (20 mesas + noivos).</li>
-              <li>Clique em <strong>"Salvar posicoes"</strong> - ficam salvas no Firestore e valem para todos os convidados.</li>
+              <li>Clique em <strong>"Salvar posicoes"</strong> - o recorte e as posicoes ficam salvos no Firestore e valem para todos os convidados.</li>
             </ol>
             <p className="mt-2 text-xs text-wine/60">
-              As posicoes sao salvas em <code>config/mapa.posicoesMesas</code> no Firestore.
+              As posicoes sao salvas em <code>config/mapa.posicoesMesas</code> e o recorte em <code>config/mapa.crop</code> no Firestore.
               Caso precise resetar, use o botao "Resetar padrao" no modo admin.
             </p>
           </article>

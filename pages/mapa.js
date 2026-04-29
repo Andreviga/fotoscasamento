@@ -7,7 +7,13 @@ import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
 import PageTitle from '../components/PageTitle';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { MESA_POSITIONS_DEFAULT, MAPA_ASPECT_RATIO } from '../lib/mapaConfig';
+import {
+  MESA_POSITIONS_DEFAULT,
+  MAPA_ASPECT_RATIO,
+  MAPA_CROP_DEFAULT,
+  getMapaMediaFrameStyle,
+  normalizeMapaCrop
+} from '../lib/mapaConfig';
 
 const TABLE_NAMES = {
   1: 'Amsterdã',
@@ -54,6 +60,7 @@ export default function MapaPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [dragging, setDragging] = useState(null);
+  const [crop, setCrop] = useState(MAPA_CROP_DEFAULT);
   const [search, setSearch] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -75,9 +82,11 @@ export default function MapaPage() {
         const res = await fetch('/api/getConfig?docs=mapa');
         const payload = await res.json();
         const saved = payload?.config?.mapa?.posicoesMesas;
+        const savedCrop = payload?.config?.mapa?.crop;
         if (Array.isArray(saved) && saved.length > 0) {
           setPositions(saved);
         }
+        setCrop(normalizeMapaCrop(savedCrop));
       } catch {
         // Usa defaults
       } finally {
@@ -203,7 +212,7 @@ export default function MapaPage() {
       const res = await fetch('/api/saveConfig', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-        body: JSON.stringify({ docId: 'mapa', data: { posicoesMesas: positions } })
+        body: JSON.stringify({ docId: 'mapa', data: { posicoesMesas: positions, crop } })
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || 'Erro ao salvar');
@@ -218,6 +227,15 @@ export default function MapaPage() {
   function resetPositions() {
     setPositions(MESA_POSITIONS_DEFAULT);
     setMessage('Posicoes resetadas para o padrao. Clique em Salvar para confirmar.');
+  }
+
+  function updateCrop(side, value) {
+    setCrop((prev) => normalizeMapaCrop({ ...prev, [side]: value }));
+  }
+
+  function resetCrop() {
+    setCrop(MAPA_CROP_DEFAULT);
+    setMessage('Recorte visual resetado. Clique em Salvar para confirmar.');
   }
 
   function nudgeSelected(dx, dy) {
@@ -237,6 +255,7 @@ export default function MapaPage() {
     if (searchResults.length > 0) return '';
     return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
   }, [debouncedSearch, searchLoading, searchResults.length]);
+  const mediaFrameStyle = useMemo(() => getMapaMediaFrameStyle(crop), [crop]);
 
   const highlightGuestTable = useCallback((mesa) => {
     if (typeof mesa !== 'number') return;
@@ -263,21 +282,24 @@ export default function MapaPage() {
           {loading ? <LoadingSpinner label="Carregando mapa" /> : (
             <div className="space-y-4">
               <div className="romantic-panel overflow-hidden">
-                <div className="relative w-full bg-black/5 select-none">
+                <div
+                  className="relative w-full overflow-hidden bg-black/5 select-none"
+                  style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}
+                >
                   <img
                     ref={imgRef}
                     src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                     alt="Layout do salao"
-                    className="w-full h-auto block"
-                    style={{ opacity: adminEnabled ? 0.75 : 0.85 }}
+                    className="absolute block"
+                    style={{ ...mediaFrameStyle, opacity: adminEnabled ? 0.75 : 0.85 }}
                     draggable={false}
                   />
 
                   <svg
                     ref={svgRef}
                     viewBox="0 0 100 122"
-                    className="absolute inset-0 w-full h-full"
-                    style={{ touchAction: adminEnabled ? 'none' : 'pan-x pan-y pinch-zoom' }}
+                    className="absolute"
+                    style={{ ...mediaFrameStyle, touchAction: adminEnabled ? 'none' : 'pan-x pan-y pinch-zoom' }}
                     preserveAspectRatio="xMidYMid meet"
                   >
                     {/* Labels das areas do salao - apenas admin */}
@@ -418,10 +440,11 @@ export default function MapaPage() {
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
                       <p className="text-xs uppercase tracking-[0.2em] text-gold/80 font-semibold">Modo Admin - Calibracao de Mesas</p>
-                      <p className="text-sm text-wine/75 mt-0.5">Arraste os circulos diretamente na imagem ou use os botoes abaixo para ajuste fino.</p>
+                      <p className="text-sm text-wine/75 mt-0.5">Arraste os circulos diretamente na imagem, ajuste o recorte visual e salve tudo em uma unica configuracao.</p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       <button className="btn btn--outline text-sm" onClick={resetPositions}>Resetar padrao</button>
+                      <button className="btn btn--outline text-sm" onClick={resetCrop}>Resetar recorte</button>
                       <button className="btn btn--primary text-sm" onClick={savePositions} disabled={saving}>
                         {saving ? 'Salvando...' : 'Salvar posicoes'}
                       </button>
@@ -442,6 +465,46 @@ export default function MapaPage() {
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div className="rounded-2xl border border-roseDeep/20 bg-white/60 p-4 space-y-4">
+                    <div>
+                      <p className="text-sm font-semibold text-cocoa">Recorte visual do mapa</p>
+                      <p className="mt-1 text-xs text-wine/65">Esse recorte esconde bordas da imagem sem mudar as coordenadas salvas das mesas.</p>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {[
+                        ['top', 'Topo'],
+                        ['right', 'Direita'],
+                        ['bottom', 'Base'],
+                        ['left', 'Esquerda']
+                      ].map(([side, label]) => (
+                        <label key={side} className="block">
+                          <span className="text-xs text-wine/70">{label}: {crop[side]}%</span>
+                          <div className="mt-2 flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="0"
+                              max="30"
+                              step="1"
+                              value={crop[side]}
+                              onChange={(e) => updateCrop(side, Number(e.target.value))}
+                              className="flex-1"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              max="30"
+                              step="1"
+                              className="input-elegant w-20 text-sm py-1"
+                              value={crop[side]}
+                              onChange={(e) => updateCrop(side, Number(e.target.value))}
+                            />
+                          </div>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   {selectedMesa && (

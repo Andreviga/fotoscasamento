@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
 import PageHeader from '@/components/PageHeader';
+import {
+  MAPA_ASPECT_RATIO,
+  MAPA_CROP_DEFAULT,
+  getMapaMediaFrameStyle,
+  normalizeMapaCrop
+} from '../../../lib/mapaConfig';
 
 type TabMapaProps = {
   onNavigate: (tab: AppTab) => void;
@@ -68,6 +74,7 @@ const DEFAULT_POSITIONS: MesaPosition[] = [
 
 export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: TabMapaProps) {
   const [positions, setPositions] = useState<MesaPosition[]>(DEFAULT_POSITIONS);
+  const [crop, setCrop] = useState(MAPA_CROP_DEFAULT);
   const [localSelected, setLocalSelected] = useState<number | null>(selectedTable ?? null);
   const [loadingPositions, setLoadingPositions] = useState(true);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -80,8 +87,12 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
         const res = await fetch('/api/getConfig?docs=mapa');
         const payload = await res.json();
         const saved = payload?.config?.mapa?.posicoesMesas;
+        const savedCrop = payload?.config?.mapa?.crop;
         if (active && Array.isArray(saved) && saved.length > 0) {
           setPositions(saved as MesaPosition[]);
+        }
+        if (active) {
+          setCrop(normalizeMapaCrop(savedCrop));
         }
       } catch {
         // Mantem defaults
@@ -127,6 +138,8 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
     setLocalSelected(next);
     onSelectTable?.(next);
   }
+
+  const mediaFrameStyle = useMemo(() => getMapaMediaFrameStyle(crop), [crop]);
 
   return (
     <section className="main" style={{ paddingTop: '1.5rem', paddingBottom: '1.5rem' }}>
@@ -185,20 +198,20 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                 <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-gold" />
               </div>
             ) : (
-              <div className="relative w-full bg-black/5">
+              <div className="relative w-full overflow-hidden bg-black/5" style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}>
                 <img
                   src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                   alt="Layout do salao"
-                  className="w-full h-auto block"
-                  style={{ opacity: 0.85 }}
+                  className="absolute block"
+                  style={{ ...mediaFrameStyle, opacity: 0.85 }}
                   draggable={false}
                 />
 
                 <svg
                   ref={svgRef}
                   viewBox="0 0 100 122"
-                  className="absolute inset-0 w-full h-full"
-                  style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
+                  className="absolute"
+                  style={{ ...mediaFrameStyle, touchAction: 'pan-x pan-y pinch-zoom' }}
                   preserveAspectRatio="xMidYMid meet"
                 >
                   {/* Renderiza APENAS a mesa selecionada em cor verde quando encontrada */}
