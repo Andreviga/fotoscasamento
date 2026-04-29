@@ -866,6 +866,12 @@
   align-items: start;
 }
 
+.menu-paper__grid--center-last > .menu-block:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(100%, 34rem);
+}
+
 .menu-block {
   padding: 0.4rem 0.2rem;
   text-align: center;

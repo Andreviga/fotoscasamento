@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const MENU_FALLBACK = {
-  heroTitle: 'Cardápio & Bebidas',
+  heroTitle: 'Menu & Bebidas',
   heroSubtitle: 'Menu Bellagio, bebidas do buffet e Bar Energy com as seleções da noite',
   secoes: [
     {
@@ -202,7 +202,7 @@ export default function MenuPage({ embedded = false }) {
   const GROUP_META = {
     cardapio: {
       eyebrow: '01',
-      title: 'Cardápio',
+      title: 'Menu',
       subtitle: 'Menu Bellagio'
     },
     'bebidas-buffet': {
@@ -214,6 +214,11 @@ export default function MenuPage({ embedded = false }) {
       eyebrow: '03',
       title: 'Bar Energy',
       subtitle: 'Drinks e coquetelaria da noite'
+    },
+    outros: {
+      eyebrow: '04',
+      title: 'Welcome drink',
+      subtitle: ''
     }
   };
   const groupedSections = menuSections.reduce((acc, section) => {
@@ -280,7 +285,9 @@ export default function MenuPage({ embedded = false }) {
                       {meta.subtitle ? <p className="menu-paper__subtitle">{meta.subtitle}</p> : null}
                     </header>
 
-                    <div className={`menu-paper__grid ${group.key === 'bar-energy' ? 'menu-paper__grid--bar' : ''}`}>
+                    <div
+                      className={`menu-paper__grid ${group.key === 'bar-energy' ? 'menu-paper__grid--bar' : ''} ${group.sections.length % 2 !== 0 ? 'menu-paper__grid--center-last' : ''}`}
+                    >
                       {group.sections.map((section) => (
                         <section key={section.id || section.title} className="menu-block">
                           <header className="menu-block__header">
