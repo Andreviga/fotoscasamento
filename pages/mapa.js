@@ -221,7 +221,8 @@ export default function MapaPage() {
                       </g>
                     )}
 
-                    {positions.map((mesa) => {
+                    {/* Circulos das mesas - apenas visivel em modo admin */}
+                    {adminEnabled && positions.map((mesa) => {
                       const isSelected = selectedN === mesa.n;
                       const isHighlighted = highlightedN === mesa.n;
                       const isNoivos = mesa.isNoivos;

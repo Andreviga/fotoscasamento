@@ -201,7 +201,8 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                   style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
                   preserveAspectRatio="xMidYMid meet"
                 >
-                  {positions.map((mesa) => {
+                  {/* Circulos das mesas - nao aparecem no modo publico mobile */}
+                  {false && positions.map((mesa) => {
                     const isHighlighted = localSelected === mesa.n;
                     const isNoivos = mesa.isNoivos;
 
