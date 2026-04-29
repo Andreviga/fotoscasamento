@@ -11,6 +11,7 @@ import {
   MESA_POSITIONS_DEFAULT,
   MAPA_ASPECT_RATIO,
   MAPA_CROP_DEFAULT,
+  MAPA_CROP_VERSION,
   getMapaMediaFrameStyle,
   normalizeMapaCrop
 } from '../lib/mapaConfig';
@@ -84,11 +85,13 @@ export default function MapaPage() {
         const payload = await res.json();
         const saved = payload?.config?.mapa?.posicoesMesas;
         const savedCrop = payload?.config?.mapa?.crop;
+        const savedCropVersion = payload?.config?.mapa?.cropVersion;
         if (Array.isArray(saved) && saved.length > 0) {
           setPositions(saved);
           setDefaultPositions(saved);
         }
-        setCrop(normalizeMapaCrop(savedCrop));
+        const effectiveCrop = savedCropVersion === MAPA_CROP_VERSION ? savedCrop : MAPA_CROP_DEFAULT;
+        setCrop(normalizeMapaCrop(effectiveCrop));
       } catch {
         // Usa defaults
       } finally {
@@ -214,7 +217,7 @@ export default function MapaPage() {
       const res = await fetch('/api/saveConfig', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-        body: JSON.stringify({ docId: 'mapa', data: { posicoesMesas: positions, crop } })
+        body: JSON.stringify({ docId: 'mapa', data: { posicoesMesas: positions, crop, cropVersion: MAPA_CROP_VERSION } })
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || 'Erro ao salvar');

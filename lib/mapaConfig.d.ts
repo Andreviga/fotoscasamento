@@ -16,6 +16,7 @@ export type MapaCrop = {
 
 export declare const MESA_POSITIONS_DEFAULT: MesaPosition[];
 export declare const MAPA_CROP_DEFAULT: MapaCrop;
+export declare const MAPA_CROP_VERSION: number;
 export declare const MAPA_ASPECT_RATIO: number;
 
 export declare function normalizeMapaCrop(rawCrop: Partial<MapaCrop> | null | undefined): MapaCrop;

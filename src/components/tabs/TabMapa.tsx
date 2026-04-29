@@ -6,6 +6,7 @@ import PageHeader from '@/components/PageHeader';
 import {
   MAPA_ASPECT_RATIO,
   MAPA_CROP_DEFAULT,
+  MAPA_CROP_VERSION,
   getMapaMediaFrameStyle,
   normalizeMapaCrop
 } from '../../../lib/mapaConfig';
@@ -104,11 +105,13 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
         const payload = await res.json();
         const saved = payload?.config?.mapa?.posicoesMesas;
         const savedCrop = payload?.config?.mapa?.crop;
+        const savedCropVersion = payload?.config?.mapa?.cropVersion;
         if (active && Array.isArray(saved) && saved.length > 0) {
           setPositions(saved as MesaPosition[]);
         }
         if (active) {
-          setCrop(normalizeMapaCrop(savedCrop));
+          const effectiveCrop = savedCropVersion === MAPA_CROP_VERSION ? savedCrop : MAPA_CROP_DEFAULT;
+          setCrop(normalizeMapaCrop(effectiveCrop));
         }
       } catch {
         // Mantem defaults
