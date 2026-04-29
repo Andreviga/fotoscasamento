@@ -208,7 +208,7 @@ export default function MapaPage({ embedded = false }) {
   async function savePositions() {
     const token = localStorage.getItem('adminToken');
     if (!token) {
-      setMessage('Sem token admin.');
+      setMessage('Sem token de admin.');
       return;
     }
 
@@ -223,7 +223,7 @@ export default function MapaPage({ embedded = false }) {
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || 'Erro ao salvar');
       setDefaultPositions(positions);
-      setMessage('Posicoes salvas com sucesso!');
+      setMessage('Posições salvas com sucesso!');
     } catch (err) {
       setMessage(err.message);
     } finally {
@@ -452,7 +452,7 @@ export default function MapaPage({ embedded = false }) {
                       <button className="btn btn--outline text-sm" onClick={resetPositions}>Resetar padrão</button>
                       <button className="btn btn--outline text-sm" onClick={resetCrop}>Resetar recorte</button>
                       <button className="btn btn--primary text-sm" onClick={savePositions} disabled={saving}>
-                        {saving ? 'Salvando...' : 'Salvar posicoes'}
+                        {saving ? 'Salvando...' : 'Salvar posições'}
                       </button>
                     </div>
                   </div>

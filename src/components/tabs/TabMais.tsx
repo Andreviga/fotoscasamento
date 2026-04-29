@@ -25,6 +25,53 @@ type EtiquetaItem = {
 
 type SubTab = 'roteiro' | 'mapa' | 'menu' | 'extra';
 
+function normalizePtText(value?: string) {
+  if (typeof value !== 'string' || value.length === 0) return value;
+
+  const replacements: Array<[RegExp, string]> = [
+    [/\bsao\b/gi, 'são'],
+    [/\bsalao\b/gi, 'salão'],
+    [/\bfamilia\b/gi, 'família'],
+    [/\bNathalia\b/g, 'Nathália'],
+    [/\bCerimonia\b/g, 'Cerimônia'],
+    [/\bcerimonia\b/g, 'cerimônia'],
+    [/\bCelebracao\b/g, 'Celebração'],
+    [/\bcelebracao\b/g, 'celebração'],
+    [/\baliancas\b/gi, 'alianças'],
+    [/\bSaida\b/g, 'Saída'],
+    [/\bsaida\b/g, 'saída'],
+    [/\bSessao\b/g, 'Sessão'],
+    [/\bsessao\b/g, 'sessão'],
+    [/\bdanca\b/gi, 'dança'],
+    [/\bda inicio\b/gi, 'dá início'],
+    [/\bbuque\b/gi, 'buquê'],
+    [/\bUltimas\b/g, 'Últimas'],
+    [/\bultimas\b/g, 'últimas'],
+    [/\bmusicas\b/gi, 'músicas'],
+    [/\bWelcome Drink\b/g, 'Welcome drink'],
+    [/\bsake\b/gi, 'saquê'],
+    [/\bsaké\b/g, 'saquê']
+  ];
+
+  return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), value);
+}
+
+function normalizeRoteiroItems(items: RoteiroItem[]): RoteiroItem[] {
+  return items.map((item) => ({
+    ...item,
+    titulo: normalizePtText(item.titulo),
+    descricao: normalizePtText(item.descricao)
+  }));
+}
+
+function normalizeEtiquetaItems(items: EtiquetaItem[]): EtiquetaItem[] {
+  return items.map((item) => ({
+    ...item,
+    titulo: normalizePtText(item.titulo),
+    conteudo: normalizePtText(item.conteudo)
+  }));
+}
+
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '17:00', titulo: 'Chegada e Welcome drink',     destaque: false },
   { horario: '17:30', titulo: 'Abertura do salão',           destaque: false },
@@ -107,9 +154,9 @@ export default function TabMais({ onNavigate: _onNavigate, initialSub, hideChrom
         if (!active) return;
         const raw = payload?.config?.roteiro?.itens;
         const items = Array.isArray(raw) && raw.length > 0 ? raw : ROTEIRO_FALLBACK;
-        setRoteiroItems(items);
+        setRoteiroItems(normalizeRoteiroItems(items));
       })
-      .catch(() => { if (active) setRoteiroItems(ROTEIRO_FALLBACK); })
+      .catch(() => { if (active) setRoteiroItems(normalizeRoteiroItems(ROTEIRO_FALLBACK)); })
       .finally(() => { if (active) setLoadingRoteiro(false); });
     return () => { active = false; };
   }, []);
@@ -122,10 +169,10 @@ export default function TabMais({ onNavigate: _onNavigate, initialSub, hideChrom
         if (!active) return;
         const raw = payload?.config?.etiqueta?.secoes;
         const items = Array.isArray(raw) && raw.length > 0 ? raw : ETIQUETA_FALLBACK;
-        setEtiquetaItems(items);
+        setEtiquetaItems(normalizeEtiquetaItems(items));
       })
       .catch(() => {
-        if (active) setEtiquetaItems(ETIQUETA_FALLBACK);
+        if (active) setEtiquetaItems(normalizeEtiquetaItems(ETIQUETA_FALLBACK));
       })
       .finally(() => {
         if (active) setLoadingEtiqueta(false);

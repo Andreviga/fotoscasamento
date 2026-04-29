@@ -1043,7 +1043,7 @@ export default function AdminPage() {
               <li>Use as <strong>setas ^ v &lt; &gt;</strong> para ajuste fino (0.5% por clique).</li>
               <li>Ajuste o <strong>raio</strong> para cobrir o tamanho visual correto de cada mesa.</li>
               <li>Repita para todas as 21 posições (20 mesas + noivos).</li>
-              <li>Clique em <strong>"Salvar posicoes"</strong> - o recorte e as posições ficam salvos no Firestore e valem para todos os convidados.</li>
+              <li>Clique em <strong>"Salvar posições"</strong> - o recorte e as posições ficam salvos no Firestore e valem para todos os convidados.</li>
             </ol>
             <p className="mt-2 text-xs text-wine/60">
               As posições são salvas em <code>config/mapa.posicoesMesas</code> e o recorte em <code>config/mapa.crop</code> no Firestore.

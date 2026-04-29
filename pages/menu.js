@@ -147,7 +147,7 @@ const MENU_FALLBACK = {
       subtitle: 'Frutas: morango, melancia, abacaxi, limão e uva',
       items: [
         { name: 'Caipirinha', description: 'cachaça com frutas' },
-        { name: 'Saquerinha', description: 'saké com frutas' },
+        { name: 'Saquerinha', description: 'saquê com frutas' },
         { name: 'Caipiroska', description: 'vodka com frutas' },
       ]
     },

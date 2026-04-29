@@ -54,7 +54,7 @@ function buildMessage(guest) {
   }
 
   lines.push('');
-  lines.push('Para facilitar sua chegada, deixamos no site o mapa do espaço, a localização da sua mesa, o roteiro do casamento, cardápio, mural de recados e envio de fotos:');
+  lines.push('Para facilitar sua chegada, deixamos no site o mapa do espaço, a localização da sua mesa, o roteiro do casamento, menu, mural de recados e envio de fotos:');
   lines.push('');
   lines.push(SITE_LINK);
   lines.push('');
