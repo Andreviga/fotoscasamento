@@ -217,7 +217,7 @@ function saveDeleteToken(documentId, deleteToken) {
 
 export default function FotosPage() {
   const router = useRouter();
-  const embedded = useMemo(() => router.asPath?.includes('embedded=1'), [router.asPath]);
+  const [embedded, setEmbedded] = useState(false);
   const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
@@ -250,6 +250,14 @@ export default function FotosPage() {
       fotoBase.mediaType
     );
   }, [fotoBase, filtroSelecionado]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const embeddedByQuery = params.get('embedded') === '1';
+    const embeddedByFrame = window.self !== window.top;
+    setEmbedded(embeddedByQuery || embeddedByFrame);
+  }, [router.asPath]);
 
   useEffect(() => {
     const feedQuery = query(collection(firebaseDb, COLLECTION_NAME), limit(120));

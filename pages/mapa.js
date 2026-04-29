@@ -67,6 +67,7 @@ export default function MapaPage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
+  const [isEmbedded, setIsEmbedded] = useState(false);
   const imgRef = useRef(null);
   const svgRef = useRef(null);
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -76,6 +77,14 @@ export default function MapaPage() {
     const token = localStorage.getItem('adminToken');
     setAdminEnabled(isAdminQuery && Boolean(token));
   }, [isAdminQuery]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const embeddedByQuery = params.get('embedded') === '1';
+    const embeddedByFrame = window.self !== window.top;
+    setIsEmbedded(embeddedByQuery || embeddedByFrame);
+  }, [router.asPath]);
 
   useEffect(() => {
     async function load() {
@@ -254,7 +263,6 @@ export default function MapaPage() {
   }
 
   const selectedMesa = positions.find((m) => m.n === selectedN);
-  const isEmbedded = router.asPath?.includes('embedded=1');
   const selectedGuest = searchResults[0] || null;
   const emptySearchMessage = useMemo(() => {
     if (!debouncedSearch.trim() || searchLoading) return '';
