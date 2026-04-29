@@ -8,7 +8,7 @@ import useConfig from '../lib/useConfig';
 
 const MENU_FALLBACK = {
   heroTitle: 'Menu & Bebidas',
-  heroSubtitle: 'Menu Bellagio, bebidas do buffet e Bar Energy com as seleções da noite',
+  heroSubtitle: 'Bebidas do buffet e Bar Energy com as seleções da noite',
   secoes: [
     {
       id: 'coquetel-frio',
@@ -203,7 +203,7 @@ export default function MenuPage({ embedded = false }) {
     cardapio: {
       eyebrow: '01',
       title: 'Menu',
-      subtitle: 'Menu Bellagio'
+      subtitle: ''
     },
     'bebidas-buffet': {
       eyebrow: '02',
