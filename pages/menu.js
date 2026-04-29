@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import WeddingHeader from '../components/WeddingHeader';
@@ -192,10 +191,8 @@ const MENU_FALLBACK = {
   ],
 };
 
-export default function MenuPage() {
+export default function MenuPage({ embedded = false }) {
   const { loading, error, data } = useConfig(['site', 'menu']);
-  const router = useRouter();
-  const embedded = router.query.embedded === '1';
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
   const heroTitle = MENU_FALLBACK.heroTitle;
   const heroSubtitle = MENU_FALLBACK.heroSubtitle;
@@ -327,4 +324,12 @@ export default function MenuPage() {
       {!embedded ? <WeddingFooter /> : null}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      embedded: context?.query?.embedded === '1',
+    },
+  };
 }

@@ -50,10 +50,10 @@ function useDebouncedValue(value, delay = 300) {
   return debounced;
 }
 
-export default function MapaPage() {
+export default function MapaPage({ embedded = false }) {
   const router = useRouter();
   const isAdminQuery = router.query.admin === 'true';
-  const isEmbedded = router.query.embedded === '1';
+  const isEmbedded = embedded;
   const [adminEnabled, setAdminEnabled] = useState(false);
   const [positions, setPositions] = useState(MESA_POSITIONS_DEFAULT);
   const [defaultPositions, setDefaultPositions] = useState(MESA_POSITIONS_DEFAULT);
@@ -696,4 +696,12 @@ export default function MapaPage() {
       {!isEmbedded && <WeddingFooter />}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      embedded: context?.query?.embedded === '1',
+    },
+  };
 }

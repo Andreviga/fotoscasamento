@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { collection, limit, onSnapshot, query } from 'firebase/firestore';
 
 import WeddingHeader from '../components/WeddingHeader';
@@ -92,9 +91,7 @@ function formatTime(timestampMs) {
   }).format(timestampMs);
 }
 
-export default function MuralPage() {
-  const router = useRouter();
-  const embedded = router.query.embedded === '1';
+export default function MuralPage({ embedded = false }) {
   const [photos, setPhotos] = useState([]);
   const [status, setStatus] = useState('Conectando ao mural...');
   const [deleteTokens, setDeleteTokens] = useState({});
@@ -284,4 +281,12 @@ export default function MuralPage() {
       {!embedded ? <WeddingFooter /> : null}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      embedded: context?.query?.embedded === '1',
+    },
+  };
 }

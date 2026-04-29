@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
 import {
   collection,
   limit,
@@ -215,9 +214,7 @@ function saveDeleteToken(documentId, deleteToken) {
   }
 }
 
-export default function FotosPage() {
-  const router = useRouter();
-  const embedded = router.query.embedded === '1';
+export default function FotosPage({ embedded = false }) {
   const filtersRef = useRef(null);
 
   const [nomeConvidado, setNomeConvidado] = useState('');
@@ -662,4 +659,12 @@ export default function FotosPage() {
       {!embedded ? <WeddingFooter /> : null}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      embedded: context?.query?.embedded === '1',
+    },
+  };
 }
