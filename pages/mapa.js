@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import WeddingHeader from '../components/WeddingHeader';
@@ -32,6 +32,17 @@ const TABLE_NAMES = {
   20: 'Sucre'
 };
 
+function useDebouncedValue(value, delay = 300) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debounced;
+}
+
 export default function MapaPage() {
   const router = useRouter();
   const isAdminQuery = router.query.admin === 'true';
@@ -43,8 +54,13 @@ export default function MapaPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [dragging, setDragging] = useState(null);
+  const [search, setSearch] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchError, setSearchError] = useState('');
   const imgRef = useRef(null);
   const svgRef = useRef(null);
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -93,6 +109,34 @@ export default function MapaPage() {
       sessionStorage.removeItem('mapa-destaque');
     }
   }, []);
+
+  useEffect(() => {
+    async function runSearch() {
+      if (!debouncedSearch.trim()) {
+        setSearchResults([]);
+        setSearchError('');
+        return;
+      }
+
+      setSearchLoading(true);
+      setSearchError('');
+      try {
+        const response = await fetch(`/api/searchGuest?q=${encodeURIComponent(debouncedSearch)}`);
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'Falha na busca');
+        }
+        setSearchResults(payload.results || []);
+      } catch (requestError) {
+        setSearchResults([]);
+        setSearchError(requestError.message);
+      } finally {
+        setSearchLoading(false);
+      }
+    }
+
+    runSearch();
+  }, [debouncedSearch]);
 
   const getRelativePos = useCallback((e) => {
     const svg = svgRef.current;
@@ -187,6 +231,19 @@ export default function MapaPage() {
 
   const selectedMesa = positions.find((m) => m.n === selectedN);
   const isEmbedded = router.asPath?.includes('embedded=1');
+  const selectedGuest = searchResults[0] || null;
+  const emptySearchMessage = useMemo(() => {
+    if (!debouncedSearch.trim() || searchLoading) return '';
+    if (searchResults.length > 0) return '';
+    return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
+  }, [debouncedSearch, searchLoading, searchResults.length]);
+
+  const highlightGuestTable = useCallback((mesa) => {
+    if (typeof mesa !== 'number') return;
+    setSelectedN(mesa);
+    setHighlightedN(mesa);
+    imgRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   return (
     <>
@@ -496,6 +553,64 @@ export default function MapaPage() {
                     Buscar convidados desta mesa -&gt;
                   </Link>
                 </div>
+              )}
+
+              {!adminEnabled && !isEmbedded && (
+                <section className="romantic-panel p-5 sm:p-7">
+                  <div className="max-w-2xl">
+                    <p className="text-xs uppercase tracking-[0.16em] text-roseDeep/60">Encontrar minha mesa</p>
+                    <h2 className="mt-2 text-2xl text-cocoa">Busque seu nome sem sair do mapa</h2>
+                    <p className="mt-2 text-sm text-wine/75">
+                      Digite seu nome para localizar sua mesa e destaca-la diretamente no mapa acima.
+                    </p>
+
+                    <label className="form-label mt-5 block" htmlFor="mapa-mesa-search">Nome do convidado</label>
+                    <input
+                      id="mapa-mesa-search"
+                      className="input-elegant mt-2 text-lg"
+                      placeholder="Ex: Maria Silva"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      autoComplete="off"
+                      inputMode="search"
+                    />
+                    <p className="mt-2 text-xs text-wine/65">Busca inteligente por nome do convidado ou nome do convite.</p>
+                  </div>
+
+                  <div className="mt-6 max-w-2xl space-y-4">
+                    {searchLoading ? <LoadingSpinner label="Buscando convidado" /> : null}
+                    {searchError ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{searchError}</div> : null}
+
+                    {selectedGuest ? (
+                      <article className="rounded-3xl border border-gold/30 bg-[#fffaf1] p-5 shadow-sm">
+                        <div className="text-3xl">🎉</div>
+                        <h3 className="mt-2 text-2xl text-cocoa">Ola, {selectedGuest.nomeOriginal}!</h3>
+                        {typeof selectedGuest.mesa === 'number' ? (
+                          <div className="mt-4 rounded-2xl border border-gold/40 bg-white p-4">
+                            <p className="text-sm text-wine/70">Voce esta na</p>
+                            <p className="text-3xl font-semibold text-cocoa">Mesa {selectedGuest.mesa}</p>
+                            <p className="mt-1 text-sm text-wine/75">{TABLE_NAMES[selectedGuest.mesa] || 'Mesa localizada no mapa'}</p>
+                            <button
+                              type="button"
+                              className="btn btn--primary mt-4"
+                              onClick={() => highlightGuestTable(selectedGuest.mesa)}
+                            >
+                              Destacar essa mesa no mapa
+                            </button>
+                          </div>
+                        ) : (
+                          <p className="mt-3 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
+                        )}
+                      </article>
+                    ) : null}
+
+                    {emptySearchMessage ? (
+                      <div className="rounded-2xl border border-roseDeep/15 bg-white/80 p-5 text-sm text-wine/80">
+                        {emptySearchMessage}
+                      </div>
+                    ) : null}
+                  </div>
+                </section>
               )}
 
               {!adminEnabled && !isEmbedded && (
