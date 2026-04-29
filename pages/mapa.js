@@ -53,6 +53,7 @@ function useDebouncedValue(value, delay = 300) {
 export default function MapaPage() {
   const router = useRouter();
   const isAdminQuery = router.query.admin === 'true';
+  const isEmbedded = router.query.embedded === '1';
   const [adminEnabled, setAdminEnabled] = useState(false);
   const [positions, setPositions] = useState(MESA_POSITIONS_DEFAULT);
   const [defaultPositions, setDefaultPositions] = useState(MESA_POSITIONS_DEFAULT);
@@ -67,7 +68,6 @@ export default function MapaPage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
-  const [isEmbedded, setIsEmbedded] = useState(false);
   const imgRef = useRef(null);
   const svgRef = useRef(null);
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -77,14 +77,6 @@ export default function MapaPage() {
     const token = localStorage.getItem('adminToken');
     setAdminEnabled(isAdminQuery && Boolean(token));
   }, [isAdminQuery]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const embeddedByQuery = params.get('embedded') === '1';
-    const embeddedByFrame = window.self !== window.top;
-    setIsEmbedded(embeddedByQuery || embeddedByFrame);
-  }, [router.asPath]);
 
   useEffect(() => {
     async function load() {

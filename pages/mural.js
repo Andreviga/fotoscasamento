@@ -94,20 +94,12 @@ function formatTime(timestampMs) {
 
 export default function MuralPage() {
   const router = useRouter();
-  const [embedded, setEmbedded] = useState(false);
+  const embedded = router.query.embedded === '1';
   const [photos, setPhotos] = useState([]);
   const [status, setStatus] = useState('Conectando ao mural...');
   const [deleteTokens, setDeleteTokens] = useState({});
   const [deletingId, setDeletingId] = useState('');
   const [downloadingId, setDownloadingId] = useState('');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const embeddedByQuery = params.get('embedded') === '1';
-    const embeddedByFrame = window.self !== window.top;
-    setEmbedded(embeddedByQuery || embeddedByFrame);
-  }, [router.asPath]);
 
   async function downloadMedia(url, name, id) {
     setDownloadingId(id);

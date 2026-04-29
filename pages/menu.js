@@ -195,15 +195,7 @@ const MENU_FALLBACK = {
 export default function MenuPage() {
   const { loading, error, data } = useConfig(['site', 'menu']);
   const router = useRouter();
-  const [embedded, setEmbedded] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const embeddedByQuery = params.get('embedded') === '1';
-    const embeddedByFrame = window.self !== window.top;
-    setEmbedded(embeddedByQuery || embeddedByFrame);
-  }, [router.asPath]);
+  const embedded = router.query.embedded === '1';
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
   const heroTitle = MENU_FALLBACK.heroTitle;
   const heroSubtitle = MENU_FALLBACK.heroSubtitle;
