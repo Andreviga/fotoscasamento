@@ -8,6 +8,11 @@ type TabInfoProps = {
 };
 
 const EVENT_DAY_STR = '2026-05-03';
+const CERIMONIA_HOUR = 18;
+const CERIMONIA_MINUTE = 0;
+const DELAY_ALERT_BUFFER_MINUTES = 30;
+const DESTINATION_ADDRESS = 'R. das Araribás, 31 - Bairro dos Casa, São Bernardo do Campo - SP, 09840-210';
+const DESTINATION_COORDS = { lat: -23.743138, lon: -46.5749888 };
 
 const ROTEIRO_ITEMS = [
   { horario: '17:00', titulo: 'Chegada e welcome drink' },
@@ -38,6 +43,8 @@ type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 };
+
+type RouteApp = 'google' | 'waze';
 
 function computeNextAtracao(): NextAtracao {
   const now = new Date();
@@ -79,6 +86,9 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installStatus, setInstallStatus] = useState('');
   const [notifStatus, setNotifStatus] = useState('');
+  const [routeStatus, setRouteStatus] = useState('');
+  const [isRouting, setIsRouting] = useState(false);
+  const [delayNotified, setDelayNotified] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => setAtracao(computeNextAtracao()), 30000);
@@ -128,6 +138,140 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
     }
 
     setNotifStatus('Permissão de notificações negada.');
+  }
+
+  function getTrafficMultiplier() {
+    const hour = new Date().getHours();
+    const isRushHour = (hour >= 6 && hour < 9) || (hour >= 17 && hour < 21);
+    return isRushHour ? 1.35 : 1.15;
+  }
+
+  async function estimateTravelMinutes(fromLat: number, fromLon: number) {
+    try {
+      const routeUrl = `https://router.project-osrm.org/route/v1/driving/${fromLon},${fromLat};${DESTINATION_COORDS.lon},${DESTINATION_COORDS.lat}?overview=false`;
+      const res = await fetch(routeUrl, { cache: 'no-store' });
+      const payload = await res.json();
+      const rawMinutes = Number(payload?.routes?.[0]?.duration) / 60;
+      if (Number.isFinite(rawMinutes) && rawMinutes > 0) {
+        return Math.ceil(rawMinutes * getTrafficMultiplier());
+      }
+    } catch {
+      // Fallback below when route API is unavailable.
+    }
+
+    const earthRadiusKm = 6371;
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const dLat = toRad(DESTINATION_COORDS.lat - fromLat);
+    const dLon = toRad(DESTINATION_COORDS.lon - fromLon);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(fromLat)) * Math.cos(toRad(DESTINATION_COORDS.lat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distanceKm = earthRadiusKm * c;
+    const avgCitySpeedKmH = 28;
+    const minutes = (distanceKm / avgCitySpeedKmH) * 60;
+    return Math.max(5, Math.ceil(minutes * getTrafficMultiplier()));
+  }
+
+  function getCeremonyRemainingMinutes() {
+    const now = new Date();
+    const eventDay = new Date(EVENT_DAY_STR);
+    const isEventDay =
+      now.getFullYear() === eventDay.getFullYear() &&
+      now.getMonth() === eventDay.getMonth() &&
+      now.getDate() === eventDay.getDate();
+
+    if (!isEventDay) {
+      return null;
+    }
+
+    const ceremonyTime = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      CERIMONIA_HOUR,
+      CERIMONIA_MINUTE,
+      0
+    );
+    return Math.floor((ceremonyTime.getTime() - now.getTime()) / 60000);
+  }
+
+  async function maybeNotifyDelay(etaMinutes: number, remainingMinutes: number) {
+    if (delayNotified) {
+      return;
+    }
+
+    const slackMinutes = remainingMinutes - etaMinutes;
+    const hasDelayRisk = slackMinutes <= DELAY_ALERT_BUFFER_MINUTES;
+
+    if (!hasDelayRisk) {
+      return;
+    }
+
+    const isLate = slackMinutes < 0;
+    const alertBody = isLate
+      ? `Com o trânsito atual, sua chegada estimada é em ${etaMinutes} min e você pode atrasar para a cerimônia.`
+      : `Com o trânsito atual, sua margem até a cerimônia é de apenas ${slackMinutes} min. Saia agora para evitar atraso.`;
+
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification('Atenção ao horário', {
+        body: alertBody,
+      });
+      setDelayNotified(true);
+      return;
+    }
+
+    setRouteStatus(`Atenção: ${alertBody} Ative as notificações para receber alerta automático.`);
+    setDelayNotified(true);
+  }
+
+  async function openDirections(app: RouteApp) {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setRouteStatus('Geolocalização não suportada neste navegador.');
+      return;
+    }
+
+    setIsRouting(true);
+    setRouteStatus('Buscando sua localização para traçar a rota...');
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 60000,
+        });
+      });
+
+      const originLat = position.coords.latitude;
+      const originLon = position.coords.longitude;
+      const etaMinutes = await estimateTravelMinutes(originLat, originLon);
+      const remainingMinutes = getCeremonyRemainingMinutes();
+
+      if (remainingMinutes !== null) {
+        if (remainingMinutes <= 0) {
+          setRouteStatus(`Rota pronta no ${app === 'google' ? 'Google Maps' : 'Waze'}. A cerimônia já começou.`);
+        } else {
+          setRouteStatus(
+            `Rota pronta no ${app === 'google' ? 'Google Maps' : 'Waze'}. Tempo estimado: ${etaMinutes} min.`
+          );
+          await maybeNotifyDelay(etaMinutes, remainingMinutes);
+        }
+      } else {
+        setRouteStatus(`Rota pronta no ${app === 'google' ? 'Google Maps' : 'Waze'}. Tempo estimado: ${etaMinutes} min.`);
+      }
+
+      const destinationQuery = encodeURIComponent(DESTINATION_ADDRESS);
+      const googleUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLon}&destination=${destinationQuery}&travelmode=driving`;
+      const wazeUrl = `https://waze.com/ul?ll=${DESTINATION_COORDS.lat},${DESTINATION_COORDS.lon}&navigate=yes`;
+      const targetUrl = app === 'google' ? googleUrl : wazeUrl;
+
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      setRouteStatus('Não foi possível obter sua localização. Permita o acesso ao local para abrir a rota.');
+    } finally {
+      setIsRouting(false);
+    }
   }
 
   return (
@@ -202,11 +346,11 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <button
             type="button"
             aria-label="Como chegar"
-            onClick={() => onNavigate('mapa')}
+            onClick={() => void openDirections('google')}
             className="flex flex-col items-center gap-2 rounded-[24px] border border-gold/40 bg-white/70 py-5 text-sm font-semibold text-cocoa shadow-soft transition hover:bg-white active:scale-95"
           >
             <span className="text-2xl">🗺</span>
-            Como chegar
+            Como chegar (Maps)
           </button>
           <button
             type="button"
@@ -217,6 +361,39 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             <span className="text-2xl">📸</span>
             Enviar fotos
           </button>
+        </div>
+
+        <div className="rounded-2xl border border-gold/30 bg-white/60 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-roseDeep/55">Navegação até o local</p>
+          <p className="mt-1 text-sm text-cocoa/80">
+            Toque para abrir rota com sua localização atual: {DESTINATION_ADDRESS}.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => void openDirections('google')}
+              disabled={isRouting}
+              className="btn btn--outline py-3 text-sm disabled:opacity-60"
+            >
+              📍 Abrir no Google Maps
+            </button>
+            <button
+              type="button"
+              onClick={() => void openDirections('waze')}
+              disabled={isRouting}
+              className="btn btn--outline py-3 text-sm disabled:opacity-60"
+            >
+              🚗 Abrir no Waze
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('mapa')}
+            className="mt-3 text-xs font-semibold text-wine hover:underline"
+          >
+            Ver mapa interno do salão
+          </button>
+          {routeStatus ? <p className="mt-3 text-xs text-wine/70">{routeStatus}</p> : null}
         </div>
 
         {/* Quick info cards */}
