@@ -201,35 +201,21 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                   style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
                   preserveAspectRatio="xMidYMid meet"
                 >
-                  {/* Circulos das mesas - nao aparecem no modo publico mobile */}
-                  {false && positions.map((mesa) => {
-                    const isHighlighted = localSelected === mesa.n;
-                    const isNoivos = mesa.isNoivos;
+                  {/* Renderiza APENAS a mesa selecionada em cor verde quando encontrada */}
+                  {localSelected && positions
+                    .filter((mesa) => mesa.n === localSelected)
+                    .map((mesa) => {
+                      const isHighlighted = true;
+                      const isNoivos = mesa.isNoivos;
+                      const nomeLines = mesa.nome.split(' ');
+                      const linha1 = nomeLines.slice(0, 2).join(' ');
+                      const linha2 = nomeLines.length > 2 ? nomeLines.slice(2).join(' ') : null;
 
-                    const fill = isHighlighted
-                      ? 'rgba(29,158,117,0.88)'
-                      : isNoivos
-                      ? 'rgba(196,164,100,0.35)'
-                      : 'rgba(255,255,255,0.82)';
-
-                    const stroke = isHighlighted
-                      ? '#0F6E56'
-                      : isNoivos
-                      ? '#C4A464'
-                      : 'rgba(47,62,50,0.45)';
-
-                    const textFill = isHighlighted ? '#ffffff' : '#22352c';
-                    const nomeLines = mesa.nome.split(' ');
-                    const linha1 = nomeLines.slice(0, 2).join(' ');
-                    const linha2 = nomeLines.length > 2 ? nomeLines.slice(2).join(' ') : null;
-
-                    return (
-                      <g
-                        key={mesa.n}
-                        onClick={() => mesa.n > 0 && handleSelect(mesa.n)}
-                        style={{ cursor: mesa.n > 0 ? 'pointer' : 'default' }}
-                      >
-                        {isHighlighted && (
+                      return (
+                        <g
+                          key={mesa.n}
+                          style={{ cursor: 'default' }}
+                        >
                           <circle
                             cx={mesa.cx}
                             cy={mesa.cy}
@@ -239,59 +225,58 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                             strokeWidth="0.5"
                             opacity="0.4"
                           />
-                        )}
-                        <circle
-                          cx={mesa.cx}
-                          cy={mesa.cy}
-                          r={mesa.r}
-                          fill={fill}
-                          stroke={stroke}
-                          strokeWidth={isHighlighted ? 0.7 : 0.4}
-                        />
-                        <text
-                          x={mesa.cx}
-                          y={linha2 ? mesa.cy - 1.1 : mesa.cy}
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                          fontSize={mesa.r > 5 ? 2.1 : 1.75}
-                          fontWeight="600"
-                          fill={textFill}
-                          fontFamily="DM Sans, sans-serif"
-                          style={{ pointerEvents: 'none' }}
-                        >
-                          {linha1}
-                        </text>
-                        {linha2 && (
+                          <circle
+                            cx={mesa.cx}
+                            cy={mesa.cy}
+                            r={mesa.r}
+                            fill="rgba(29,158,117,0.88)"
+                            stroke="#0F6E56"
+                            strokeWidth="0.7"
+                          />
                           <text
                             x={mesa.cx}
-                            y={mesa.cy + 1.5}
+                            y={linha2 ? mesa.cy - 1.1 : mesa.cy}
                             textAnchor="middle"
                             dominantBaseline="central"
-                            fontSize={1.55}
+                            fontSize={mesa.r > 5 ? 2.1 : 1.75}
                             fontWeight="600"
-                            fill={textFill}
+                            fill="#ffffff"
                             fontFamily="DM Sans, sans-serif"
                             style={{ pointerEvents: 'none' }}
                           >
-                            {linha2}
+                            {linha1}
                           </text>
-                        )}
-                        {mesa.n > 0 && (
-                          <text
-                            x={mesa.cx}
-                            y={mesa.cy + mesa.r + 1.8}
-                            textAnchor="middle"
-                            fontSize={1.35}
-                            fill={isHighlighted ? '#0F6E56' : 'rgba(34,53,44,0.6)'}
-                            fontFamily="DM Sans, sans-serif"
-                            style={{ pointerEvents: 'none' }}
-                          >
-                            Mesa {mesa.n}
-                          </text>
-                        )}
-                      </g>
-                    );
-                  })}
+                          {linha2 && (
+                            <text
+                              x={mesa.cx}
+                              y={mesa.cy + 1.5}
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                              fontSize={1.55}
+                              fontWeight="600"
+                              fill="#ffffff"
+                              fontFamily="DM Sans, sans-serif"
+                              style={{ pointerEvents: 'none' }}
+                            >
+                              {linha2}
+                            </text>
+                          )}
+                          {mesa.n > 0 && (
+                            <text
+                              x={mesa.cx}
+                              y={mesa.cy + mesa.r + 1.8}
+                              textAnchor="middle"
+                              fontSize={1.35}
+                              fill="#0F6E56"
+                              fontFamily="DM Sans, sans-serif"
+                              style={{ pointerEvents: 'none' }}
+                            >
+                              Mesa {mesa.n}
+                            </text>
+                          )}
+                        </g>
+                      );
+                    })}
                 </svg>
               </div>
             )}

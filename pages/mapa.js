@@ -82,6 +82,18 @@ export default function MapaPage() {
     }
   }, [router.query.destaque]);
 
+  useEffect(() => {
+    const saved = sessionStorage.getItem('mapa-destaque');
+    if (saved) {
+      const n = Number(saved);
+      if (n) {
+        setSelectedN(n);
+        setHighlightedN(n);
+      }
+      sessionStorage.removeItem('mapa-destaque');
+    }
+  }, []);
+
   const getRelativePos = useCallback((e) => {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
@@ -221,13 +233,13 @@ export default function MapaPage() {
                       </g>
                     )}
 
-                    {/* Circulos das mesas - apenas visivel em modo admin */}
-                    {adminEnabled && positions.map((mesa) => {
+                    {/* Circulos das mesas - admin vê todos, publico ve apenas sua mesa selecionada */}
+                    {(adminEnabled ? positions : positions.filter(m => m.n === selectedN)).map((mesa) => {
                       const isSelected = selectedN === mesa.n;
                       const isHighlighted = highlightedN === mesa.n;
                       const isNoivos = mesa.isNoivos;
 
-                      const fill = isHighlighted
+                      const fill = isHighlighted || (!adminEnabled && isSelected)
                         ? 'rgba(29,158,117,0.88)'
                         : isSelected && adminEnabled
                         ? 'rgba(196,164,100,0.85)'
@@ -235,7 +247,7 @@ export default function MapaPage() {
                         ? 'rgba(196,164,100,0.35)'
                         : 'rgba(255,255,255,0.82)';
 
-                      const stroke = isHighlighted
+                      const stroke = isHighlighted || (!adminEnabled && isSelected)
                         ? '#0F6E56'
                         : isSelected && adminEnabled
                         ? '#C4A464'
@@ -243,7 +255,7 @@ export default function MapaPage() {
                         ? '#C4A464'
                         : 'rgba(47,62,50,0.5)';
 
-                      const textFill = isHighlighted
+                      const textFill = isHighlighted || (!adminEnabled && isSelected)
                         ? '#ffffff'
                         : isNoivos
                         ? '#3d2a0a'
