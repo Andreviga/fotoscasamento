@@ -26,7 +26,7 @@ type EtiquetaItem = {
 type SubTab = 'roteiro' | 'mapa' | 'menu' | 'extra';
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
-  { horario: '17:00', titulo: 'Chegada e welcome drink',     destaque: false },
+  { horario: '17:00', titulo: 'Chegada e Welcome drink',     destaque: false },
   { horario: '17:30', titulo: 'Abertura do salão',           destaque: false },
   { horario: '18:00', titulo: 'Entrada dos padrinhos',       destaque: true  },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos', destaque: true  },

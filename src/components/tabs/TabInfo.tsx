@@ -15,7 +15,7 @@ const DESTINATION_ADDRESS = 'R. das Araribás, 31 - Bairro dos Casa, São Bernar
 const DESTINATION_COORDS = { lat: -23.743138, lon: -46.5749888 };
 
 const ROTEIRO_ITEMS = [
-  { horario: '17:00', titulo: 'Chegada e welcome drink' },
+  { horario: '17:00', titulo: 'Chegada e Welcome drink' },
   { horario: '17:30', titulo: 'Abertura do salão' },
   { horario: '18:00', titulo: 'Entrada dos padrinhos' },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos' },

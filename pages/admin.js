@@ -247,7 +247,7 @@ export default function AdminPage() {
       }
 
       setAparencia((prev) => ({ ...prev, logo_url: payload.secure_url }));
-      setStatusMessage('Logo enviada para Cloudinary. Clique em Salvar Aparencia.');
+      setStatusMessage('Logo enviada para Cloudinary. Clique em Salvar Aparência.');
     } catch (uploadError) {
       setStatusMessage(uploadError.message);
     }
@@ -300,10 +300,10 @@ export default function AdminPage() {
 
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || 'Falha na importacao');
+        throw new Error(payload.error || 'Falha na importação');
       }
 
-      setStatusMessage(`Importacao concluida: ${payload.importados} convidados.`);
+      setStatusMessage(`Importação concluída: ${payload.importados} convidados.`);
       setPreview(null);
       fetchGuests();
     } catch (requestError) {
@@ -732,14 +732,14 @@ export default function AdminPage() {
         <section className="space-y-3">
           <div className="romantic-panel p-5 flex items-center justify-between">
             <h2 className="text-2xl text-cocoa">Editor de etiqueta</h2>
-            <button className="btn btn--outline" onClick={() => setEtiqueta((prev) => [...prev, { ...EMPTY_SECAO }])}>Adicionar secao</button>
+            <button className="btn btn--outline" onClick={() => setEtiqueta((prev) => [...prev, { ...EMPTY_SECAO }])}>Adicionar seção</button>
           </div>
 
           {etiqueta.map((secao, index) => (
             <article key={index} className="romantic-panel p-4 space-y-2">
-              <input className="input-elegant" placeholder="Titulo" value={secao.titulo || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, titulo: e.target.value } : x))} />
-              <input className="input-elegant" placeholder="Icone" value={secao.icone || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, icone: e.target.value } : x))} />
-              <textarea className="input-elegant" rows={4} placeholder="Conteudo" value={secao.conteudo || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, conteudo: e.target.value } : x))} />
+              <input className="input-elegant" placeholder="Título" value={secao.titulo || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, titulo: e.target.value } : x))} />
+              <input className="input-elegant" placeholder="Ícone" value={secao.icone || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, icone: e.target.value } : x))} />
+              <textarea className="input-elegant" rows={4} placeholder="Conteúdo" value={secao.conteudo || ''} onChange={(e) => setEtiqueta((prev) => prev.map((x, i) => i === index ? { ...x, conteudo: e.target.value } : x))} />
               <div className="flex flex-wrap gap-2">
                 <button className="btn btn--outline" onClick={() => moveEtiqueta(index, -1)}>Subir</button>
                 <button className="btn btn--outline" onClick={() => moveEtiqueta(index, 1)}>Descer</button>
@@ -758,7 +758,7 @@ export default function AdminPage() {
     if (activeTab === 'aparencia') {
       return (
         <section className="romantic-panel p-5 space-y-4">
-          <h2 className="text-2xl text-cocoa">Aparencia</h2>
+          <h2 className="text-2xl text-cocoa">Aparência</h2>
           <label className="block">
             <span className="form-label">Paleta principal</span>
             <select className="input-elegant" value={aparencia.paleta || 'dourado_branco'} onChange={(e) => setAparencia((prev) => ({ ...prev, paleta: e.target.value }))}>
@@ -783,11 +783,11 @@ export default function AdminPage() {
               checked={Boolean(aparencia.mostrar_outros_na_mesa)}
               onChange={(e) => setAparencia((prev) => ({ ...prev, mostrar_outros_na_mesa: e.target.checked }))}
             />
-            Mostrar outros convidados da mesma mesa na busca publica
+            Mostrar outros convidados da mesma mesa na busca pública
           </label>
 
           <button className="btn btn--primary" onClick={() => saveConfig('aparencia', aparencia)} disabled={savingDoc === 'aparencia'}>
-            {savingDoc === 'aparencia' ? 'Salvando...' : 'Salvar Aparencia'}
+            {savingDoc === 'aparencia' ? 'Salvando...' : 'Salvar Aparência'}
           </button>
         </section>
       );
@@ -912,14 +912,14 @@ export default function AdminPage() {
                     <p key={`${item.nomeOriginal}-${index}`}>{item.nomeOriginal} - {item.nomeConvite}</p>
                   ))}
                 </div>
-                <button className="btn btn--primary mt-3" onClick={confirmImport} disabled={importing}>Confirmar importacao</button>
+                <button className="btn btn--primary mt-3" onClick={confirmImport} disabled={importing}>Confirmar importação</button>
               </div>
             ) : null}
           </article>
 
           <article className="romantic-panel p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-2xl text-cocoa">Atribuicao de mesas</h2>
+              <h2 className="text-2xl text-cocoa">Atribuição de mesas</h2>
               <a href="/api/adminGuests?export=csv" className="btn btn--outline" onClick={(e) => {
                 if (!token) return;
                 e.preventDefault();
@@ -940,14 +940,14 @@ export default function AdminPage() {
             <div className="grid gap-2 sm:grid-cols-4">
               <input className="input-elegant" placeholder="Mesa" value={guestFilters.mesa} onChange={(e) => setGuestFilters((prev) => ({ ...prev, mesa: e.target.value }))} />
               <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
-                <option value="">Confirmacao (todos)</option>
+                <option value="">Confirmação (todos)</option>
                 <option value="true">Confirmado</option>
                 <option value="false">Não confirmado</option>
               </select>
               <select className="input-elegant" value={guestFilters.excluded} onChange={(e) => setGuestFilters((prev) => ({ ...prev, excluded: e.target.value }))}>
                 <option value="">Pesquisa (todos)</option>
                 <option value="false">Aparecendo na busca</option>
-                <option value="true">Excluidos da busca</option>
+                <option value="true">Excluídos da busca</option>
               </select>
               <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
             </div>
@@ -970,7 +970,7 @@ export default function AdminPage() {
                       <th className="px-3 py-2">Mesa</th>
                       <th className="px-3 py-2">Confirmado</th>
                       <th className="px-3 py-2">Busca</th>
-                      <th className="px-3 py-2">Acoes</th>
+                      <th className="px-3 py-2">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1143,7 +1143,7 @@ export default function AdminPage() {
           <PageTitle
             kicker="Controle total"
             title="Painel Administrativo"
-            subtitle="Edite todos os conteudos do site sem alterar codigo."
+            subtitle="Edite todos os conteúdos do site sem alterar código."
           />
 
           {!isLogged ? <AdminLogin onLogin={login} error={authError} /> : null}
