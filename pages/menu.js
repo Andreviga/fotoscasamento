@@ -7,8 +7,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const MENU_FALLBACK = {
-  heroTitle: 'Cardapio & Bebidas',
-  heroSubtitle: 'Menu Bellagio, bebidas do buffet e Bar Energy com as selecoes da noite',
+  heroTitle: 'Cardápio & Bebidas',
+  heroSubtitle: 'Menu Bellagio, bebidas do buffet e Bar Energy com as seleções da noite',
   secoes: [
     {
       id: 'coquetel-frio',
@@ -16,9 +16,9 @@ const MENU_FALLBACK = {
       title: 'Coquetel frio',
       subtitle: '',
       items: [
-        { name: 'Blinis com salmao', description: '' },
+        { name: 'Blinis com salmão', description: '' },
         { name: 'Conne siciliano', description: '' },
-        { name: 'Polenta com pesto e linguica artesanal', description: '' },
+        { name: 'Polenta com pesto e linguiça artesanal', description: '' },
       ]
     },
     {
@@ -28,12 +28,12 @@ const MENU_FALLBACK = {
       subtitle: '',
       items: [
         { name: 'Pastelzinho com caldo de cana', description: '' },
-        { name: 'Coxinha a la creme', description: '' },
-        { name: 'Panceta sensacao', description: '' },
+        { name: 'Coxinha à la creme', description: '' },
+        { name: 'Panceta sensação', description: '' },
         { name: 'Queijo coalho com mel de laranjeira', description: '' },
-        { name: 'Ourico de queijo', description: '' },
-        { name: 'Damasco brulee', description: '' },
-        { name: 'Wantan de camarao', description: '' },
+        { name: 'Ouriço de queijo', description: '' },
+        { name: 'Damasco brûlée', description: '' },
+        { name: 'Wantan de camarão', description: '' },
       ]
     },
     {
@@ -42,7 +42,7 @@ const MENU_FALLBACK = {
       title: 'Finger foods',
       subtitle: '',
       items: [
-        { name: 'Camarao com creme de queijo e palmito', description: '' },
+        { name: 'Camarão com creme de queijo e palmito', description: '' },
         { name: 'Mignon na fonduta de queijo', description: '' },
       ]
     },
@@ -54,8 +54,8 @@ const MENU_FALLBACK = {
       items: [
         { name: 'Verdes nobres, bacon crispy e croutons', description: '' },
         { name: 'Molho de mostarda e mel', description: '' },
-        { name: 'Arroz com crispy de alho-poro', description: '' },
-        { name: 'Batata rustica na paprika e alecrim', description: '' },
+        { name: 'Arroz com crispy de alho-poró', description: '' },
+        { name: 'Batata rústica na páprica e alecrim', description: '' },
         { name: 'Penne ao molho tartufato', description: '' },
         { name: 'Cupim ao demi-glace de alecrim', description: '' },
       ]
@@ -77,7 +77,7 @@ const MENU_FALLBACK = {
       subtitle: '',
       items: [
         { name: 'Mini hamburguinho', description: '' },
-        { name: 'Cafe, cha e palmier', description: '' },
+        { name: 'Café, chá e palmier', description: '' },
         { name: 'Tirinhas de laranja', description: '' },
         { name: 'Balas de coco', description: '' },
       ]
@@ -85,13 +85,13 @@ const MENU_FALLBACK = {
     {
       id: 'nao-alcoolicas-buffet',
       group: 'bebidas-buffet',
-      title: 'Nao alcoolicas',
+      title: 'Não alcoólicas',
       subtitle: '',
       items: [
-        { name: 'Agua com e sem gas', description: '' },
-        { name: 'Agua aromatizada na cerimonia', description: '' },
+        { name: 'Água com e sem gás', description: '' },
+        { name: 'Água aromatizada na cerimônia', description: '' },
         { name: 'Sucos de uva e laranja', description: '' },
-        { name: 'Refrigerantes normais e diet - Coca e Guarana', description: '' },
+        { name: 'Refrigerantes normais e diet - Coca e Guaraná', description: '' },
       ]
     },
     {
@@ -119,8 +119,8 @@ const MENU_FALLBACK = {
       title: 'Encerramento',
       subtitle: '',
       items: [
-        { name: 'Cafe', description: '' },
-        { name: 'Cha', description: '' },
+        { name: 'Café', description: '' },
+        { name: 'Chá', description: '' },
         { name: 'Palmier', description: '' },
         { name: 'Tirinhas de laranja', description: '' },
         { name: 'Balas de coco', description: '' },
@@ -194,9 +194,11 @@ const MENU_FALLBACK = {
 export default function MenuPage({ embedded = false }) {
   const { loading, error, data } = useConfig(['site', 'menu']);
   const weddingDate = data?.site?.data_casamento || '03 de maio de 2026';
-  const heroTitle = MENU_FALLBACK.heroTitle;
-  const heroSubtitle = MENU_FALLBACK.heroSubtitle;
-  const menuSections = MENU_FALLBACK.secoes;
+  const heroTitle = data?.menu?.heroTitle || MENU_FALLBACK.heroTitle;
+  const heroSubtitle = data?.menu?.heroSubtitle || MENU_FALLBACK.heroSubtitle;
+  const menuSections = Array.isArray(data?.menu?.secoes) && data.menu.secoes.length > 0
+    ? data.menu.secoes
+    : MENU_FALLBACK.secoes;
   const GROUP_META = {
     cardapio: {
       eyebrow: '01',

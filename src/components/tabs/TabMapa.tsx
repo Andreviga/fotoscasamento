@@ -208,7 +208,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
   const emptySearchMessage = useMemo(() => {
     if (!debouncedSearch.trim() || searchLoading) return '';
     if (searchResults.length > 0) return '';
-    return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
+    return 'Não encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
   }, [debouncedSearch, searchLoading, searchResults.length]);
 
   return (
@@ -254,7 +254,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
 
         <div className="romantic-panel overflow-hidden">
           <div className="border-b border-roseDeep/10 px-4 py-2.5 flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.14em] text-roseDeep/60">Layout do salao</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-roseDeep/60">Layout do salão</p>
             {localSelected && (
               <button type="button" className="text-xs font-semibold text-wine" onClick={() => onNavigate('mesa')}>
                 &lt;- Voltar a busca
@@ -271,7 +271,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
               <div className="relative w-full overflow-hidden" style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}>
                 <img
                   src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
-                  alt="Layout do salao"
+                  alt="Layout do salão"
                   className="absolute block"
                   style={{ ...mediaFrameStyle, opacity: 1 }}
                   draggable={false}
@@ -434,10 +434,10 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
 
             {selectedGuest ? (
               <article className="rounded-2xl border border-gold/35 bg-[#fffaf1] p-4">
-                <p className="text-lg text-cocoa">Ola, {selectedGuest.nomeOriginal}!</p>
+                <p className="text-lg text-cocoa">Olá, {selectedGuest.nomeOriginal}!</p>
                 {typeof selectedGuest.mesa === 'number' ? (
                   <div className="mt-2 space-y-2">
-                    <p className="text-sm text-wine/75">Voce esta na <strong>Mesa {selectedGuest.mesa}</strong>.</p>
+                    <p className="text-sm text-wine/75">Você está na <strong>Mesa {selectedGuest.mesa}</strong>.</p>
                     <button
                       type="button"
                       className="btn btn--primary text-sm"
@@ -447,7 +447,7 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                     </button>
                   </div>
                 ) : (
-                  <p className="mt-2 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
+                  <p className="mt-2 text-sm text-wine/80">Sua mesa ainda não foi definida. Procure a recepção ao chegar.</p>
                 )}
               </article>
             ) : null}

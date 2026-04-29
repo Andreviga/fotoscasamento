@@ -98,8 +98,8 @@ export default async function handler(req, res) {
             guest.nomeOriginal,
             guest.nomeConvite,
             guest.mesa ?? '',
-            guest.confirmado ? 'sim' : 'nao',
-            guest.excludedFromSearch ? 'sim' : 'nao',
+            guest.confirmado ? 'sim' : 'não',
+            guest.excludedFromSearch ? 'sim' : 'não',
             guest.telefone || '',
             guest.observacao || ''
           ]));
@@ -190,5 +190,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(405).json({ error: 'Metodo nao permitido' });
+  return res.status(405).json({ error: 'Método não permitido' });
 }

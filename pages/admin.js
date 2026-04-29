@@ -942,7 +942,7 @@ export default function AdminPage() {
               <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
                 <option value="">Confirmacao (todos)</option>
                 <option value="true">Confirmado</option>
-                <option value="false">Nao confirmado</option>
+                <option value="false">Não confirmado</option>
               </select>
               <select className="input-elegant" value={guestFilters.excluded} onChange={(e) => setGuestFilters((prev) => ({ ...prev, excluded: e.target.value }))}>
                 <option value="">Pesquisa (todos)</option>
@@ -1022,32 +1022,32 @@ export default function AdminPage() {
       return (
         <section className="space-y-4">
           <article className="romantic-panel p-5 space-y-3">
-            <h2 className="text-2xl text-cocoa">Calibracao do Mapa do Salao</h2>
+            <h2 className="text-2xl text-cocoa">Calibração do Mapa do Salão</h2>
             <p className="text-sm text-wine/80">
-              Abra o mapa em modo admin para <strong>arrastar os circulos</strong> sobre a foto real do salao,
-              usar as setas de ajuste fino, aplicar um recorte visual e salvar as configuracoes no Firestore.
-              As posicoes salvas aparecem automaticamente para todos os convidados.
+              Abra o mapa em modo admin para <strong>arrastar os círculos</strong> sobre a foto real do salão,
+              usar as setas de ajuste fino, aplicar um recorte visual e salvar as configurações no Firestore.
+              As posições salvas aparecem automaticamente para todos os convidados.
             </p>
             <a href="/mapa?admin=true" target="_blank" rel="noopener noreferrer" className="btn btn--primary inline-flex">
-              Abrir calibracao do mapa
+              Abrir calibração do mapa
             </a>
           </article>
 
           <article className="romantic-panel p-5 space-y-2 text-sm text-wine/80">
-            <p className="font-semibold text-cocoa">Como usar a calibracao:</p>
+            <p className="font-semibold text-cocoa">Como usar a calibração:</p>
             <ol className="list-decimal pl-5 space-y-1.5">
-              <li>Clique em "Abrir calibracao do mapa" acima.</li>
+              <li>Clique em "Abrir calibração do mapa" acima.</li>
               <li>Se precisar esconder bordas da imagem, ajuste primeiro o <strong>recorte visual</strong>.</li>
-              <li>Selecione uma mesa no dropdown ou clique diretamente no circulo.</li>
-              <li><strong>Arraste</strong> o circulo ate ele ficar sobre a mesa correta na foto.</li>
+              <li>Selecione uma mesa no dropdown ou clique diretamente no círculo.</li>
+              <li><strong>Arraste</strong> o círculo até ele ficar sobre a mesa correta na foto.</li>
               <li>Use as <strong>setas ^ v &lt; &gt;</strong> para ajuste fino (0.5% por clique).</li>
               <li>Ajuste o <strong>raio</strong> para cobrir o tamanho visual correto de cada mesa.</li>
-              <li>Repita para todas as 21 posicoes (20 mesas + noivos).</li>
-              <li>Clique em <strong>"Salvar posicoes"</strong> - o recorte e as posicoes ficam salvos no Firestore e valem para todos os convidados.</li>
+              <li>Repita para todas as 21 posições (20 mesas + noivos).</li>
+              <li>Clique em <strong>"Salvar posicoes"</strong> - o recorte e as posições ficam salvos no Firestore e valem para todos os convidados.</li>
             </ol>
             <p className="mt-2 text-xs text-wine/60">
-              As posicoes sao salvas em <code>config/mapa.posicoesMesas</code> e o recorte em <code>config/mapa.crop</code> no Firestore.
-              Caso precise resetar, use o botao "Resetar padrao" no modo admin.
+              As posições são salvas em <code>config/mapa.posicoesMesas</code> e o recorte em <code>config/mapa.crop</code> no Firestore.
+              Caso precise resetar, use o botão "Resetar padrão" no modo admin.
             </p>
           </article>
         </section>
@@ -1164,7 +1164,7 @@ export default function AdminPage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button className="btn btn--outline" onClick={() => runConfigSeed(false)} disabled={seedingConfig}>
-                      {seedingConfig ? 'Inicializando...' : 'Inicializar Config Padrao'}
+                      {seedingConfig ? 'Inicializando...' : 'Inicializar Config Padrão'}
                     </button>
                     <button className="btn btn--outline" onClick={() => runConfigSeed(true)} disabled={seedingConfig}>
                       {seedingConfig ? 'Aplicando...' : 'Forcar Seed'}
@@ -1174,7 +1174,7 @@ export default function AdminPage() {
                 </div>
               </section>
 
-              {loading ? <LoadingSpinner label="Carregando configuracoes" /> : null}
+              {loading ? <LoadingSpinner label="Carregando configurações" /> : null}
               {error ? <div className="romantic-panel p-4 text-sm text-red-700">{error}</div> : null}
 
               {!loading && !error ? tabContent : null}

@@ -3,7 +3,7 @@ import { CONFIG_DOC_IDS, seedAllConfigDefaults } from '../../lib/defaultConfig';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Metodo nao permitido' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
   if (!assertAdmin(req, res)) {
@@ -26,6 +26,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Erro em seedConfig:', error);
-    return res.status(500).json({ error: 'Falha ao inicializar configuracoes padrao' });
+    return res.status(500).json({ error: 'Falha ao inicializar configurações padrão' });
   }
 }

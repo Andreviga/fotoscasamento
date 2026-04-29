@@ -61,7 +61,7 @@ function parseRows(rows) {
     }
 
     if (!currentInviteName) {
-      errors.push(`Linha ${rowIndex + 1}: nome_convite nao identificado.`);
+      errors.push(`Linha ${rowIndex + 1}: nome_convite não identificado.`);
       return;
     }
 
@@ -108,7 +108,7 @@ async function parseForm(req) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Metodo nao permitido' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
   if (!assertAdmin(req, res)) {

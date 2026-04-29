@@ -15,7 +15,7 @@ function parseDocs(value) {
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Metodo nao permitido' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
@@ -35,6 +35,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ config });
   } catch (error) {
     console.error('Erro em getConfig:', error);
-    return res.status(500).json({ error: 'Falha ao carregar configuracoes' });
+    return res.status(500).json({ error: 'Falha ao carregar configurações' });
   }
 }

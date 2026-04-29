@@ -233,7 +233,7 @@ export default function MapaPage({ embedded = false }) {
 
   function resetPositions() {
     setPositions(defaultPositions);
-    setMessage('Posicoes resetadas para o padrao salvo. Clique em Salvar para confirmar.');
+    setMessage('Posições resetadas para o padrão salvo. Clique em Salvar para confirmar.');
   }
 
   function updateCrop(side, value) {
@@ -259,7 +259,7 @@ export default function MapaPage({ embedded = false }) {
   const emptySearchMessage = useMemo(() => {
     if (!debouncedSearch.trim() || searchLoading) return '';
     if (searchResults.length > 0) return '';
-    return 'Nao encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
+    return 'Não encontramos esse nome. Verifique a grafia ou busque pelo nome do convite.';
   }, [debouncedSearch, searchLoading, searchResults.length]);
   const mediaFrameStyle = useMemo(() => getMapaMediaFrameStyle(crop), [crop]);
 
@@ -272,7 +272,7 @@ export default function MapaPage({ embedded = false }) {
 
   return (
     <>
-      <Head><title>Mapa do Salao - Andre e Nathalia</title></Head>
+      <Head><title>Mapa do Salão - André e Nathália</title></Head>
       {!isEmbedded && <WeddingHeader />}
       <main className={`main ${isEmbedded ? 'pt-3 pb-3' : ''}`}>
         {!isEmbedded && <div className="hero-haze" />}
@@ -280,7 +280,7 @@ export default function MapaPage({ embedded = false }) {
           {!isEmbedded && (
             <PageTitle
               kicker="Visual"
-              title="Mapa do Salao"
+              title="Mapa do Salão"
               subtitle="Clique em uma mesa para ver os convidados. Use dois dedos para dar zoom."
             />
           )}
@@ -295,7 +295,7 @@ export default function MapaPage({ embedded = false }) {
                   <img
                     ref={imgRef}
                     src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
-                    alt="Layout do salao"
+                    alt="Layout do salão"
                     className="absolute block"
                     style={{ ...mediaFrameStyle, opacity: 1 }}
                     draggable={false}
@@ -308,7 +308,7 @@ export default function MapaPage({ embedded = false }) {
                     style={{ ...mediaFrameStyle, touchAction: adminEnabled ? 'none' : 'pan-x pan-y pinch-zoom' }}
                     preserveAspectRatio="xMidYMid meet"
                   >
-                    {/* Labels das areas do salao - apenas admin */}
+                    {/* Labels das áreas do salão - apenas admin */}
                     {adminEnabled && (
                       <g opacity="0.45" fontFamily="DM Sans, sans-serif" fontSize="1.8" fontWeight="600" fill="#666">
                         <text x="12" y="25" textAnchor="start">BAR</text>
@@ -445,11 +445,11 @@ export default function MapaPage({ embedded = false }) {
                 <div className="romantic-panel p-5 space-y-4 border-2 border-gold/40">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.2em] text-gold/80 font-semibold">Modo Admin - Calibracao de Mesas</p>
-                      <p className="text-sm text-wine/75 mt-0.5">Arraste os circulos diretamente na imagem, ajuste o recorte visual e salve tudo em uma unica configuracao.</p>
+                      <p className="text-xs uppercase tracking-[0.2em] text-gold/80 font-semibold">Modo Admin - Calibração de Mesas</p>
+                      <p className="text-sm text-wine/75 mt-0.5">Arraste os círculos diretamente na imagem, ajuste o recorte visual e salve tudo em uma única configuração.</p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      <button className="btn btn--outline text-sm" onClick={resetPositions}>Resetar padrao</button>
+                      <button className="btn btn--outline text-sm" onClick={resetPositions}>Resetar padrão</button>
                       <button className="btn btn--outline text-sm" onClick={resetCrop}>Resetar recorte</button>
                       <button className="btn btn--primary text-sm" onClick={savePositions} disabled={saving}>
                         {saving ? 'Salvando...' : 'Salvar posicoes'}
@@ -653,10 +653,10 @@ export default function MapaPage({ embedded = false }) {
                     {selectedGuest ? (
                       <article className="rounded-3xl border border-gold/30 bg-[#fffaf1] p-5 shadow-sm">
                         <div className="text-3xl">🎉</div>
-                        <h3 className="mt-2 text-2xl text-cocoa">Ola, {selectedGuest.nomeOriginal}!</h3>
+                        <h3 className="mt-2 text-2xl text-cocoa">Olá, {selectedGuest.nomeOriginal}!</h3>
                         {typeof selectedGuest.mesa === 'number' ? (
                           <div className="mt-4 rounded-2xl border border-gold/40 bg-white p-4">
-                            <p className="text-sm text-wine/70">Voce esta na</p>
+                            <p className="text-sm text-wine/70">Você está na</p>
                             <p className="text-3xl font-semibold text-cocoa">Mesa {selectedGuest.mesa}</p>
                             <p className="mt-1 text-sm text-wine/75">{TABLE_NAMES[selectedGuest.mesa] || 'Mesa localizada no mapa'}</p>
                             <button
@@ -668,7 +668,7 @@ export default function MapaPage({ embedded = false }) {
                             </button>
                           </div>
                         ) : (
-                          <p className="mt-3 text-sm text-wine/80">Sua mesa ainda nao foi definida. Procure a recepcao ao chegar.</p>
+                          <p className="mt-3 text-sm text-wine/80">Sua mesa ainda não foi definida. Procure a recepção ao chegar.</p>
                         )}
                       </article>
                     ) : null}
