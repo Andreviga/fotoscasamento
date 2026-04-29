@@ -221,7 +221,13 @@ export default function TabMesa({ onNavigate }: TabMesaProps) {
             <button
               type="button"
               className="btn btn--outline mt-4"
-              onClick={() => onNavigate('mapa')}
+              onClick={() => {
+                if (selected?.mesa) {
+                  sessionStorage.setItem('mapa-destaque', String(selected.mesa));
+                  sessionStorage.setItem('tab-mais-focus', 'mapa');
+                }
+                onNavigate('mapa');
+              }}
             >
               Ver mesa no mapa
             </button>

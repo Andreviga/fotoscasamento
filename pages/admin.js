@@ -1022,82 +1022,32 @@ export default function AdminPage() {
       return (
         <section className="space-y-4">
           <article className="romantic-panel p-5 space-y-3">
-            <h2 className="text-2xl text-cocoa">Editor do mapa</h2>
-            <p className="text-sm text-wine/80">Acesse o modo admin do mapa para arrastar, editar e salvar elementos do layout.</p>
-            <a href="/mapa?admin=true" className="btn btn--primary">Abrir mapa em modo admin</a>
+            <h2 className="text-2xl text-cocoa">Calibracao do Mapa do Salao</h2>
+            <p className="text-sm text-wine/80">
+              Abra o mapa em modo admin para <strong>arrastar os circulos</strong> sobre a foto real do salao,
+              usar as setas de ajuste fino e salvar as posicoes no Firestore.
+              As posicoes salvas aparecem automaticamente para todos os convidados.
+            </p>
+            <a href="/mapa?admin=true" target="_blank" rel="noopener noreferrer" className="btn btn--primary inline-flex">
+              Abrir calibracao do mapa
+            </a>
           </article>
 
-          <article className="romantic-panel p-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-2xl text-cocoa">Alocar convidados nas mesas</h2>
-              <button className="btn btn--outline" onClick={fetchGuests}>Atualizar lista</button>
-            </div>
-
-            <p className="text-sm text-wine/75">
-              As alterações aqui refletem na busca pública da aba Mesa.
+          <article className="romantic-panel p-5 space-y-2 text-sm text-wine/80">
+            <p className="font-semibold text-cocoa">Como usar a calibracao:</p>
+            <ol className="list-decimal pl-5 space-y-1.5">
+              <li>Clique em "Abrir calibracao do mapa" acima.</li>
+              <li>Selecione uma mesa no dropdown ou clique diretamente no circulo.</li>
+              <li><strong>Arraste</strong> o circulo ate ele ficar sobre a mesa correta na foto.</li>
+              <li>Use as <strong>setas ^ v &lt; &gt;</strong> para ajuste fino (0.5% por clique).</li>
+              <li>Ajuste o <strong>raio</strong> para cobrir o tamanho visual correto de cada mesa.</li>
+              <li>Repita para todas as 21 posicoes (20 mesas + noivos).</li>
+              <li>Clique em <strong>"Salvar posicoes"</strong> - ficam salvas no Firestore e valem para todos os convidados.</li>
+            </ol>
+            <p className="mt-2 text-xs text-wine/60">
+              As posicoes sao salvas em <code>config/mapa.posicoesMesas</code> no Firestore.
+              Caso precise resetar, use o botao "Resetar padrao" no modo admin.
             </p>
-
-            <div className="grid gap-2 sm:grid-cols-4">
-              <input className="input-elegant" placeholder="Mesa" value={guestFilters.mesa} onChange={(e) => setGuestFilters((prev) => ({ ...prev, mesa: e.target.value }))} />
-              <select className="input-elegant" value={guestFilters.confirmado} onChange={(e) => setGuestFilters((prev) => ({ ...prev, confirmado: e.target.value }))}>
-                <option value="">Confirmacao (todos)</option>
-                <option value="true">Confirmado</option>
-                <option value="false">Nao confirmado</option>
-              </select>
-              <select className="input-elegant" value={guestFilters.excluded} onChange={(e) => setGuestFilters((prev) => ({ ...prev, excluded: e.target.value }))}>
-                <option value="">Pesquisa (todos)</option>
-                <option value="false">Aparecendo na busca</option>
-                <option value="true">Excluidos da busca</option>
-              </select>
-              <button className="btn btn--outline" onClick={fetchGuests}>Aplicar filtros</button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <button className="btn btn--primary" onClick={saveGuestsBatch} disabled={loadingGuests || guestRows.length === 0}>
-                Salvar mesas em lote
-              </button>
-            </div>
-
-            {loadingGuests ? <LoadingSpinner label="Carregando convidados" /> : null}
-
-            {!loadingGuests ? (
-              <div className="overflow-auto rounded-xl border border-roseDeep/20">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-white/70 text-left text-wine/80">
-                    <tr>
-                      <th className="px-3 py-2">Nome</th>
-                      <th className="px-3 py-2">Mesa</th>
-                      <th className="px-3 py-2">Busca</th>
-                      <th className="px-3 py-2">Acoes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {guestRows.map((guest) => (
-                      <tr key={guest.id} className={`border-t border-roseDeep/10 ${guest.excludedFromSearch ? 'bg-rose-50/50 text-wine/60' : ''}`}>
-                        <td className="px-3 py-2">{guest.nomeOriginal}</td>
-                        <td className="px-3 py-2">
-                          <input
-                            className="w-24 rounded-md border border-roseDeep/25 bg-white px-2 py-1"
-                            type="number"
-                            value={guest.mesa ?? ''}
-                            onChange={(e) => updateGuestRow(guest.id, { mesa: e.target.value })}
-                          />
-                        </td>
-                        <td className="px-3 py-2">{guest.excludedFromSearch ? 'Oculto' : 'Ativo'}</td>
-                        <td className="px-3 py-2">
-                          <div className="flex flex-wrap gap-2">
-                            <button className="btn btn--outline" onClick={() => saveGuest(guest)}>Salvar</button>
-                            <button className="btn btn--outline" onClick={() => toggleGuestSearchVisibility(guest, !guest.excludedFromSearch)}>
-                              {guest.excludedFromSearch ? 'Reativar busca' : 'Excluir da busca'}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : null}
           </article>
         </section>
       );
