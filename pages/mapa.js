@@ -54,6 +54,7 @@ export default function MapaPage() {
   const isAdminQuery = router.query.admin === 'true';
   const [adminEnabled, setAdminEnabled] = useState(false);
   const [positions, setPositions] = useState(MESA_POSITIONS_DEFAULT);
+  const [defaultPositions, setDefaultPositions] = useState(MESA_POSITIONS_DEFAULT);
   const [selectedN, setSelectedN] = useState(null);
   const [highlightedN, setHighlightedN] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -85,6 +86,7 @@ export default function MapaPage() {
         const savedCrop = payload?.config?.mapa?.crop;
         if (Array.isArray(saved) && saved.length > 0) {
           setPositions(saved);
+          setDefaultPositions(saved);
         }
         setCrop(normalizeMapaCrop(savedCrop));
       } catch {
@@ -216,6 +218,7 @@ export default function MapaPage() {
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || 'Erro ao salvar');
+      setDefaultPositions(positions);
       setMessage('Posicoes salvas com sucesso!');
     } catch (err) {
       setMessage(err.message);
@@ -225,8 +228,8 @@ export default function MapaPage() {
   }
 
   function resetPositions() {
-    setPositions(MESA_POSITIONS_DEFAULT);
-    setMessage('Posicoes resetadas para o padrao. Clique em Salvar para confirmar.');
+    setPositions(defaultPositions);
+    setMessage('Posicoes resetadas para o padrao salvo. Clique em Salvar para confirmar.');
   }
 
   function updateCrop(side, value) {
@@ -283,7 +286,7 @@ export default function MapaPage() {
             <div className="space-y-4">
               <div className="romantic-panel overflow-hidden">
                 <div
-                  className="relative w-full overflow-hidden bg-black/5 select-none"
+                  className="relative w-full overflow-hidden select-none"
                   style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}
                 >
                   <img
@@ -291,7 +294,7 @@ export default function MapaPage() {
                     src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                     alt="Layout do salao"
                     className="absolute block"
-                    style={{ ...mediaFrameStyle, opacity: adminEnabled ? 0.75 : 0.85 }}
+                    style={{ ...mediaFrameStyle, opacity: 1 }}
                     draggable={false}
                   />
 

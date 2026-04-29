@@ -198,12 +198,12 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                 <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-gold" />
               </div>
             ) : (
-              <div className="relative w-full overflow-hidden bg-black/5" style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}>
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: String(MAPA_ASPECT_RATIO) }}>
                 <img
                   src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                   alt="Layout do salao"
                   className="absolute block"
-                  style={{ ...mediaFrameStyle, opacity: 0.85 }}
+                  style={{ ...mediaFrameStyle, opacity: 1 }}
                   draggable={false}
                 />
 
