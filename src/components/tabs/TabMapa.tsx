@@ -185,12 +185,12 @@ export default function TabMapa({ onNavigate, selectedTable, onSelectTable }: Ta
                 <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-gold" />
               </div>
             ) : (
-              <div className="relative w-full" style={{ paddingBottom: `${(1 / 0.82) * 100}%` }}>
+              <div className="relative w-full bg-black/5">
                 <img
                   src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                   alt="Layout do salao"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ opacity: 0.58 }}
+                  className="w-full h-auto block"
+                  style={{ opacity: 0.85 }}
                   draggable={false}
                 />
 

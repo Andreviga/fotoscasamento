@@ -194,13 +194,13 @@ export default function MapaPage() {
           {loading ? <LoadingSpinner label="Carregando mapa" /> : (
             <div className="space-y-4">
               <div className="romantic-panel overflow-hidden">
-                <div className="relative w-full select-none" style={{ paddingBottom: `${(1 / MAPA_ASPECT_RATIO) * 100}%` }}>
+                <div className="relative w-full bg-black/5 select-none">
                   <img
                     ref={imgRef}
                     src="/MAPA_COMPLETO_DO_SALAO_COM_OS_NOMES.png"
                     alt="Layout do salao"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ opacity: adminEnabled ? 0.7 : 0.6 }}
+                    className="w-full h-auto block"
+                    style={{ opacity: adminEnabled ? 0.75 : 0.85 }}
                     draggable={false}
                   />
 
@@ -211,6 +211,16 @@ export default function MapaPage() {
                     style={{ touchAction: adminEnabled ? 'none' : 'pan-x pan-y pinch-zoom' }}
                     preserveAspectRatio="xMidYMid meet"
                   >
+                    {/* Labels das areas do salao - apenas admin */}
+                    {adminEnabled && (
+                      <g opacity="0.45" fontFamily="DM Sans, sans-serif" fontSize="1.8" fontWeight="600" fill="#666">
+                        <text x="12" y="25" textAnchor="start">BAR</text>
+                        <text x="40" y="18" textAnchor="middle">BUFFET</text>
+                        <text x="85" y="25" textAnchor="end">PISTA</text>
+                        <text x="50" y="110" textAnchor="middle">ENTRADA</text>
+                      </g>
+                    )}
+
                     {positions.map((mesa) => {
                       const isSelected = selectedN === mesa.n;
                       const isHighlighted = highlightedN === mesa.n;
