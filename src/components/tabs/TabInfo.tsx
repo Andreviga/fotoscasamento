@@ -102,6 +102,9 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
 
   useEffect(() => {
     initTestTime();
+    // Recalculate immediately after initTestTime
+    setAtracao(computeNextAtracao(roteiroItems));
+    // Then set interval for continuous updates
     const id = window.setInterval(() => setAtracao(computeNextAtracao(roteiroItems)), 30000);
     return () => window.clearInterval(id);
   }, [roteiroItems]);
@@ -334,39 +337,14 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <p className="hero-intro">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
           </p>
-          {/* Próxima Atração */}
+        {/* Próxima Atração */}
           <div
             aria-live="polite"
             className="mx-auto mt-5 inline-block rounded-2xl border border-roseDeep/15 bg-white/60 px-5 py-3 text-center"
           >
-            <p className="text-[10px] uppercase tracking-[0.22em] text-roseDeep/55">Próxima Atração</p>
-            {atracao.status === 'ended' ? (
-              <p className="font-serifRomance text-2xl text-wine mt-1">Que noite incrível! ✿</p>
-            ) : atracao.status === 'now' ? (
-              <>
-                <p className="font-serifRomance text-xl text-wine mt-1">{atracao.titulo}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">⏱ Acontecendo agora · {atracao.horario}</p>
-              </>
-            ) : atracao.status === 'before' ? (
-              <>
-                <p className="font-serifRomance text-xl text-cocoa mt-1">A Festa · 03 de maio</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
-                  em {Math.floor((atracao.minutesUntil ?? 0) / 1440)} {Math.floor((atracao.minutesUntil ?? 0) / 1440) === 1 ? 'dia' : 'dias'}
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="font-serifRomance text-xl text-cocoa mt-1">{atracao.titulo}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
-                  {atracao.horario}
-                  {atracao.minutesUntil !== undefined && atracao.minutesUntil < 60
-                    ? ` · em ${atracao.minutesUntil} min`
-                    : atracao.minutesUntil !== undefined
-                    ? ` · em ${Math.floor(atracao.minutesUntil / 60)}h${atracao.minutesUntil % 60 > 0 ? String(atracao.minutesUntil % 60).padStart(2,'0') : ''}`
-                    : ''}
-                </p>
-              </>
-            )}
+            <p className="text-[10px] uppercase tracking-[0.22em] text-roseDeep/55">Quando chegar</p>
+            <p className="font-serifRomance text-xl text-cocoa mt-1">03 de maio</p>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Cerimônia às 18h (pontual)</p>
           </div>
 
           <p className="wedding-signature mt-3" style={{ '--font-size': '19px' } as React.CSSProperties}>

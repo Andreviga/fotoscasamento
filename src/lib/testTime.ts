@@ -19,7 +19,6 @@ export function initTestTime() {
       const [h, min] = timePart.split(':').map(Number);
       if (y && m && d && h !== undefined && min !== undefined) {
         overrideTime = new Date(y, m - 1, d, h, min, 0);
-        console.log('[TestTime]', 'Simulando:', overrideTime.toLocaleString('pt-BR'));
       }
     }
   }
