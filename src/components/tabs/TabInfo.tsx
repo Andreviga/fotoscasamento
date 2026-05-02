@@ -51,16 +51,17 @@ type RouteApp = 'google' | 'waze';
 
 function computeNextAtracao(items: RoteiroItem[]): NextAtracao {
   const now = new Date();
-  const evDay = new Date(EVENT_DAY_STR);
   const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const evMidnight = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate());
+  // Parse as local midnight to avoid UTC-offset shifting the date
+  const [ey, em, ed] = EVENT_DAY_STR.split('-').map(Number);
+  const evMidnight = new Date(ey, em - 1, ed);
 
   const firstItem = items[0];
   const lastItem = items[items.length - 1];
 
   if (nowMidnight < evMidnight) {
     const daysUntil = Math.ceil((evMidnight.getTime() - nowMidnight.getTime()) / (1000 * 60 * 60 * 24));
-    return { status: 'before', titulo: 'A Festa', horario: firstItem?.horario ?? '17:00', minutesUntil: daysUntil * 1440 };
+    return { status: 'before', titulo: 'A Festa', horario: firstItem?.horario ?? '16:00', minutesUntil: daysUntil * 1440 };
   }
 
   if (nowMidnight > evMidnight) {
@@ -71,7 +72,7 @@ function computeNextAtracao(items: RoteiroItem[]): NextAtracao {
   let current = lastItem;
   for (const item of items) {
     const [h, m] = item.horario.split(':').map(Number);
-    const itemTime = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate(), h, m, 0);
+    const itemTime = new Date(ey, em - 1, ed, h, m, 0);
     if (itemTime > now) {
       const minutesUntil = Math.floor((itemTime.getTime() - now.getTime()) / 60000);
       return { status: 'next', titulo: item.titulo, horario: item.horario, minutesUntil };
@@ -214,11 +215,11 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
 
   function getCeremonyRemainingMinutes() {
     const now = new Date();
-    const eventDay = new Date(EVENT_DAY_STR);
+    const [ey, em, ed] = EVENT_DAY_STR.split('-').map(Number);
     const isEventDay =
-      now.getFullYear() === eventDay.getFullYear() &&
-      now.getMonth() === eventDay.getMonth() &&
-      now.getDate() === eventDay.getDate();
+      now.getFullYear() === ey &&
+      now.getMonth() === em - 1 &&
+      now.getDate() === ed;
 
     if (!isEventDay) {
       return null;

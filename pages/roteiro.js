@@ -25,7 +25,7 @@ const ROTEIRO_FALLBACK = [
   { horario: '23:00', titulo: 'Encerramento',                 descricao: 'Últimas músicas e despedida',                 destaque: false },
 ];
 
-const DIA_FESTA = new Date('2026-05-03');
+const DIA_FESTA = new Date(2026, 4, 3); // 3 de maio de 2026, meia-noite local
 
 function getItemAtual(items) {
   const agora = new Date();

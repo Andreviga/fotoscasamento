@@ -97,7 +97,7 @@ const ETIQUETA_FALLBACK: EtiquetaItem[] = [
   { icone: '📷', titulo: 'Fotos e redes sociais', conteudo: 'Publique suas fotos no mural ao vivo pelo app para compartilhar esse dia com todo mundo.' },
 ];
 
-const DIA_FESTA = new Date('2026-05-03');
+const DIA_FESTA = new Date(2026, 4, 3); // 3 de maio de 2026, meia-noite local
 
 function getHorarioAtual(items: RoteiroItem[]): string | null {
   const agora = new Date();
