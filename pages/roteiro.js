@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import useConfig from '../lib/useConfig';
 
 const ROTEIRO_FALLBACK = [
-  { horario: '17:00', titulo: 'Chegada e Welcome drink',      descricao: 'Recepção na varanda com drinks de boas-vindas', destaque: false },
+  { horario: '16:00', titulo: 'Chegada e Welcome drink',      descricao: 'Recepção na varanda com drinks de boas-vindas', destaque: false },
   { horario: '17:30', titulo: 'Abertura do salão',            descricao: 'Convidados são convidados a se acomodar',       destaque: false },
   { horario: '18:00', titulo: 'Entrada dos padrinhos',        descricao: 'Cortejo ao som da trilha escolhida',            destaque: true  },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos',  descricao: 'Momento especial com a família',                destaque: true  },

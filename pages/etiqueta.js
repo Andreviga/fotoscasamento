@@ -8,7 +8,7 @@ import useConfig from '../lib/useConfig';
 
 const ETIQUETA_FALLBACK = [
   { icone: '👔', titulo: 'Traje', conteudo: 'Esporte fino. Pedimos gentilmente que as convidadas evitem vestidos brancos, creme ou na cor da noiva.' },
-  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 17h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com 20 minutos de antecedência.' },
+  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 16h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com 20 minutos de antecedência.' },
   { icone: '🔕', titulo: 'Durante a cerimônia', conteudo: 'Deixe o celular no silencioso. Aguarde a entrada da noiva antes de se sentar. Evite passar na frente do fotógrafo e videomaker.' },
   { icone: '📷', titulo: 'Fotos e redes sociais', conteudo: 'Use o Instacasamento no app para publicar fotos no mural ao vivo da festa! Na hashtag #andreanathalia2026 poderemos encontrar suas fotos.' },
   { icone: '🎁', titulo: 'Presente', conteudo: 'Sua presença já é o nosso presente! Se quiser nos presentear, acesse a lista de presentes pelo site.' },

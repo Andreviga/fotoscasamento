@@ -73,7 +73,7 @@ function normalizeEtiquetaItems(items: EtiquetaItem[]): EtiquetaItem[] {
 }
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
-  { horario: '17:00', titulo: 'Chegada e Welcome drink',     destaque: false },
+  { horario: '16:00', titulo: 'Chegada e Welcome drink',     destaque: false },
   { horario: '17:30', titulo: 'Abertura do salão',           destaque: false },
   { horario: '18:00', titulo: 'Entrada dos padrinhos',       destaque: true  },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos', destaque: true  },
@@ -92,7 +92,7 @@ const ROTEIRO_FALLBACK: RoteiroItem[] = [
 
 const ETIQUETA_FALLBACK: EtiquetaItem[] = [
   { icone: '👔', titulo: 'Traje', conteudo: 'Esporte fino. Pedimos gentilmente que as convidadas evitem vestidos brancos, creme ou na cor da noiva.' },
-  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 17h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com antecedência.' },
+  { icone: '⏰', titulo: 'Horários', conteudo: 'A festa começa às 16h. A cerimônia terá início às 18h pontualmente. Por favor, chegue com antecedência.' },
   { icone: '🔕', titulo: 'Durante a cerimônia', conteudo: 'Deixe o celular no silencioso e aguarde a entrada da noiva antes de se sentar.' },
   { icone: '📷', titulo: 'Fotos e redes sociais', conteudo: 'Publique suas fotos no mural ao vivo pelo app para compartilhar esse dia com todo mundo.' },
 ];

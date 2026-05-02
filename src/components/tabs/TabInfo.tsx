@@ -17,7 +17,7 @@ const DESTINATION_COORDS = { lat: -23.743138, lon: -46.5749888 };
 type RoteiroItem = { horario: string; titulo: string };
 
 const ROTEIRO_FALLBACK: RoteiroItem[] = [
-  { horario: '17:00', titulo: 'Chegada e Welcome drink' },
+  { horario: '16:00', titulo: 'Chegada e Welcome drink' },
   { horario: '17:30', titulo: 'Abertura do salão' },
   { horario: '18:00', titulo: 'Entrada dos padrinhos' },
   { horario: '18:15', titulo: 'Entrada dos pais dos noivos' },
@@ -439,7 +439,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           {[
             { icon: '📅', label: 'Data', value: siteInfo.info_data || '03 de maio de 2026 — Domingo' },
             { icon: '📍', label: 'Local', value: siteInfo.info_local || 'Espaço Vdara — Sítio São Jorge, São Bernardo do Campo' },
-            { icon: '⏰', label: 'Horário', value: siteInfo.info_horario || 'Festa: 17h · Cerimônia: 18h (pontual)' },
+            { icon: '⏰', label: 'Horário', value: siteInfo.info_horario || 'Festa: 16h · Cerimônia: 18h (pontual)' },
             { icon: '👔', label: 'Traje', value: siteInfo.info_traje || 'Esporte fino. Evite branco, creme ou tons da noiva.' },
             { icon: '🅿️', label: 'Estacionamento', value: siteInfo.info_estacionamento || 'Verifique a orientação da equipe no local.' },
           ].map((item) => (
