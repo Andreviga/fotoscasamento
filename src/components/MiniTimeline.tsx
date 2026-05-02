@@ -1,55 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-
 type TimelineItem = {
   horario?: string;
   titulo?: string;
   destaque?: boolean;
 };
 
-type TimelineState = {
+type MiniTimelineProps = {
   items: TimelineItem[];
-  loaded: boolean;
+  onNavigate: () => void;
 };
 
-export default function MiniTimeline() {
-  const [state, setState] = useState<TimelineState>({ items: [], loaded: false });
+export default function MiniTimeline({ items, onNavigate }: MiniTimelineProps) {
+  const preview = items.slice(0, 4);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadTimeline() {
-      try {
-        const response = await fetch('/api/getConfig?docs=roteiro', { cache: 'no-store' });
-        if (!response.ok) {
-          throw new Error('Falha ao carregar roteiro');
-        }
-
-        const payload = await response.json();
-        const raw = payload?.config?.roteiro?.itens;
-        const items = Array.isArray(raw) ? raw.slice(0, 4) : [];
-
-        if (active) {
-          setState({ items, loaded: true });
-        }
-      } catch {
-        if (active) {
-          setState({ items: [], loaded: true });
-        }
-      }
-    }
-
-    loadTimeline();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const items = useMemo(() => state.items, [state.items]);
-
-  if (!state.loaded || items.length === 0) {
+  if (preview.length === 0) {
     return null;
   }
 
@@ -57,7 +22,7 @@ export default function MiniTimeline() {
     <section className="romantic-panel p-4 sm:p-6" aria-label="Mini timeline do dia">
       <h2 className="text-2xl sm:text-3xl">Primeiros momentos do dia</h2>
       <div className="mt-4 space-y-3">
-        {items.map((item, index) => {
+        {preview.map((item, index) => {
           const highlight = Boolean(item.destaque);
           return (
             <div key={`${item.horario || 'hora'}-${index}`} className="grid grid-cols-[72px_18px_1fr] items-start gap-2">
@@ -74,9 +39,13 @@ export default function MiniTimeline() {
         })}
       </div>
       <div className="mt-4">
-        <Link href="/roteiro" className="text-sm font-semibold text-wine hover:text-cocoa">
+        <button
+          type="button"
+          onClick={onNavigate}
+          className="text-sm font-semibold text-wine hover:text-cocoa"
+        >
           Ver roteiro completo →
-        </Link>
+        </button>
       </div>
     </section>
   );

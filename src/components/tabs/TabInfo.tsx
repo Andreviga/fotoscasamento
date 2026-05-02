@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
+import MiniTimeline from '@/components/MiniTimeline';
 
 type TabInfoProps = {
   onNavigate: (tab: AppTab) => void;
@@ -452,6 +453,11 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
             </div>
           ))}
         </div>
+
+        {/* Mini roteiro */}
+        {roteiroItems.length > 0 && (
+          <MiniTimeline items={roteiroItems} onNavigate={() => onNavigate('roteiro')} />
+        )}
 
         {/* Secondary navigation */}
         <div className="grid grid-cols-3 gap-3">
