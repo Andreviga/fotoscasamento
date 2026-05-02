@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { initTestTime, getNow } from '@/lib/testTime';
 import type { AppTab } from '@/components/TabBar';
 import PageHeader from '@/components/PageHeader';
 
@@ -100,7 +101,7 @@ const ETIQUETA_FALLBACK: EtiquetaItem[] = [
 const DIA_FESTA = new Date(2026, 4, 3); // 3 de maio de 2026, meia-noite local
 
 function getHorarioAtual(items: RoteiroItem[]): string | null {
-  const agora = new Date();
+  const agora = getNow();
   if (agora < DIA_FESTA) return null;
   let current: string | null = null;
   for (const item of items) {

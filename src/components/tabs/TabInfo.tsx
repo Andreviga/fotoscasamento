@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { AppTab } from '@/components/TabBar';
 import MiniTimeline from '@/components/MiniTimeline';
+import { initTestTime, getNow } from '@/lib/testTime';
 
 type TabInfoProps = {
   onNavigate: (tab: AppTab) => void;
@@ -50,7 +51,7 @@ type BeforeInstallPromptEvent = Event & {
 type RouteApp = 'google' | 'waze';
 
 function computeNextAtracao(items: RoteiroItem[]): NextAtracao {
-  const now = new Date();
+  const now = getNow();
   const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   // Parse as local midnight to avoid UTC-offset shifting the date
   const [ey, em, ed] = EVENT_DAY_STR.split('-').map(Number);
@@ -100,6 +101,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
   const [delayNotified, setDelayNotified] = useState(false);
 
   useEffect(() => {
+    initTestTime();
     const id = window.setInterval(() => setAtracao(computeNextAtracao(roteiroItems)), 30000);
     return () => window.clearInterval(id);
   }, [roteiroItems]);
@@ -214,7 +216,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
   }
 
   function getCeremonyRemainingMinutes() {
-    const now = new Date();
+    const now = getNow();
     const [ey, em, ed] = EVENT_DAY_STR.split('-').map(Number);
     const isEventDay =
       now.getFullYear() === ey &&
