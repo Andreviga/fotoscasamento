@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import * as XLSX from 'xlsx';
 
 import WeddingHeader from '../components/WeddingHeader';
 import WeddingFooter from '../components/WeddingFooter';
@@ -323,6 +324,40 @@ export default function AdminWhatsappPage() {
     }
   }
 
+  function exportExcel() {
+    const rows = filteredGuests.map((guest) => {
+      const message = buildMessage(guest);
+      const linkWhatsApp = guest.validPhone ? createWhatsAppLink(guest.telefone, message) : '';
+      return {
+        Nome: guest.nome || '',
+        Telefone: sanitizePhone(guest.telefone),
+        Mesa: guest.mesa || '',
+        'Localização da Mesa': guest.localizacaoMesa || '',
+        'Mensagem WhatsApp': message,
+        'Link WhatsApp': linkWhatsApp,
+        Status: guest.sent ? 'Enviado' : 'Pendente'
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    // Ajusta largura das colunas automaticamente
+    const colWidths = [
+      { wch: 35 },  // Nome
+      { wch: 18 },  // Telefone
+      { wch: 10 },  // Mesa
+      { wch: 30 },  // Localização
+      { wch: 80 },  // Mensagem
+      { wch: 70 },  // Link
+      { wch: 12 }   // Status
+    ];
+    worksheet['!cols'] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Convidados');
+    XLSX.writeFile(workbook, 'whatsapp-convidados.xlsx');
+  }
+
   function exportCsv() {
     const headers = ['nome', 'telefone', 'mesa', 'localizacaoMesa', 'mensagem', 'linkWhatsApp', 'statusEnvio'];
 
@@ -382,6 +417,7 @@ export default function AdminWhatsappPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm text-wine/80">Ação manual e segura: sem disparo automático.</p>
                   <div className="flex flex-wrap gap-2">
+                    <button type="button" className="btn btn--outline" onClick={exportExcel}>Exportar Excel</button>
                     <button type="button" className="btn btn--outline" onClick={exportCsv}>Exportar CSV</button>
                     <button type="button" className="btn btn--outline" onClick={logout}>Sair</button>
                   </div>
