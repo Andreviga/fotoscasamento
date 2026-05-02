@@ -337,14 +337,15 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           <p className="hero-intro">
             Bem-vindos ao nosso casamento. Encontre sua mesa, veja as informações do local e compartilhe seus registros desse dia especial.
           </p>
-        {/* Próxima Atração */}
-          <div
-            aria-live="polite"
-            className="mx-auto mt-5 inline-block rounded-2xl border border-roseDeep/15 bg-white/60 px-5 py-3 text-center"
-          >
-            <p className="text-[10px] uppercase tracking-[0.22em] text-roseDeep/55">Quando chegar</p>
-            <p className="font-serifRomance text-xl text-cocoa mt-1">03 de maio</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Cerimônia às 18h (pontual)</p>
+          <div className="mt-5 text-center">
+            <a
+              href="https://andrenathalia03052026.site/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-full border border-roseDeep/20 px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-roseDeep/70 transition hover:border-gold/40 hover:text-cocoa"
+            >
+              Lista de presentes
+            </a>
           </div>
 
           <p className="wedding-signature mt-3" style={{ '--font-size': '19px' } as React.CSSProperties}>
