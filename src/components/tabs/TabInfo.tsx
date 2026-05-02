@@ -83,6 +83,7 @@ function computeNextAtracao(): NextAtracao {
 
 export default function TabInfo({ onNavigate }: TabInfoProps) {
   const [atracao, setAtracao] = useState<NextAtracao>(computeNextAtracao);
+  const [siteInfo, setSiteInfo] = useState<Record<string, string>>({});
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installStatus, setInstallStatus] = useState('');
   const [notifStatus, setNotifStatus] = useState('');
@@ -93,6 +94,30 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
   useEffect(() => {
     const id = window.setInterval(() => setAtracao(computeNextAtracao()), 30000);
     return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchSiteInfo() {
+      try {
+        const response = await fetch('/api/getConfig?docs=site', { cache: 'no-store' });
+        const payload = await response.json();
+        if (!response.ok) return;
+        const site = payload?.config?.site;
+
+        if (mounted && site && typeof site === 'object') {
+          setSiteInfo(site as Record<string, string>);
+        }
+      } catch {
+        // Keep defaults in UI when config API is unavailable.
+      }
+    }
+
+    void fetchSiteInfo();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -399,11 +424,11 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
         {/* Quick info cards */}
         <div className="romantic-panel divide-y divide-roseDeep/10 overflow-hidden">
           {[
-            { icon: '📅', label: 'Data', value: '03 de maio de 2026 — Domingo' },
-            { icon: '📍', label: 'Local', value: 'Espaço Vdara — Sítio São Jorge, São Bernardo do Campo' },
-            { icon: '⏰', label: 'Horário', value: 'Festa: 17h · Cerimônia: 18h (pontual)' },
-            { icon: '👔', label: 'Traje', value: 'Esporte fino. Evite branco, creme ou tons da noiva.' },
-            { icon: '🅿️', label: 'Estacionamento', value: 'Verifique a orientação da equipe no local.' },
+            { icon: '📅', label: 'Data', value: siteInfo.info_data || '03 de maio de 2026 — Domingo' },
+            { icon: '📍', label: 'Local', value: siteInfo.info_local || 'Espaço Vdara — Sítio São Jorge, São Bernardo do Campo' },
+            { icon: '⏰', label: 'Horário', value: siteInfo.info_horario || 'Festa: 17h · Cerimônia: 18h (pontual)' },
+            { icon: '👔', label: 'Traje', value: siteInfo.info_traje || 'Esporte fino. Evite branco, creme ou tons da noiva.' },
+            { icon: '🅿️', label: 'Estacionamento', value: siteInfo.info_estacionamento || 'Verifique a orientação da equipe no local.' },
           ].map((item) => (
             <div key={item.label} className="flex items-start gap-3 px-4 py-3.5">
               <span className="mt-0.5 shrink-0 text-lg">{item.icon}</span>

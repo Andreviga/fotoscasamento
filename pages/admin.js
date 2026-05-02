@@ -114,6 +114,11 @@ export default function AdminPage() {
         onlyEventDay: data?.notificacoes?.onlyEventDay !== false,
         schedules: Array.isArray(data?.notificacoes?.schedules) ? data.notificacoes.schedules : []
       });
+            ['info_data', 'Info rápida - Data'],
+            ['info_local', 'Info rápida - Local'],
+            ['info_horario', 'Info rápida - Horário'],
+            ['info_traje', 'Info rápida - Traje'],
+            ['info_estacionamento', 'Info rápida - Estacionamento'],
     }
   }, [loading, data]);
 
