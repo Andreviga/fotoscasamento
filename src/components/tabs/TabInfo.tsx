@@ -14,7 +14,9 @@ const DELAY_ALERT_BUFFER_MINUTES = 30;
 const DESTINATION_ADDRESS = 'R. das Araribás, 31 - Bairro dos Casa, São Bernardo do Campo - SP, 09840-210';
 const DESTINATION_COORDS = { lat: -23.743138, lon: -46.5749888 };
 
-const ROTEIRO_ITEMS = [
+type RoteiroItem = { horario: string; titulo: string };
+
+const ROTEIRO_FALLBACK: RoteiroItem[] = [
   { horario: '17:00', titulo: 'Chegada e Welcome drink' },
   { horario: '17:30', titulo: 'Abertura do salão' },
   { horario: '18:00', titulo: 'Entrada dos padrinhos' },
@@ -46,24 +48,27 @@ type BeforeInstallPromptEvent = Event & {
 
 type RouteApp = 'google' | 'waze';
 
-function computeNextAtracao(): NextAtracao {
+function computeNextAtracao(items: RoteiroItem[]): NextAtracao {
   const now = new Date();
   const evDay = new Date(EVENT_DAY_STR);
   const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const evMidnight = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate());
 
+  const firstItem = items[0];
+  const lastItem = items[items.length - 1];
+
   if (nowMidnight < evMidnight) {
     const daysUntil = Math.ceil((evMidnight.getTime() - nowMidnight.getTime()) / (1000 * 60 * 60 * 24));
-    return { status: 'before', titulo: 'A Festa', horario: '17:00', minutesUntil: daysUntil * 1440 };
+    return { status: 'before', titulo: 'A Festa', horario: firstItem?.horario ?? '17:00', minutesUntil: daysUntil * 1440 };
   }
 
   if (nowMidnight > evMidnight) {
-    return { status: 'ended', titulo: 'Encerramento', horario: '23:00' };
+    return { status: 'ended', titulo: lastItem?.titulo ?? 'Encerramento', horario: lastItem?.horario ?? '23:00' };
   }
 
   // Event day — find next item
-  let lastItem = ROTEIRO_ITEMS[ROTEIRO_ITEMS.length - 1];
-  for (const item of ROTEIRO_ITEMS) {
+  let current = lastItem;
+  for (const item of items) {
     const [h, m] = item.horario.split(':').map(Number);
     const itemTime = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate(), h, m, 0);
     if (itemTime > now) {
@@ -75,14 +80,15 @@ function computeNextAtracao(): NextAtracao {
     if (itemTime <= now && now < windowEnd) {
       return { status: 'now', titulo: item.titulo, horario: item.horario };
     }
-    lastItem = item;
+    current = item;
   }
 
-  return { status: 'ended', titulo: lastItem.titulo, horario: lastItem.horario };
+  return { status: 'ended', titulo: current?.titulo ?? 'Encerramento', horario: current?.horario ?? '23:00' };
 }
 
 export default function TabInfo({ onNavigate }: TabInfoProps) {
-  const [atracao, setAtracao] = useState<NextAtracao>(computeNextAtracao);
+  const [roteiroItems, setRoteiroItems] = useState<RoteiroItem[]>(ROTEIRO_FALLBACK);
+  const [atracao, setAtracao] = useState<NextAtracao>(() => computeNextAtracao(ROTEIRO_FALLBACK));
   const [siteInfo, setSiteInfo] = useState<Record<string, string>>({});
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installStatus, setInstallStatus] = useState('');
@@ -92,29 +98,36 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
   const [delayNotified, setDelayNotified] = useState(false);
 
   useEffect(() => {
-    const id = window.setInterval(() => setAtracao(computeNextAtracao()), 30000);
+    const id = window.setInterval(() => setAtracao(computeNextAtracao(roteiroItems)), 30000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [roteiroItems]);
 
   useEffect(() => {
     let mounted = true;
 
-    async function fetchSiteInfo() {
+    async function fetchConfig() {
       try {
-        const response = await fetch('/api/getConfig?docs=site', { cache: 'no-store' });
+        const response = await fetch('/api/getConfig?docs=site,roteiro', { cache: 'no-store' });
         const payload = await response.json();
         if (!response.ok) return;
-        const site = payload?.config?.site;
 
+        const site = payload?.config?.site;
         if (mounted && site && typeof site === 'object') {
           setSiteInfo(site as Record<string, string>);
+        }
+
+        const rawRoteiro = payload?.config?.roteiro?.itens;
+        if (mounted && Array.isArray(rawRoteiro) && rawRoteiro.length > 0) {
+          const items = rawRoteiro as RoteiroItem[];
+          setRoteiroItems(items);
+          setAtracao(computeNextAtracao(items));
         }
       } catch {
         // Keep defaults in UI when config API is unavailable.
       }
     }
 
-    void fetchSiteInfo();
+    void fetchConfig();
     return () => {
       mounted = false;
     };
