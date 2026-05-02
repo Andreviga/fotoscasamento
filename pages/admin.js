@@ -114,11 +114,6 @@ export default function AdminPage() {
         onlyEventDay: data?.notificacoes?.onlyEventDay !== false,
         schedules: Array.isArray(data?.notificacoes?.schedules) ? data.notificacoes.schedules : []
       });
-            ['info_data', 'Info rápida - Data'],
-            ['info_local', 'Info rápida - Local'],
-            ['info_horario', 'Info rápida - Horário'],
-            ['info_traje', 'Info rápida - Traje'],
-            ['info_estacionamento', 'Info rápida - Estacionamento'],
     }
   }, [loading, data]);
 
@@ -624,6 +619,11 @@ export default function AdminPage() {
             ['data_casamento', 'Data do casamento'],
             ['local_cerimonia', 'Local da cerimônia'],
             ['local_recepcao', 'Local da recepção'],
+            ['info_data', 'Info rápida - Data'],
+            ['info_local', 'Info rápida - Local'],
+            ['info_horario', 'Info rápida - Horário'],
+            ['info_traje', 'Info rápida - Traje'],
+            ['info_estacionamento', 'Info rápida - Estacionamento'],
             ['mensagem_boas_vindas', 'Mensagem de boas-vindas'],
             ['hashtag', 'Hashtag'],
             ['pix_key', 'Chave PIX'],
