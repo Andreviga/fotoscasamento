@@ -339,7 +339,7 @@ export default function TabInfo({ onNavigate }: TabInfoProps) {
           </p>
           <div className="mt-5 text-center">
             <a
-              href="/api/giftLink"
+              href="/lista-presentes"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-full border border-roseDeep/20 px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-roseDeep/70 transition hover:border-gold/40 hover:text-cocoa"

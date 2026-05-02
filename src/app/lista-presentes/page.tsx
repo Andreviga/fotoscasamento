@@ -9,6 +9,9 @@ export default function ListaPresentesFallbackPage() {
           <p className="mt-3 text-sm sm:text-base text-cocoa/80">
             Se o acesso automático falhar, use um dos links abaixo para abrir a lista de presentes.
           </p>
+          <p className="mt-2 text-xs text-wine/70">
+            Se aparecer "403 Forbidden", tente o link alternativo abaixo.
+          </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
             <a
